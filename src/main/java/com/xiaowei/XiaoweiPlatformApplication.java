@@ -1,4 +1,4 @@
-package com.xiaowei.com.xiaoweiplatform;
+package com.xiaowei;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
