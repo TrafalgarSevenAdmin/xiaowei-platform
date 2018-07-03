@@ -1,6 +1,7 @@
 package com.xiaowei.commonjts.utils;
 
-import com.rundi.common.jts.bean.Gps;
+
+import com.xiaowei.commonjts.bean.Gps;
 
 /**
  * Created by yuanxuan on 2018/4/11.
