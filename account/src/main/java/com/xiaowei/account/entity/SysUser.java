@@ -30,6 +30,11 @@ public class SysUser extends BaseEntity {
     private String password;
 
     /**
+     *
+     */
+    private String openId;
+
+    /**
      * 盐
      */
     private String salt;
@@ -70,6 +75,14 @@ public class SysUser extends BaseEntity {
             inverseJoinColumns={@JoinColumn(name="COMPANY_ID")})
     @JsonIgnore
     private List<Company> companies;
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
 
     public List<Company> getCompanies() {
         return companies;

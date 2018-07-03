@@ -1,0 +1,49 @@
+profiles:  dev_environment
+server:
+  port: 9003
+  servlet:
+    context-path: /account
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: data-server
+  jpa:
+    generate-ddl: true
+    properties:
+      format_sql: true
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+  thymeleaf:
+    cache: false
+    cache-period: 0
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+logging:
+  level:
+    com:
+      yulintu: DEBUG
+upload:
+  path: C:/upload #将此路径用iis配置发布
+  type: local
+  accessUrlRoot: http://192.168.0.127:9000/
+  tags:
+    - idCard
+    - prove
+    - purchaseContract
+    - contract
+    - logo
