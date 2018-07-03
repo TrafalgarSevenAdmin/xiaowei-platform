@@ -15,7 +15,7 @@
    stage: run
    script:
      - mvn  -Dmaven.test.skip=true clean package
-     - cd account-web && docker:build
+     - cd account-web && mvn -Dmaven.test.skip=true docker:build
      - echo "打包完毕，准备运行"
      - "[ -f /cache/account-web.pid ] && cat /cache/account-web.pid |xargs -i docker kill {}"
      - "[ -f /cache/account-web.pid ] && cat /cache/account-web.pid |xargs -i docker rm {}"
