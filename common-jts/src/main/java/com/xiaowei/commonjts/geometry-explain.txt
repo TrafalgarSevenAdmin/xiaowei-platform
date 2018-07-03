@@ -1,0 +1,18 @@
+contains:包含  图形可以有相接的边  但是不能超出
+overlaps:相交  图形必须有相交区域  不包括共边和包含的情况
+intersects:相交  图形在完全没有相交时返回true,哪怕有一个点相交也算
+disjoint:与intersects判断方式一致,返回结果相反
+within:判断方式与contains相同,参数顺序相反
+covers:目前判断与contains相同
+touches:外接 图形共点或共边  但是不能有相交区域或者包含区域
+getCentroid 获取中心点  返回一个Point
+distance:获取距离 返回一个double表示笛卡尔距离 在图形完全没有接触的情况下才会有值,否则都返回0.0
+getArea:获取面积  返回一个double表示笛卡尔面积
+getInteriorPoint:获取内部点  返回一个Point 如果getCentroid的点在图形以内,这两个方法获取的Point相等;
+                                           如果getCentroid的点在图形以外,getInteriorPoint必定返回一个图形以内的点(具体算法未知)
+buffer:缓冲生成一个新的图形
+                   三个参数:distance  单位(度)  各边衍生指定距离
+		            quadrantSegments  衍生的各边的1/4圆的连接点的个数,默认是8
+			    endCapStyle  指定缓冲区的连接样式 默认是1  :BufferParameters.CAP_ROUND  1  表示指定一个圆形的缓冲区端点样式。
+				                                        BufferParameters.CAP_FLAT   2  表示指定一个扁平的行缓冲区结束帽样式。
+									BufferParameters.CAP_SQUARE 3  表示指定一个矩形的缓冲区结束帽样式。
