@@ -1,8 +1,12 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -31,14 +35,30 @@ public class ServiceItem extends BaseEntity{
      * 维修简介
      */
     private String serviceIntro;
-    /**
-     * 收费
-     */
-    private Double charge;
+
     /**
      * 状态
      */
     private Integer status;
+    /**
+     * 所属工单
+     */
+    @ManyToOne(targetEntity = WorkOrder.class)
+    @JoinColumn(name = "workOrder_id")
+    @Fetch(FetchMode.JOIN)
+    private WorkOrder workOrder;
+    /**
+     * 收费
+     */
+    private Double toll;
+
+    public Boolean getCharge() {
+        return isCharge;
+    }
+
+    public void setCharge(Boolean charge) {
+        isCharge = charge;
+    }
 
     public Integer getOrder() {
         return order;
@@ -46,26 +66,6 @@ public class ServiceItem extends BaseEntity{
 
     public void setOrder(Integer order) {
         this.order = order;
-    }
-
-    public Boolean getCharge() {
-        return isCharge;
-    }
-
-    public void setCharge(Double charge) {
-        this.charge = charge;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public void setCharge(Boolean charge) {
-        isCharge = charge;
     }
 
     public Integer getSource() {
@@ -90,5 +90,29 @@ public class ServiceItem extends BaseEntity{
 
     public void setServiceIntro(String serviceIntro) {
         this.serviceIntro = serviceIntro;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public WorkOrder getWorkOrder() {
+        return workOrder;
+    }
+
+    public void setWorkOrder(WorkOrder workOrder) {
+        this.workOrder = workOrder;
+    }
+
+    public Double getToll() {
+        return toll;
+    }
+
+    public void setToll(Double toll) {
+        this.toll = toll;
     }
 }
