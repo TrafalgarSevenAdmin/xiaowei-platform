@@ -2,7 +2,7 @@ profiles:  dev_environment
 server:
   port: 9003
   servlet:
-    context-path: /account
+    context-path: /work
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8
