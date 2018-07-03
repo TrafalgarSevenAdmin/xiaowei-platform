@@ -9,7 +9,7 @@
    script:
      - mvn test
    tags:
-     - dev
+     - docker
 
  run:
    stage: run
