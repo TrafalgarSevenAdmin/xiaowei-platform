@@ -1,25 +1,27 @@
- image: xw-ci:alpine
+image: xw-ci:alpine
 
- stages:
-   - test
-   - run
+variables:
+ PACKAGE_NAME: 'account-web'
+ PORT: 9002
+stages:
+ - test
+ - run_account
 
- test:
-   stage: test
-   script:
-     - mvn test
-   tags:
-     - docker
+test:
+ stage: test
+ script:
+   - mvn test
+ tags:
+   - docker
 
- run:
-   stage: run
-   script:
-     - mvn  -Dmaven.test.skip=true clean package
-     - cd account-web && docker:build
-     - echo "打包完毕，准备运行"
-     - "[ -f /cache/account-web.pid ] && cat /cache/account-web.pid |xargs -i docker kill {}"
-     - "[ -f /cache/account-web.pid ] && cat /cache/account-web.pid |xargs -i docker rm {}"
-     - docker run -d -p 9002:9002 account-web > /cache/account-web.pid
-     - echo "开始启动..."
-   tags:
-     - docker
+run_account:
+ stage: run_account
+ script:
+   - mvn  -Dmaven.test.skip=true clean package
+   - cd $PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - echo "打包完毕，准备运行"
+   - docker kill $PACKAGE_NAME && docker rm $PACKAGE_NAME
+   - docker run -d -p $PORT:$PORT --name $PACKAGE_NAME $PACKAGE_NAME
+   - echo "开始启动..."
+ tags:
+   - docker
