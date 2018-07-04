@@ -6,15 +6,25 @@ variables:
  WORK_PACKAGE_NAME: 'work-system'
  WORK_PORT: 9003
 
+cache:
+  paths:
+    - ./
+
 stages:
+ - package
  - run_account
  - run_work
 
+package:
+ stage: package
+ script:
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+ tags:
+   - docker
 
 run_account:
  stage: run_account
  script:
-   - mvn  -Dmaven.test.skip=true -P dev clean package
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
@@ -25,7 +35,6 @@ run_account:
 run_work:
  stage: run_work
  script:
-   - mvn  -Dmaven.test.skip=true -P dev clean package
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
    - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
