@@ -16,8 +16,8 @@ run_account:
  script:
    - mvn  -Dmaven.test.skip=true -P dev clean package
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
-   - docker kill $ACCOUNT_PACKAGE_NAME 
-   - docker rm $ACCOUNT_PACKAGE_NAME
+   - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
+   - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
    - docker run -d -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
  tags:
    - docker
@@ -27,8 +27,8 @@ run_work:
  script:
    - mvn  -Dmaven.test.skip=true -P dev clean package
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
-   - docker kill $WORK_PACKAGE_NAME
-   - docker rm $WORK_PACKAGE_NAME
+   - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
+   - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
    - docker run -d -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - docker
