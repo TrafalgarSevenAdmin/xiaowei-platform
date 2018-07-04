@@ -36,6 +36,7 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
             throw new BusinessException("工单不是待评价状态!");
         }
         workOrder.setEvaluate(evaluateRepository.save(evaluate));
+        workOrder.setUserStatus(WorkOrderUserStatus.COMPLETED.getStatus());//修改为完成状态
         workOrderRepository.save(workOrder);
         return evaluate;
     }
