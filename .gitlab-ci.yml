@@ -1,27 +1,34 @@
 image: xw-ci:alpine
 
 variables:
- PACKAGE_NAME: 'account-web'
- PORT: 9002
-stages:
- - test
- - run_account
+ ACCOUNT_PACKAGE_NAME: 'account-web'
+ ACCOUNT_PORT: 9002
+ WORK_PACKAGE_NAME: 'work-system'
+ WORK_PORT: 9003
 
-test:
- stage: test
- script:
-   - mvn test
- tags:
-   - docker
+stages:
+ - run_account
+ - run_work
+
 
 run_account:
  stage: run_account
  script:
-   - mvn  -Dmaven.test.skip=true clean package
-   - cd $PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
-   - echo "打包完毕，准备运行"
-   - docker kill $PACKAGE_NAME && docker rm $PACKAGE_NAME
-   - docker run -d -p $PORT:$PORT --name $PACKAGE_NAME $PACKAGE_NAME
-   - echo "开始启动..."
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
+   - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
+   - docker run -d -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+ tags:
+   - docker
+
+run_work:
+ stage: run_work
+ script:
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
+   - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
+   - docker run -d -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - docker

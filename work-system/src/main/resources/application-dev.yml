@@ -5,9 +5,9 @@ server:
     context-path: /work
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8
-    username: postgres
-    password: admin
+    url: @datasource.url@
+    username: @datasource.username@
+    password: @datasource.password@
     driver-class-name: org.postgresql.Driver
   application:
     name: data-server
@@ -27,7 +27,7 @@ spring:
     cache: false
     cache-period: 0
   redis:
-    host: 127.0.0.1
+    host: @redis.url@
     port: 6379
   servlet:
     multipart:
