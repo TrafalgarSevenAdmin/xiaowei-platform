@@ -9,10 +9,7 @@ import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.dto.EquipmentDTO;
-import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Equipment;
-import com.xiaowei.worksystem.entity.WorkOrder;
-import com.xiaowei.worksystem.query.WorkOrderQuery;
 import com.xiaowei.worksystem.service.IEquipmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +28,9 @@ import java.util.List;
 @RequestMapping("/api/equipment")
 public class EquipmentController {
 
+    /**
+     * 设备服务
+     */
     @Autowired
     private IEquipmentService equipmentService;
 
