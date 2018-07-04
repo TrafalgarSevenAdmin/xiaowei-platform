@@ -1,10 +1,12 @@
 package com.xiaowei.core.exception;
 
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
-import com.xiaowei.core.context.ContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -21,19 +23,20 @@ import java.util.*;
  * @Version 1.0
  */
 @Component
-public class ExceptionHandlerInterceptor implements HandlerExceptionResolver,InitializingBean {
+public class ExceptionHandlerInterceptor implements HandlerExceptionResolver,InitializingBean,ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerInterceptor.class);
 
     private static Map<String,List<ExceptionHandler>> exceptionHandlerMap;
+    private ApplicationContext applicationContext;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         exceptionHandlerMap = new HashMap<String,List<ExceptionHandler>>();
-        String[] exceptionHandler = ContextUtils.getApplicationContext().getBeanNamesForType(ExceptionHandler.class);
+        String[] exceptionHandler = applicationContext.getBeanNamesForType(ExceptionHandler.class);
         for (String exception : exceptionHandler) {
             //获取所有的异常处理区
-            ExceptionHandler handler = ContextUtils.getApplicationContext().getBean(exception, ExceptionHandler.class);
+            ExceptionHandler handler = applicationContext.getBean(exception, ExceptionHandler.class);
             ExceptionSign exceptionSign = handler.getClass().getDeclaredAnnotation(ExceptionSign.class);
             if(exceptionSign == null){
                 throw new RuntimeException(handler.getClass().getName() + "这个类未标记需要处理什么异常!");
@@ -111,4 +114,8 @@ public class ExceptionHandlerInterceptor implements HandlerExceptionResolver,Ini
     }
 
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }
