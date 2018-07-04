@@ -8,7 +8,8 @@ variables:
 
 cache:
   paths:
-    - ./
+    - $ACCOUNT_PACKAGE_NAME/
+    - $WORK_PACKAGE_NAME/
 
 stages:
  - package
