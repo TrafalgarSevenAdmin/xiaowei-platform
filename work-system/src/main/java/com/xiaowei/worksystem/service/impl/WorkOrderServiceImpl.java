@@ -138,12 +138,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.CONFIRMED.getStatus())) {
             throw new BusinessException("状态错误!");
         }
-        onConfirmed(workOrder,serviceItemIds);
+        onConfirmed(workOrder, serviceItemIds);
         workOrderRepository.save(workOrder);
         return workOrder;
     }
 
-    private void onConfirmed(WorkOrder workOrder,List<String> serviceItemIds) {
+    private void onConfirmed(WorkOrder workOrder, List<String> serviceItemIds) {
         workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.CONFIRMED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
@@ -152,7 +152,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         serviceItems.stream().forEach(serviceItem -> {
             String serviceItemId = serviceItem.getId();
             //如果匹配上,则表示是用户确认的项目
-            if(serviceItemIds.contains(serviceItemId)){
+            if (serviceItemIds.contains(serviceItemId)) {
                 serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());
                 serviceItemRepository.save(serviceItem);
             }
