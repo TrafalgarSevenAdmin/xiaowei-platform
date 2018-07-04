@@ -1,39 +1,44 @@
 package com.xiaowei.worksystem.status;
 
-public enum WorkOrderSystemStatus {
+public enum WorkOrderEngineerStatus {
     /**
-     * 待指派
+     * 待接单
      */
-    ASSIGNED(0),
+    RECEIVED(0),
 
     /**
-     * 待审批
+     * 待出发
      */
-    APPROVED(1),
+    DEPARTED(1),
 
     /**
-     * 待归档
+     * 行程中
      */
-    ARCHIVEING(2),
+    TRIPING(2),
 
     /**
-     * 归档
+     * 处理中
      */
-    ARCHIVED(3),
+    INHAND(3),
 
     /**
-     * 待审批
+     * 处理完成
      */
-    INHAND(4),
+    COMPLETEINHAND(4),
 
     /**
-     * 删除
+     * 待报销
      */
-    DELETE(99);
+    REIMBURSEMENT(5),
+
+    /**
+     * 完成
+     */
+    COMPLETED(6);
 
     private Integer status;
 
-    WorkOrderSystemStatus(Integer status){
+    WorkOrderEngineerStatus(Integer status){
         this.status = status;
     }
 
