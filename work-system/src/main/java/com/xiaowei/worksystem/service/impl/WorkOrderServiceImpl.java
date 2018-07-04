@@ -119,7 +119,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
-     * 修改工单针对用户的状态
+     * 用户确认项目
      *
      * @param workOrderId
      * @return
@@ -141,6 +141,46 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         onConfirmed(workOrder, serviceItemIds);
         workOrderRepository.save(workOrder);
         return workOrder;
+    }
+
+    /**
+     * 用户付费项目
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder payServiceItem(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的用户");
+        WorkOrder workOrder = one.get();
+        //如果已经完成,则不允许修改
+        if (workOrder.getUserStatus().equals(WorkOrderUserStatus.COMPLETED.getStatus())) {
+            throw new BusinessException("该工单已经完成!");
+        }
+        //待付款
+        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.PAIED.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+
+        onPaied(workOrder);
+        workOrderRepository.save(workOrder);
+        return workOrder;
+
+    }
+
+    private void onPaied(WorkOrder workOrder) {
+        workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());
+        List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
+        if (CollectionUtils.isEmpty(serviceItems)) {
+            return;
+        }
+        serviceItems.stream().forEach(serviceItem -> {
+            //所有项目由待付款变为完成状态
+            serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());
+            serviceItemRepository.save(serviceItem);
+        });
     }
 
     private void onConfirmed(WorkOrder workOrder, List<String> serviceItemIds) {

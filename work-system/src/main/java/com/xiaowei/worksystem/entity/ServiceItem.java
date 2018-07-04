@@ -40,6 +40,7 @@ public class ServiceItem extends BaseEntity{
      * 状态
      */
     private Integer status;
+
     /**
      * 所属工单
      */
@@ -47,6 +48,7 @@ public class ServiceItem extends BaseEntity{
     @JoinColumn(name = "workOrder_id")
     @Fetch(FetchMode.JOIN)
     private WorkOrder workOrder;
+
     /**
      * 收费
      */
