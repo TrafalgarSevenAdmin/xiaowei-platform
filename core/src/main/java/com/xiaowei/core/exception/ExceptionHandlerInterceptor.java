@@ -30,7 +30,6 @@ public class ExceptionHandlerInterceptor implements HandlerExceptionResolver,Ini
     @Override
     public void afterPropertiesSet() throws Exception {
         exceptionHandlerMap = new HashMap<String,List<ExceptionHandler>>();
-        System.out.printf("获取到的上下文为"+ContextUtils.getApplicationContext());
         String[] exceptionHandler = ContextUtils.getApplicationContext().getBeanNamesForType(ExceptionHandler.class);
         for (String exception : exceptionHandler) {
             //获取所有的异常处理区
