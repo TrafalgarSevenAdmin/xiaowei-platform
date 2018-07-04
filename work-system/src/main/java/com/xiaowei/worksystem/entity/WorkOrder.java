@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
+import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -55,6 +56,63 @@ public class WorkOrder extends BaseEntity {
      * 针对工程师状态
      */
     private Integer engineerStatus;
+    /**
+     * 创建方式
+     */
+    private Integer createdType;
+    /**
+     * 申请处理人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "proposer_id")
+    @Fetch(FetchMode.JOIN)
+    private SysUser proposer;
+    /**
+     * 后台处理人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "backgrounder_id")
+    @Fetch(FetchMode.JOIN)
+    private SysUser backgrounder;
+    /**
+     * 处理工程师
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "engineer_id")
+    @Fetch(FetchMode.JOIN)
+    private SysUser engineer;
+
+    public Integer getCreatedType() {
+        return createdType;
+    }
+
+    public void setCreatedType(Integer createdType) {
+        this.createdType = createdType;
+    }
+
+    public SysUser getProposer() {
+        return proposer;
+    }
+
+    public void setProposer(SysUser proposer) {
+        this.proposer = proposer;
+    }
+
+    public SysUser getBackgrounder() {
+        return backgrounder;
+    }
+
+    public void setBackgrounder(SysUser backgrounder) {
+        this.backgrounder = backgrounder;
+    }
+
+    public SysUser getEngineer() {
+        return engineer;
+    }
+
+    public void setEngineer(SysUser engineer) {
+        this.engineer = engineer;
+    }
 
     public Integer getSystemStatus() {
         return systemStatus;

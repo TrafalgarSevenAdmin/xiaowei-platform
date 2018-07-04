@@ -7,4 +7,7 @@ import com.xiaowei.worksystem.entity.WorkOrder;
 
 public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
+    WorkOrder saveWorkOrder(WorkOrder workOrder);
+
+    WorkOrder updateWorkOrder(WorkOrder workOrder);
 }

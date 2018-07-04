@@ -22,7 +22,7 @@ public class ServiceItem extends BaseEntity{
     /**
      * 维修顺序
      */
-    private Integer order;
+    private Integer orderNumber;
     /**
      * 项目创建来源
      */
@@ -60,12 +60,12 @@ public class ServiceItem extends BaseEntity{
         isCharge = charge;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public Integer getSource() {
