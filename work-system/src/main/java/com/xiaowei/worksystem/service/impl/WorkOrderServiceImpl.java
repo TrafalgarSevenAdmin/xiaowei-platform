@@ -53,6 +53,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
+            workOrder.setEvaluate(null);
             //检查设备,如果没有设备,则新增设备
             judgeEquipment(workOrder);
             //设置工单状态
@@ -63,7 +64,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             EmptyUtils.assertString(workOrderId, "没有传入对象id");
             Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
             EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
-
         }
     }
 

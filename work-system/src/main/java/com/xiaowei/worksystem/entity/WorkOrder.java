@@ -5,10 +5,7 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 工单实体
@@ -81,6 +78,22 @@ public class WorkOrder extends BaseEntity {
     @JoinColumn(name = "engineer_id")
     @Fetch(FetchMode.JOIN)
     private SysUser engineer;
+
+    public Evaluate getEvaluate() {
+        return evaluate;
+    }
+
+    public void setEvaluate(Evaluate evaluate) {
+        this.evaluate = evaluate;
+    }
+
+    /**
+     * 用户评价
+     */
+    @OneToOne(targetEntity = Evaluate.class,fetch = FetchType.LAZY)
+    @JoinColumn(name = "evaluate_id")
+    @Fetch(FetchMode.JOIN)
+    private Evaluate evaluate;
 
     public Integer getCreatedType() {
         return createdType;

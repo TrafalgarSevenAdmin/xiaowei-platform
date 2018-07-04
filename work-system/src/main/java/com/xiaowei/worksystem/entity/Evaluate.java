@@ -2,8 +2,7 @@ package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 设备实体
@@ -31,6 +30,7 @@ public class Evaluate extends BaseEntity{
      * 速度评价
      */
     private String speedEvaluate;
+
     /**
      * 反馈意见
      */

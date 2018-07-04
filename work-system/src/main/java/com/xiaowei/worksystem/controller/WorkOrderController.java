@@ -7,9 +7,12 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
+import com.xiaowei.worksystem.entity.Evaluate;
 import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.query.WorkOrderQuery;
+import com.xiaowei.worksystem.service.IEvaluateService;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +33,8 @@ public class WorkOrderController {
 
     @Autowired
     private IWorkOrderService workOrderService;
+    @Autowired
+    private IEvaluateService evaluateService;
 
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
@@ -38,6 +43,15 @@ public class WorkOrderController {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder = workOrderService.saveWorkOrder(workOrder);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
+    }
+
+    @ApiOperation(value = "添加评价")
+    @AutoErrorHandler
+    @PostMapping("/{workOrderId}/evaluate")
+    public Result insertEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
+        evaluate = evaluateService.saveEvaluate(workOrderId,evaluate);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
     }
 
     @ApiOperation(value = "修改工单")
