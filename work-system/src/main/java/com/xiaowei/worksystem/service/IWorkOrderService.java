@@ -4,6 +4,8 @@ package com.xiaowei.worksystem.service;
 import com.xiaowei.core.basic.service.IBaseService;
 import com.xiaowei.worksystem.entity.WorkOrder;
 
+import java.util.List;
+
 
 public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
@@ -12,4 +14,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder updateWorkOrder(WorkOrder workOrder);
 
     void fakeDelete(String workOrderId);
+
+    WorkOrder confirmed(String workOrderId,List<String> serviceItemIds);
 }

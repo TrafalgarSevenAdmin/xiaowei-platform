@@ -50,6 +50,15 @@ public class WorkOrderController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
+    @ApiOperation(value = "用户确认项目")
+    @AutoErrorHandler
+    @PutMapping("/confirmed/{workOrderId}")
+    public Result confirmed(@PathVariable("workOrderId") String workOrderId, List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
+        workOrderService.confirmed(workOrderId,serviceItemIds);
+        return Result.getSuccess();
+    }
+
+
     @ApiOperation("工单查询接口")
     @GetMapping("")
     public Result query(WorkOrderQuery workOrderQuery, FieldsView fieldsView) {
