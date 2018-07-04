@@ -77,4 +77,12 @@ public class WorkOrderController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
+    @ApiOperation("删除工单")
+    @DeleteMapping("/{workOrderId}")
+    public Result delete(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
+        //伪删除
+        workOrderService.fakeDelete(workOrderId);
+        return Result.getSuccess("删除成功");
+    }
+
 }
