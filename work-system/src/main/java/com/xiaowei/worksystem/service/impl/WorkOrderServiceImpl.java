@@ -50,7 +50,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             EmptyUtils.assertString(workOrderId,"没有传入对象id");
             Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
             EmptyUtils.assertOptional(one,"没有查询到需要修改的对象");
-
         }
     }
 
