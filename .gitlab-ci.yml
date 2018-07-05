@@ -16,14 +16,12 @@ stages:
  - run_work
  - run_account
 
-package:
- stage: package
- script:
-   - mvn  -Dmaven.test.skip=true -P dev clean package
- tags:
-   - docker
-
-
+#package:
+# stage: package
+# script:
+#   - mvn  -Dmaven.test.skip=true -P dev clean package
+# tags:
+#   - docker
 
 run_work:
  stage: run_work
@@ -36,13 +34,13 @@ run_work:
  tags:
    - docker
 
- run_account:
-  stage: run_account
-  script:
-    - mvn  -Dmaven.test.skip=true -P dev clean package
-    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
-    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
-    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
-    - docker run -d -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
-  tags:
-    - docker
+run_account:
+ stage: run_account
+ script:
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
+   - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
+   - docker run -d -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+ tags:
+   - docker
