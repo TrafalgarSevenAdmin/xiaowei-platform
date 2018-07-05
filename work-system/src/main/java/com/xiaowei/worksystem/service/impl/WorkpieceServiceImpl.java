@@ -7,12 +7,14 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.worksystem.entity.Workpiece;
 import com.xiaowei.worksystem.repository.WorkpieceRepository;
 import com.xiaowei.worksystem.service.IWorkpieceService;
+import com.xiaowei.worksystem.status.CommonStatus;
 import com.xiaowei.worksystem.status.WorkpieceStoreType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
@@ -65,6 +67,11 @@ public class WorkpieceServiceImpl extends BaseServiceImpl<Workpiece> implements 
      */
     @Override
     public void fakeDelete(String workpieceId) {
-
+        EmptyUtils.assertString(workpieceId, "没有传入对象id");
+        Optional<Workpiece> one = workpieceRepository.findById(workpieceId);
+        EmptyUtils.assertOptional(one, "没有查询到需要删除的对象");
+        Workpiece Workpiece = one.get();
+        Workpiece.setStatus(CommonStatus.DELETE.getStatus());
+        workpieceRepository.save(Workpiece);
     }
 }
