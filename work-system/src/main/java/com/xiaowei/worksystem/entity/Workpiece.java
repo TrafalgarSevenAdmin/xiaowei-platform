@@ -1,14 +1,10 @@
 package com.xiaowei.worksystem.entity;
 
-import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.worksystem.status.CommonStatus;
 import com.xiaowei.worksystem.status.WorkpieceStoreType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -50,7 +46,7 @@ public class Workpiece extends BaseEntity{
     /**
      * 数据状态
      */
-    private String status;
+    private Integer status = CommonStatus.LIVE.getStatus();
 
 
     public String getName() {
@@ -101,11 +97,11 @@ public class Workpiece extends BaseEntity{
         this.userId = userId;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 }

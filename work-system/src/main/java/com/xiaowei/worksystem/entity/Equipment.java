@@ -1,7 +1,9 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.worksystem.status.CommonStatus;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -31,7 +33,10 @@ public class Equipment extends BaseEntity{
      */
     private String address;
 
-    private Integer status;
+    /**
+     * 数据状态
+     */
+    private Integer status = CommonStatus.LIVE.getStatus();
 
     public Integer getStatus() {
         return status;
