@@ -27,7 +27,7 @@ public class WorkpieceDTO {
      */
     @ApiModelProperty(value = "工件名称")
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "工件名称必填!")
-    private Equipment name;
+    private String name;
 
     /**
      * 所属厂库类型，0个人厂库，1总库
@@ -56,11 +56,11 @@ public class WorkpieceDTO {
         this.code = code;
     }
 
-    public Equipment getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Equipment name) {
+    public void setName(String name) {
         this.name = name;
     }
 

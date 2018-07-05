@@ -80,6 +80,15 @@ public class WorkpieceController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workpiece, fieldsView));
     }
 
+    /**
+     * 想怎么修改就怎么修改。属于后台管理员权限
+     * @param workpieceDTO
+     * @param bindingResult
+     * @param equipmentId
+     * @param fieldsView
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value = "修改工件")
     @AutoErrorHandler
     @PutMapping("/")

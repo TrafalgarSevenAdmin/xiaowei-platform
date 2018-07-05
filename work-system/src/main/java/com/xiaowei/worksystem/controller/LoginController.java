@@ -59,4 +59,15 @@ public class LoginController {
         return Result.getSuccess();
     }
 
+    /**
+     * 获取当前登录用户的信息
+     * @param
+     * @return
+     */
+    @ApiOperation("获取当前登录用户的信息")
+    @GetMapping("/userInfo")
+    public Result userInfo(){
+        return Result.getSuccess(LoginUserUtils.getLoginUser());
+    }
+
 }

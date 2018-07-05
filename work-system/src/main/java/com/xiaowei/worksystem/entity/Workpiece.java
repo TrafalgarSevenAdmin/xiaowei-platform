@@ -47,6 +47,11 @@ public class Workpiece extends BaseEntity{
      */
     private String userId;
 
+    /**
+     * 数据状态
+     */
+    private String status;
+
 
     public String getName() {
         return name;
@@ -94,5 +99,13 @@ public class Workpiece extends BaseEntity{
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
