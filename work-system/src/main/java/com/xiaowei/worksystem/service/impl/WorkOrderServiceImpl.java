@@ -90,7 +90,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     private void judgeEquipment(WorkOrder workOrder) {
         Equipment equipment = workOrder.getEquipment();
-        EmptyUtils.assertObject(equipment, "工单所属设备为空");
+        if (equipment == null) {
+            return;
+        }
         String code = equipment.getCode();
         Equipment byCode = equipmentRepository.findByCode(code);
         if (byCode == null) {
@@ -231,6 +233,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 工程师出发
+     *
      * @param workOrderId
      * @param shape
      * @return
@@ -256,6 +259,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 工程师开始处理
+     *
      * @param workOrderId
      * @param shape
      * @return

@@ -14,13 +14,12 @@ public class WorkOrderDTO {
      * 工单编号
      */
     @ApiModelProperty(value = "工单编号")
-    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "工单编号必填!")
+    @NotBlank(groups = {V.Update.class},message = "工单编号必填!")
     private String code;
     /**
      * 所属设备
      */
     @ApiModelProperty(value = "所属设备")
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "所属设备必填!")
     private Equipment equipment;
     /**
      * 联系人
@@ -44,6 +43,7 @@ public class WorkOrderDTO {
      * 服务类型
      */
     @ApiModelProperty(value = "服务类型")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "工单编号必填!")
     private String serviceType;
 
     /**
