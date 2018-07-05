@@ -88,6 +88,13 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工程师预约")
+    @AutoErrorHandler
+    @PutMapping("/appointing/{workOrderId}")
+    public Result appointingWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.appointingWorkOrder(workOrderId);
+        return Result.getSuccess();
+    }
 
     @ApiOperation("工单查询接口")
     @GetMapping("")

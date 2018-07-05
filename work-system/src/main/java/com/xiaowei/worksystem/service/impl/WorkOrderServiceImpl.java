@@ -135,7 +135,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Transactional
     public WorkOrder confirmed(String workOrderId, List<String> serviceItemIds) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-        EmptyUtils.assertOptional(one, "没有查询到需要修改的用户");
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //如果已经完成,则不允许修改
         if (workOrder.getUserStatus().equals(WorkOrderUserStatus.COMPLETED.getStatus())) {
@@ -160,7 +160,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Transactional
     public WorkOrder payServiceItem(String workOrderId) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-        EmptyUtils.assertOptional(one, "没有查询到需要修改的用户");
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //如果已经完成,则不允许修改
         if (workOrder.getUserStatus().equals(WorkOrderUserStatus.COMPLETED.getStatus())) {
@@ -186,7 +186,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Transactional
     public WorkOrder receivedWorkOrder(String workOrderId) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-        EmptyUtils.assertOptional(one, "没有查询到需要修改的用户");
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //待接单
         if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.RECEIVED.getStatus())) {
@@ -198,6 +198,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         workOrder.setEngineerWork(engineerWork);
         workOrder.setEngineerStatus(WorkOrderEngineerStatus.APPOINTING.getStatus());//工程师状态变更为预约中
         workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());//用户状态变更为处理中
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 工程师预约
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder appointingWorkOrder(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //待接单
+        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.APPOINTING.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        EngineerWork engineerWork = workOrder.getEngineerWork();
+        EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
+        engineerWork.setAppointTime(new Date());//预约时间
+        engineerWorkRepository.save(engineerWork);
+        workOrder.setEngineerStatus(WorkOrderEngineerStatus.DEPARTED.getStatus());//工程师状态变更为预约中
         return workOrderRepository.save(workOrder);
     }
 
