@@ -71,7 +71,7 @@ public class EquipmentModifiedServiceImpl extends BaseServiceImpl<EquipmentModif
         EquipmentModified equipmentModified = toModifiedEquipment.get();//获取数据
         Equipment modified = BeanCopyUtils.copy(equipmentModified, Equipment.class);//将修改的数据拷贝到最终设备里
         modified.setId(equipmentModified.getWorkOrder().getEquipment().getId());//修改最终设备的id
-        equipmentService.save(modified);//修改
+        equipmentService.saveEquipment(modified);//修改
         equipmentModifiedRepository.delete(equipmentModified);//删掉此条申请修改信息，因为已经修改成功了
     }
 }

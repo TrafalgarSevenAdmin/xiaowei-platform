@@ -20,6 +20,18 @@ public class EmptyUtils {
     }
 
     /**
+     * 对象如果不为空,则抛出异常
+     * @param obj
+     * @param msg
+     * @throws Throwable
+     */
+    public static void assertObjectNotNull(Object obj, String msg){
+        if (obj != null) {
+            throw new BusinessException(msg);
+        }
+    }
+
+    /**
      * 字符串如果为空,则抛出异常
      * @param s
      * @param msg

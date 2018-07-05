@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.controller;
 
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -11,6 +12,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.dto.EquipmentDTO;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.service.IEquipmentService;
+import com.xiaowei.worksystem.status.EquipmentStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +41,11 @@ public class EquipmentController {
     @PostMapping("")
     public Result insert(@RequestBody @Validated(V.Insert.class) EquipmentDTO equipmentDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Equipment equipment = BeanCopyUtils.copy(equipmentDTO, Equipment.class);
-        equipment = equipmentService.save(equipment);
+        equipment = equipmentService.saveEquipment(equipment);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(equipment, fieldsView));
     }
 
-    @ApiOperation(value = "添加设备")
+    @ApiOperation(value = "修改设备")
     @AutoErrorHandler
     @PutMapping("/{equipmentId}")
     public Result update(@RequestBody @Validated(V.Insert.class) EquipmentDTO equipmentDTO, BindingResult bindingResult,
@@ -64,13 +66,14 @@ public class EquipmentController {
     @ApiOperation("删除设备")
     @DeleteMapping("/{equipmentId}")
     public Result delete(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
-        equipmentService.delete(equipmentId);
+        equipmentService.fakeDelete(equipmentId);
         return Result.getSuccess("删除成功");
     }
 
     @ApiOperation("设备查询接口")
     @GetMapping("")
     public Result query(Query query, FieldsView fieldsView) {
+        query.addFilter(new Filter("status", Filter.Operator.neq,EquipmentStatus.DELETE.getStatus()));
         if (query.isNoPage()) {
             List<Equipment> equipments = equipmentService.query(query, Equipment.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));//以list形式返回,没有层级
