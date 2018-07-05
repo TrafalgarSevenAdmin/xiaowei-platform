@@ -47,21 +47,6 @@ public class Workpiece extends BaseEntity{
      */
     private String userId;
 
-    /**
-     * 个人厂库所属人信息
-     */
-    @ManyToOne(targetEntity = SysUser.class)
-    @JoinColumn(name = "user_id")
-    @Fetch(FetchMode.JOIN)
-    private SysUser engineer;
-
-    public SysUser getEngineer() {
-        return engineer;
-    }
-
-    public void setEngineer(SysUser engineer) {
-        this.engineer = engineer;
-    }
 
     public String getName() {
         return name;
