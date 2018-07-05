@@ -89,6 +89,14 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工程师开始处理")
+    @AutoErrorHandler
+    @PutMapping("/inhand/{workOrderId}")
+    public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody String wkt, FieldsView fieldsView) throws Exception {
+        workOrderService.inhandWorkOrder(workOrderId,GeometryUtil.transWKT(wkt));
+        return Result.getSuccess();
+    }
+
     @ApiOperation(value = "工程师接单")
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")
@@ -108,7 +116,7 @@ public class WorkOrderController {
     @ApiOperation("工单查询接口")
     @GetMapping("")
     public Result query(WorkOrderQuery workOrderQuery, FieldsView fieldsView) {
-        //查询公司设置默认条件
+        //查询工单设置默认条件
         setDefaultCondition(workOrderQuery);
 
         if (workOrderQuery.isNoPage()) {

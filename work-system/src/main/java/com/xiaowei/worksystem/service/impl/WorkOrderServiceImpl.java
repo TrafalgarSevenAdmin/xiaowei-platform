@@ -254,6 +254,31 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         return workOrderRepository.save(workOrder);
     }
 
+    /**
+     * 工程师开始处理
+     * @param workOrderId
+     * @param shape
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder inhandWorkOrder(String workOrderId, Geometry shape) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //行程中
+        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.TRIPING.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        EngineerWork engineerWork = workOrder.getEngineerWork();
+        EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
+        engineerWork.setBeginInhandTime(new Date());//开始处理时间
+        engineerWork.setArriveShape(shape);//目的地
+        engineerWorkRepository.save(engineerWork);
+        workOrder.setEngineerStatus(WorkOrderEngineerStatus.INHAND.getStatus());//工程师状态变更为处理中
+        return workOrderRepository.save(workOrder);
+    }
+
     private void onPaied(WorkOrder workOrder) {
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
