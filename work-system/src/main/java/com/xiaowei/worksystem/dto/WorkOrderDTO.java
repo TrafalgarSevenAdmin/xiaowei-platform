@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
 
 public class WorkOrderDTO {
     /**
@@ -83,18 +82,6 @@ public class WorkOrderDTO {
      */
     @ApiModelProperty(value = "处理工程师")
     private SysUser engineer;
-
-    @ApiModelProperty(value = "创建时间")
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "创建时间必填!")
-    private Date createdTime;
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
 
     public String getCode() {
         return code;

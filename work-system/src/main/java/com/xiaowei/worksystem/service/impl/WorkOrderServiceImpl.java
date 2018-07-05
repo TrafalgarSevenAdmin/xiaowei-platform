@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
             workOrder.setEvaluate(null);
+            workOrder.setCreatedTime(new Date());
             //检查设备,如果没有设备,则新增设备
             judgeEquipment(workOrder);
             //设置工单状态
