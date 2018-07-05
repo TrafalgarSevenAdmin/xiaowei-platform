@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.controller;
 
+import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -67,7 +68,7 @@ public class WorkOrderController {
     @ApiOperation(value = "用户确认项目")
     @AutoErrorHandler
     @PutMapping("/confirmed/{workOrderId}")
-    public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId, List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
+    public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId,@RequestBody  List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
         workOrderService.confirmed(workOrderId,serviceItemIds);
         return Result.getSuccess();
     }
@@ -77,6 +78,14 @@ public class WorkOrderController {
     @PutMapping("/pay/{workOrderId}")
     public Result payServiceItem(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.payServiceItem(workOrderId);
+        return Result.getSuccess();
+    }
+
+    @ApiOperation(value = "工程师出发")
+    @AutoErrorHandler
+    @PutMapping("/departe/{workOrderId}")
+    public Result departeWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody String wkt, FieldsView fieldsView) throws Exception {
+        workOrderService.departeWorkOrder(workOrderId,GeometryUtil.transWKT(wkt));
         return Result.getSuccess();
     }
 

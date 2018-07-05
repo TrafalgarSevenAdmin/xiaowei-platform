@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.service;
 
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.core.basic.service.IBaseService;
 import com.xiaowei.worksystem.entity.WorkOrder;
 
@@ -22,4 +23,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder receivedWorkOrder(String workOrderId);
 
     WorkOrder appointingWorkOrder(String workOrderId);
+
+    WorkOrder departeWorkOrder(String workOrderId, Geometry shape);
 }

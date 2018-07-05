@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.core.basic.entity.BaseEntity;
 
@@ -39,11 +40,13 @@ public class EngineerWork extends BaseEntity{
      * 出发地
      */
     @Column(columnDefinition = "geometry(POINT,4326)")
+    @JsonIgnore
     private Geometry startShape;
     /**
      * 目的地
      */
     @Column(columnDefinition = "geometry(POINT,4326)")
+    @JsonIgnore
     private Geometry arriveShape;
     @Transient
     private String startWkt;
