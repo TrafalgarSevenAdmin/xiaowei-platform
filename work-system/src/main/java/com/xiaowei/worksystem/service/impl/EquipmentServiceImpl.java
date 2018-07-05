@@ -7,13 +7,14 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.repository.EquipmentRepository;
 import com.xiaowei.worksystem.service.IEquipmentService;
-import com.xiaowei.worksystem.status.EquipmentStatus;
+import com.xiaowei.worksystem.status.CommonStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 
@@ -56,12 +57,13 @@ public class EquipmentServiceImpl extends BaseServiceImpl<Equipment> implements 
         Optional<Equipment> one = equipmentRepository.findById(equipmentId);
         EmptyUtils.assertOptional(one, "没有查询到需要删除的对象");
         Equipment equipment = one.get();
-        equipment.setStatus(EquipmentStatus.DELETE.getStatus());
+        equipment.setStatus(CommonStatus.DELETE.getStatus());
         equipmentRepository.save(equipment);
     }
 
     @Override
     public Equipment saveEquipment(Equipment equipment) {
+        equipment.setCreatedTime(new Date());
         if (StringUtils.isNotEmpty(equipment.getCode())) {
             Equipment byCode = equipmentRepository.findByCode(equipment.getCode());
             EmptyUtils.assertObjectNotNull(byCode,"设备编号重复!");

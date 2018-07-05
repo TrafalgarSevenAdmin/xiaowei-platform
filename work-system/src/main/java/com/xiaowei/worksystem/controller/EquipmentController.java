@@ -12,7 +12,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.dto.EquipmentDTO;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.service.IEquipmentService;
-import com.xiaowei.worksystem.status.EquipmentStatus;
+import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class EquipmentController {
     @ApiOperation("设备查询接口")
     @GetMapping("")
     public Result query(Query query, FieldsView fieldsView) {
-        query.addFilter(new Filter("status", Filter.Operator.neq,EquipmentStatus.DELETE.getStatus()));
+        query.addFilter(new Filter("status", Filter.Operator.neq,CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {
             List<Equipment> equipments = equipmentService.query(query, Equipment.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));//以list形式返回,没有层级

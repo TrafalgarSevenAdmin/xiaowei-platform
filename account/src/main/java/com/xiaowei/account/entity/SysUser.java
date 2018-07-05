@@ -60,8 +60,8 @@ public class SysUser extends BaseEntity {
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="sys_user_role",
-    joinColumns={@JoinColumn(name="USER_ID")},
-    inverseJoinColumns={@JoinColumn(name="ROLE_ID")})
+        joinColumns={@JoinColumn(name="USER_ID")},
+        inverseJoinColumns={@JoinColumn(name="ROLE_ID")})
     @JsonIgnore
     private List<SysRole> roles;
 

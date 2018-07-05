@@ -1,18 +1,19 @@
 package com.xiaowei.worksystem.status;
 
-public enum EquipmentStatus {
+public enum WorkpieceStoreType {
     /**
-     * 存在
+     * 个人厂库
      */
-    LIVE(0),
+    USER(0),
+
     /**
-     * 删除
+     * 总库（核心厂库）
      */
-    DELETE(99);
+    CORE(1);
 
     private Integer status;
 
-    EquipmentStatus(Integer status){
+    WorkpieceStoreType(Integer status){
         this.status = status;
     }
 

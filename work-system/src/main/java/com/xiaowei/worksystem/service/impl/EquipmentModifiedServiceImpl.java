@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.Optional;
 
 
@@ -48,10 +49,10 @@ public class EquipmentModifiedServiceImpl extends BaseServiceImpl<EquipmentModif
     @Override
     public void commitModified(String workOrderId, EquipmentModified equipment) {
         WorkOrder workOrder = workOrderService.findById(workOrderId);
-        String targetEquipmentId = workOrder.getEquipment().getId();
         if (workOrder == null) {
             throw new BusinessException("工单不存在！");
         }
+        equipment.setCreatedTime(new Date());
         equipment.setWorkOrder(workOrder);
         //设置工程师
         equipment.setEngineer(workOrder.getEngineer());
