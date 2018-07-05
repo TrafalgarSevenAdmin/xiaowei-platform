@@ -5,9 +5,11 @@ import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
+import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.entity.ServiceItem;
 import com.xiaowei.worksystem.entity.WorkOrder;
+import com.xiaowei.worksystem.repository.EngineerWorkRepository;
 import com.xiaowei.worksystem.repository.EquipmentRepository;
 import com.xiaowei.worksystem.repository.ServiceItemRepository;
 import com.xiaowei.worksystem.repository.WorkOrderRepository;
@@ -36,6 +38,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private EquipmentRepository equipmentRepository;
     @Autowired
     private ServiceItemRepository serviceItemRepository;
+    @Autowired
+    private EngineerWorkRepository engineerWorkRepository;
 
     public WorkOrderServiceImpl(@Qualifier("workOrderRepository") BaseRepository repository) {
         super(repository);
@@ -55,6 +59,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
             workOrder.setEvaluate(null);
+            workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());
             //检查设备,如果没有设备,则新增设备
             judgeEquipment(workOrder);
@@ -170,6 +175,30 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         workOrderRepository.save(workOrder);
         return workOrder;
 
+    }
+
+    /**
+     * 工程师接单
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder receivedWorkOrder(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的用户");
+        WorkOrder workOrder = one.get();
+        //待接单
+        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.RECEIVED.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        EngineerWork engineerWork = new EngineerWork();//新建工程师处理工单附表
+        engineerWork.setReceivedTime(new Date());
+        engineerWorkRepository.save(engineerWork);
+        workOrder.setEngineerWork(engineerWork);
+        workOrder.setEngineerStatus(WorkOrderEngineerStatus.APPOINTING.getStatus());//工程师状态变更为预约中
+        workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());//用户状态变更为处理中
+        return workOrderRepository.save(workOrder);
     }
 
     private void onPaied(WorkOrder workOrder) {

@@ -80,6 +80,14 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工程师接单")
+    @AutoErrorHandler
+    @PutMapping("/received/{workOrderId}")
+    public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.receivedWorkOrder(workOrderId);
+        return Result.getSuccess();
+    }
+
 
     @ApiOperation("工单查询接口")
     @GetMapping("")

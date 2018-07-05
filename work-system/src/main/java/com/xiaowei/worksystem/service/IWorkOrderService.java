@@ -18,4 +18,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder confirmed(String workOrderId,List<String> serviceItemIds);
 
     WorkOrder payServiceItem(String workOrderId);
+
+    WorkOrder receivedWorkOrder(String workOrderId);
 }

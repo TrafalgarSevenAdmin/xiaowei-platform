@@ -7,34 +7,39 @@ public enum WorkOrderEngineerStatus {
     RECEIVED(0),
 
     /**
+     * 预约中
+     */
+    APPOINTING(1),
+
+    /**
      * 待出发
      */
-    DEPARTED(1),
+    DEPARTED(2),
 
     /**
      * 行程中
      */
-    TRIPING(2),
+    TRIPING(3),
 
     /**
      * 处理中
      */
-    INHAND(3),
+    INHAND(4),
 
     /**
      * 处理完成
      */
-    COMPLETEINHAND(4),
+    COMPLETEINHAND(5),
 
     /**
      * 待报销
      */
-    REIMBURSEMENT(5),
+    REIMBURSEMENT(6),
 
     /**
      * 完成
      */
-    COMPLETED(6);
+    COMPLETED(7);
 
     private Integer status;
 

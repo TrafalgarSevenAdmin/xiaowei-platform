@@ -95,6 +95,22 @@ public class WorkOrder extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Evaluate evaluate;
 
+    /**
+     * 工程师处理工单附表
+     */
+    @OneToOne(targetEntity = EngineerWork.class,fetch = FetchType.LAZY)
+    @JoinColumn(name = "engineerWork_id")
+    @Fetch(FetchMode.JOIN)
+    private EngineerWork engineerWork;
+
+    public EngineerWork getEngineerWork() {
+        return engineerWork;
+    }
+
+    public void setEngineerWork(EngineerWork engineerWork) {
+        this.engineerWork = engineerWork;
+    }
+
     public Integer getCreatedType() {
         return createdType;
     }

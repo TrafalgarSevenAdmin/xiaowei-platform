@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 
 @Service
 public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IEvaluateService {
@@ -35,6 +37,7 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         if(!workOrder.getUserStatus().equals(WorkOrderUserStatus.EVALUATED.getStatus())){
             throw new BusinessException("工单不是待评价状态!");
         }
+        evaluate.setCreatedTime(new Date());
         workOrder.setEvaluate(evaluateRepository.save(evaluate));
         workOrder.setUserStatus(WorkOrderUserStatus.COMPLETED.getStatus());//修改为完成状态
         workOrderRepository.save(workOrder);
