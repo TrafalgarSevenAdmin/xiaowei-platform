@@ -70,7 +70,7 @@ public class WorkOrderDTO {
      * 申请处理人
      */
     @ApiModelProperty(value = "申请处理人")
-    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "申请处理人必填!")
+    @NotNull(groups = {V.Insert.class,V.Update.class},message = "申请处理人必填!")
     private SysUser proposer;
     /**
      * 后台处理人
