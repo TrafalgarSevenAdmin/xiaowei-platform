@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 /**
  * 产品库存
  */
+@Data
 @Entity
 @Table(name = "W_INVENTORY")
 public class Inventory  extends BaseEntity {
@@ -59,51 +61,4 @@ public class Inventory  extends BaseEntity {
      */
     public Integer passageNumber;
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
-
-    public Integer getFineNumber() {
-        return fineNumber;
-    }
-
-    public void setFineNumber(Integer fineNumber) {
-        this.fineNumber = fineNumber;
-    }
-
-    public Integer getBadNumber() {
-        return badNumber;
-    }
-
-    public void setBadNumber(Integer badNumber) {
-        this.badNumber = badNumber;
-    }
-
-    public Integer getSaveNumber() {
-        return saveNumber;
-    }
-
-    public void setSaveNumber(Integer saveNumber) {
-        this.saveNumber = saveNumber;
-    }
-
-    public Integer getPassageNumber() {
-        return passageNumber;
-    }
-
-    public void setPassageNumber(Integer passageNumber) {
-        this.passageNumber = passageNumber;
-    }
 }

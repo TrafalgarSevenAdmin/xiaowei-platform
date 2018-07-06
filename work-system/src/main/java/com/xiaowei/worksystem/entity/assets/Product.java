@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.entity.assets;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.status.ProductTagType;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 /**
  * 产品目录
  */
+@Data
 @Entity
 @Table(name = "W_PRODUCT")
 public class Product extends BaseEntity {
@@ -66,44 +68,4 @@ public class Product extends BaseEntity {
     //产品状态	状态为1表示正常，2：停止订货，3：停止销售
     //启用日期	产品建档日期
 
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ProBrand getProBrand() {
-        return proBrand;
-    }
-
-    public void setProBrand(ProBrand proBrand) {
-        this.proBrand = proBrand;
-    }
-
-    public ProClass getProClass() {
-        return proClass;
-    }
-
-    public void setProClass(ProClass proClass) {
-        this.proClass = proClass;
-    }
-
-    public Integer getTag() {
-        return tag;
-    }
-
-    public void setTag(Integer tag) {
-        this.tag = tag;
-    }
 }

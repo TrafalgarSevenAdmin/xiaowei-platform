@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.entity.assets;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.status.InvOrderOutType;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * 出库单
  */
+@Data
 @Entity
 @Table(name = "W_INV_ORDER_OUT")
 public class InvOrderOut extends BaseEntity {
@@ -89,76 +91,4 @@ public class InvOrderOut extends BaseEntity {
     //公司审批	该业务单对应的公司审批意见
     //公司审批日期	该业务单对应的公司审批通过日期
 
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getRelevantCode() {
-        return relevantCode;
-    }
-
-    public void setRelevantCode(String relevantCode) {
-        this.relevantCode = relevantCode;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
-    }
-
-    public Warehouse getOutWarehouse() {
-        return outWarehouse;
-    }
-
-    public void setOutWarehouse(Warehouse outWarehouse) {
-        this.outWarehouse = outWarehouse;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Warehouse getInWarehouse() {
-        return inWarehouse;
-    }
-
-    public void setInWarehouse(Warehouse inWarehouse) {
-        this.inWarehouse = inWarehouse;
-    }
-
-    public String getApplyUserName() {
-        return applyUserName;
-    }
-
-    public void setApplyUserName(String applyUserName) {
-        this.applyUserName = applyUserName;
-    }
-
-    public String getApplyReason() {
-        return applyReason;
-    }
-
-    public void setApplyReason(String applyReason) {
-        this.applyReason = applyReason;
-    }
-
-    public List<InvOrderOutItem> getInvOrderOutItems() {
-        return invOrderOutItems;
-    }
-
-    public void setInvOrderOutItems(List<InvOrderOutItem> invOrderOutItems) {
-        this.invOrderOutItems = invOrderOutItems;
-    }
 }

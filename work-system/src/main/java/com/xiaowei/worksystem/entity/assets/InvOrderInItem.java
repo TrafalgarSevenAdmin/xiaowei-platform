@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 /**
  * 入库单明细
  */
+@Data
 @Entity
 @Table(name = "W_INV_ORDER_IN_ITEM")
 public class InvOrderInItem extends BaseEntity {
@@ -40,27 +42,4 @@ public class InvOrderInItem extends BaseEntity {
      */
     public Integer number;
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
 }

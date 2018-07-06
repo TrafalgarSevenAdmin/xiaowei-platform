@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -8,6 +9,7 @@ import javax.persistence.Table;
 /**
  * 产品分类
  */
+@Data
 @Entity
 @Table(name = "W_PRO_CLASS")
 public class ProClass extends BaseEntity {
@@ -29,27 +31,4 @@ public class ProClass extends BaseEntity {
      */
     public Integer level;
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
 }
