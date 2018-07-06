@@ -51,7 +51,7 @@ public class EquipmentModifiedController {
 
     @ApiOperation(value = "通过此设备修改申请",notes = "此接口由后台管理员审核通过")
     @AutoErrorHandler
-    @PostMapping("/pass/{modifiedId}")
+    @PutMapping("/pass/{modifiedId}")
     public Result passModified(@PathVariable("modifiedId") String modifiedId,FieldsView fieldsView) throws Exception {
         equipmentExamineService.passModified(modifiedId);
         return Result.getSuccess("设备修改申请已通过");
