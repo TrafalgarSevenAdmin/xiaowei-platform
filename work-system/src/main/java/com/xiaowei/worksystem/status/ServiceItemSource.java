@@ -8,7 +8,7 @@ public enum ServiceItemSource {
     BACKGROUNDER(1),
 
     /**
-     * 自动创建
+     * 工程师创建
      */
     ENGINEER(2);
 

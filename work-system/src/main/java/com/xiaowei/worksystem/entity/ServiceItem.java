@@ -54,6 +54,19 @@ public class ServiceItem extends BaseEntity{
      */
     private Double toll;
 
+    /**
+     * 是否需要审核
+     */
+    private Boolean audit;
+
+    public Boolean getAudit() {
+        return audit;
+    }
+
+    public void setAudit(Boolean audit) {
+        this.audit = audit;
+    }
+
     public Boolean getCharge() {
         return isCharge;
     }

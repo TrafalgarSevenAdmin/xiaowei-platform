@@ -47,6 +47,16 @@
         <module>work-system</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+
     <profiles>
         <profile>
             <id>localhost</id>

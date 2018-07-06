@@ -12,4 +12,7 @@ public interface ServiceItemRepository extends BaseRepository<ServiceItem>{
 
     @Query("select s from ServiceItem s where s.workOrder.id = ?1 and s.status = ?2")
     List<ServiceItem> findByWorkOrderIdAndStatus(String workOrderId, Integer status);
+
+    @Query("select max(s.orderNumber) from ServiceItem s where s.workOrder.id = ?1")
+    Integer findMaxOrderNumberByWorkOrderId(String workOrderId);
 }

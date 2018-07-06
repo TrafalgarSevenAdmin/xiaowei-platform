@@ -12,14 +12,24 @@ public enum ServiceItemStatus {
     CONFIRMED(1),
 
     /**
+     * 确认不执行
+     */
+    INEXECUTION(2),
+
+    /**
      * 待付款
      */
-    PAIED(2),
+    PAIED(3),
+
+    /**
+     * 待审核
+     */
+    AUDITED(4),
 
     /**
      * 完成
      */
-    COMPLETED(3);
+    COMPLETED(5);
 
     private Integer status;
 
