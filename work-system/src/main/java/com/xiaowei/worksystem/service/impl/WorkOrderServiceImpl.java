@@ -5,6 +5,7 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +61,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
+            workOrder.setCode(StringPYUtils.getSpellCode(workOrder.getServiceType()));
             workOrder.setEvaluate(null);
             workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());
@@ -90,7 +93,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     private void judgeEquipment(WorkOrder workOrder) {
         Equipment equipment = workOrder.getEquipment();
-        EmptyUtils.assertObject(equipment, "工单所属设备为空");
+        if (equipment == null) {
+            return;
+        }
         String code = equipment.getCode();
         Equipment byCode = equipmentRepository.findByCode(code);
         if (byCode == null) {
@@ -231,6 +236,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 工程师出发
+     *
      * @param workOrderId
      * @param shape
      * @return
@@ -256,6 +262,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 工程师开始处理
+     *
      * @param workOrderId
      * @param shape
      * @return
@@ -294,15 +301,23 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     private void onConfirmed(WorkOrder workOrder, List<String> serviceItemIds) {
         workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());
+        //待确认的新增项目
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.CONFIRMED.getStatus());
-        if (CollectionUtils.isEmpty(serviceItems) || CollectionUtils.isEmpty(serviceItemIds)) {
+        if (CollectionUtils.isEmpty(serviceItems)) {
             return;
         }
+        if (serviceItemIds == null) {
+            serviceItemIds = new ArrayList<>();
+        }
+        List<String> finalServiceItemIds = serviceItemIds;
         serviceItems.stream().forEach(serviceItem -> {
             String serviceItemId = serviceItem.getId();
             //如果匹配上,则表示是用户确认的项目
-            if (serviceItemIds.contains(serviceItemId)) {
+            if (finalServiceItemIds.contains(serviceItemId)) {
                 serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());
+                serviceItemRepository.save(serviceItem);
+            }else{
+                serviceItem.setStatus(ServiceItemStatus.INEXECUTION.getStatus());
                 serviceItemRepository.save(serviceItem);
             }
         });

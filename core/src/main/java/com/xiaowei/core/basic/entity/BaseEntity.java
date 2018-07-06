@@ -1,5 +1,6 @@
 package com.xiaowei.core.basic.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import java.util.Date;
  * Created by yuanxuan on 2018/3/26.
  */
 @MappedSuperclass
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(
