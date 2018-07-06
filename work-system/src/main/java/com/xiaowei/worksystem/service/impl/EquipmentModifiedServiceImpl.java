@@ -1,6 +1,5 @@
 package com.xiaowei.worksystem.service.impl;
 
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.bean.BeanCopyUtils;
@@ -71,7 +70,10 @@ public class EquipmentModifiedServiceImpl extends BaseServiceImpl<EquipmentModif
         EmptyUtils.assertOptional(toModifiedEquipment, "没有找到此条修改信息");
         EquipmentModified equipmentModified = toModifiedEquipment.get();//获取数据
         Equipment modified = BeanCopyUtils.copy(equipmentModified, Equipment.class);//将修改的数据拷贝到最终设备里
-        modified.setId(equipmentModified.getWorkOrder().getEquipment().getId());//修改最终设备的id
+        if (equipmentModified.getWorkOrder().getEquipment() != null) {//若该工单的目标设备信息存在
+            modified.setId(equipmentModified.getWorkOrder().getEquipment().getId());//修改最终设备的id
+        }
+        //没有就直接保存为一个新的设备
         equipmentService.saveEquipment(modified);//修改
         equipmentModifiedRepository.delete(equipmentModified);//删掉此条申请修改信息，因为已经修改成功了
     }
