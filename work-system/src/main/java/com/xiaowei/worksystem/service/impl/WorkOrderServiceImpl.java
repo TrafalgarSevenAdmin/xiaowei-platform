@@ -5,6 +5,7 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
@@ -60,6 +61,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
+            workOrder.setCode(StringPYUtils.getSpellCode(workOrder.getServiceType()));
             workOrder.setEvaluate(null);
             workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());

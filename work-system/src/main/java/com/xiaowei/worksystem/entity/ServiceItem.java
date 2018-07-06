@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * 维修项目实体
@@ -58,6 +59,30 @@ public class ServiceItem extends BaseEntity{
      * 是否需要审核
      */
     private Boolean audit;
+    /**
+     * 开始处理时间
+     */
+    private Date beginTime;
+    /**
+     * 结束处理时间
+     */
+    private Date endTime;
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
 
     public Boolean getAudit() {
         return audit;
