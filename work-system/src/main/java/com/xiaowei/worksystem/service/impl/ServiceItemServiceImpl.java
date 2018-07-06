@@ -11,6 +11,7 @@ import com.xiaowei.worksystem.repository.WorkOrderRepository;
 import com.xiaowei.worksystem.service.IServiceItemService;
 import com.xiaowei.worksystem.status.ServiceItemSource;
 import com.xiaowei.worksystem.status.ServiceItemStatus;
+import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +78,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
      */
     @Override
     @Transactional
-    public void executeServiceItem(String serviceItemId) {
+    public ServiceItem executeServiceItem(String serviceItemId) {
         Optional<ServiceItem> one = serviceItemRepository.findById(serviceItemId);
         EmptyUtils.assertOptional(one, "没有查询到需要执行的服务项目");
         ServiceItem serviceItem = one.get();
@@ -86,9 +87,51 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         //2.判断当前步状态是否正常
         judgeCurrentIsNormal(serviceItem);
         //3.判断当前步是否需要审核: 若需要审核,则变更状态为待审核且不执行第四部,若不审核则执行第四部
-        judgeCurrentIsAudit(serviceItem);
+        Boolean isAudit = judgeCurrentIsAudit(serviceItem);
         //4.判断是否收费
+        if (!isAudit) {
+            judgeCurrentIsCharge(serviceItem);
+        }
+        return serviceItemRepository.save(serviceItem);
+    }
 
+    /**
+     * 判断是否收费
+     *
+     * @param serviceItem
+     */
+    private void judgeCurrentIsCharge(ServiceItem serviceItem) {
+        if (serviceItem.getCharge()) {//收费
+            serviceItem.setStatus(ServiceItemStatus.PAIED.getStatus());//代付费
+        } else {//不收费
+            serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());//完成
+        }
+        Integer orderNumber = serviceItem.getOrderNumber();
+        //设置下一步的执行开始时间
+        ServiceItem nextItem = findNextItem(serviceItem);
+        if (nextItem == null) {
+            return;
+        }
+        nextItem.setBeginTime(new Date());
+        serviceItemRepository.save(nextItem);
+    }
+
+    /**
+     * 递归查询下一服务项目
+     *
+     * @param serviceItem
+     * @return
+     */
+    public ServiceItem findNextItem(ServiceItem serviceItem) {
+        Integer orderNumber = serviceItem.getOrderNumber();
+        ServiceItem nextItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(serviceItem.getWorkOrder().getId(), ++orderNumber);
+        if (nextItem == null) {
+            return null;
+        }
+        if (nextItem.getStatus().equals(ServiceItemStatus.INEXECUTION.getStatus())) {//如果是不执行,则查询下一条
+            return findNextItem(nextItem);
+        }
+        return nextItem;
     }
 
     /**
@@ -96,11 +139,17 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
      *
      * @param serviceItem
      */
-    private void judgeCurrentIsAudit(ServiceItem serviceItem) {
+    private Boolean judgeCurrentIsAudit(ServiceItem serviceItem) {
+        serviceItem.setEndTime(new Date());//结束时间
         if (serviceItem.getAudit()) {//需要审核
-
+            serviceItem.setStatus(ServiceItemStatus.AUDITED.getStatus());//待审核状态
+            WorkOrder workOrder = serviceItem.getWorkOrder();
+            workOrder.setSystemStatus(WorkOrderSystemStatus.APPROVED.getStatus());
+            workOrderRepository.save(workOrder);
+            return true;
         } else {//不需要审核
-
+            //状态更改为待收费还是完成由第四步确认
+            return false;
         }
     }
 

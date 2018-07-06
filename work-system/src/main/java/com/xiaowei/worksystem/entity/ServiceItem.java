@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.sql.Time;
 import java.util.Date;
 
 /**
@@ -67,6 +68,19 @@ public class ServiceItem extends BaseEntity{
      * 结束处理时间
      */
     private Date endTime;
+
+    /**
+     * 预计时长
+     */
+    private Time predictTime;
+
+    public Time getPredictTime() {
+        return predictTime;
+    }
+
+    public void setPredictTime(Time predictTime) {
+        this.predictTime = predictTime;
+    }
 
     public Date getBeginTime() {
         return beginTime;
