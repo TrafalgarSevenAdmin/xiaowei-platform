@@ -20,6 +20,7 @@ import com.xiaowei.worksystem.status.ServiceItemStatus;
 import com.xiaowei.worksystem.status.WorkOrderEngineerStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
+import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -309,7 +310,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (serviceItemIds == null) {
             serviceItemIds = new ArrayList<>();
         }
-        List<String> finalServiceItemIds = serviceItemIds;
+        val finalServiceItemIds = serviceItemIds;
         serviceItems.stream().forEach(serviceItem -> {
             String serviceItemId = serviceItem.getId();
             //如果匹配上,则表示是用户确认的项目
