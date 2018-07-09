@@ -106,7 +106,6 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         } else {//不收费
             serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());//完成
         }
-        Integer orderNumber = serviceItem.getOrderNumber();
         //设置下一步的执行开始时间
         ServiceItem nextItem = findNextItem(serviceItem);
         if (nextItem == null) {
@@ -122,7 +121,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
      * @param serviceItem
      * @return
      */
-    public ServiceItem findNextItem(ServiceItem serviceItem) {
+    @SuppressWarnings("all")
+    private ServiceItem findNextItem(ServiceItem serviceItem) {
         Integer orderNumber = serviceItem.getOrderNumber();
         ServiceItem nextItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(serviceItem.getWorkOrder().getId(), ++orderNumber);
         if (nextItem == null) {

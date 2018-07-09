@@ -284,9 +284,48 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setBeginInhandTime(new Date());//开始处理时间
         engineerWork.setArriveShape(shape);//目的地
+        setFirstServiceItem(workOrderId);
         engineerWorkRepository.save(engineerWork);
         workOrder.setEngineerStatus(WorkOrderEngineerStatus.INHAND.getStatus());//工程师状态变更为处理中
         return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 递归查询下一服务项目
+     *
+     * @param serviceItem
+     * @return
+     */
+    @SuppressWarnings("all")
+    private ServiceItem findNextItem(ServiceItem serviceItem) {
+        Integer orderNumber = serviceItem.getOrderNumber();
+        ServiceItem nextItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(serviceItem.getWorkOrder().getId(), ++orderNumber);
+        if (nextItem == null) {
+            return null;
+        }
+        if (nextItem.getStatus().equals(ServiceItemStatus.INEXECUTION.getStatus())) {//如果是不执行,则查询下一条
+            return findNextItem(nextItem);
+        }
+        return nextItem;
+    }
+
+    /**
+     * 设置第一个服务项目的开始处理时间
+     * @param workOrderId
+     */
+    private void setFirstServiceItem(String workOrderId) {
+        ServiceItem serviceItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(workOrderId, 1);
+        if (serviceItem == null) {//如果一条服务项目都没有,则返回
+            return;
+        }
+        if (serviceItem.getStatus().equals(ServiceItemStatus.INEXECUTION.getStatus())) {//如果是不执行,则查询下一条
+            serviceItem = findNextItem(serviceItem);
+        }
+        if (serviceItem == null) {//如果没有服务项目,则返回
+            return;
+        }
+        serviceItem.setBeginTime(new Date());
+        serviceItemRepository.save(serviceItem);
     }
 
     /**
@@ -324,11 +363,22 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      */
     private void judgeServiceItemIsDone(WorkOrder workOrder) {
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderId(workOrder.getId());
-        serviceItems.stream().forEach(serviceItem -> {
+        boolean paid = false;
+        for (ServiceItem serviceItem : serviceItems) {
             if (!ArrayUtils.contains(ServiceItemUtils.isDone, serviceItem.getStatus())) {
                 throw new BusinessException("第" + serviceItem.getOrderNumber() + "步服务项目:" + serviceItem.getServiceType() + "未完成!");
             }
-        });
+            if (!paid) {
+                //检查用户状态是否该设置为待付费
+                if (serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus()) && serviceItem.getCharge()) {
+                    workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());
+                    paid = true;
+                }
+            }
+        }
+        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.PAIED.getStatus())) {//判断是否为付费状态,如果不是付费状态,则变更用户状态为待评价
+            workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());
+        }
 
     }
 
