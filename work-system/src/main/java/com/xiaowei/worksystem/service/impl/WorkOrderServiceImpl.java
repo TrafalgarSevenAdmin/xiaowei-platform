@@ -297,7 +297,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      */
     @Override
     @Transactional
-    public WorkOrder inhandDone(String workOrderId) {
+    public WorkOrder completeInhand(String workOrderId) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
