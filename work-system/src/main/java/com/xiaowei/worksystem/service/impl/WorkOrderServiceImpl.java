@@ -20,8 +20,10 @@ import com.xiaowei.worksystem.status.ServiceItemStatus;
 import com.xiaowei.worksystem.status.WorkOrderEngineerStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
+import com.xiaowei.worksystem.utils.ServiceItemUtils;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -86,9 +88,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             workOrder.setEngineerStatus(null);//工程师状态为空
             workOrder.setUserStatus(WorkOrderUserStatus.ASSIGNED.getStatus());//用户状态为待指派
         } else {
-            workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//后台状态为待指派
+            workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//后台状态为处理中
             workOrder.setEngineerStatus(WorkOrderEngineerStatus.RECEIVED.getStatus());//工程师状态为待接单
-            workOrder.setUserStatus(WorkOrderUserStatus.RECEIVED.getStatus());//用户状态为待指派
+            workOrder.setUserStatus(WorkOrderUserStatus.RECEIVED.getStatus());//用户状态为待接单
         }
     }
 
@@ -287,6 +289,49 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         return workOrderRepository.save(workOrder);
     }
 
+    /**
+     * 工程师处理完成
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder inhandDone(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //处理中
+        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.INHAND.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        //检查服务项目是否已经全部完成
+        judgeServiceItemIsDone(workOrder);
+        workOrder.setEngineerStatus(WorkOrderEngineerStatus.COMPLETEINHAND.getStatus());//工程师状态为处理完成
+        workOrder.setSystemStatus(WorkOrderSystemStatus.COMPLETEINHAND.getStatus());//后台状态为处理完成
+        workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());//用户状态为待付费
+        EngineerWork engineerWork = workOrder.getEngineerWork();
+        EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
+        engineerWork.setEndInhandTime(new Date());//处理完成时间
+        engineerWorkRepository.save(engineerWork);
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 检查服务项目是否已经全部完成
+     *
+     * @param workOrder
+     */
+    private void judgeServiceItemIsDone(WorkOrder workOrder) {
+        List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderId(workOrder.getId());
+        serviceItems.stream().forEach(serviceItem -> {
+            if (!ArrayUtils.contains(ServiceItemUtils.isDone, serviceItem.getStatus())) {
+                throw new BusinessException("第" + serviceItem.getOrderNumber() + "步服务项目:" + serviceItem.getServiceType() + "未完成!");
+            }
+        });
+
+    }
+
     private void onPaied(WorkOrder workOrder) {
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
@@ -301,7 +346,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onConfirmed(WorkOrder workOrder, List<String> serviceItemIds) {
-        workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());
+        workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());//用户状态变更为处理中
         //待确认的新增项目
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.CONFIRMED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
@@ -317,7 +362,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             if (finalServiceItemIds.contains(serviceItemId)) {
                 serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());
                 serviceItemRepository.save(serviceItem);
-            }else{
+            } else {
                 serviceItem.setStatus(ServiceItemStatus.INEXECUTION.getStatus());
                 serviceItemRepository.save(serviceItem);
             }

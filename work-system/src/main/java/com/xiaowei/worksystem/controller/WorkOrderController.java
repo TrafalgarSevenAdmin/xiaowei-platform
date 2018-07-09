@@ -97,6 +97,15 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工程师处理完成")
+    @AutoErrorHandler
+    @PutMapping("/completeInhand/{workOrderId}")
+    public Result inhandDoneWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.inhandDone(workOrderId);
+        return Result.getSuccess();
+    }
+
+
     @ApiOperation(value = "工程师接单")
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")

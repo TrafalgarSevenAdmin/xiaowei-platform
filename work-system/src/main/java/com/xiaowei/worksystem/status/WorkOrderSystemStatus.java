@@ -10,21 +10,29 @@ public enum WorkOrderSystemStatus {
      * 待审批
      */
     APPROVED(1),
+    /**
+     * 处理中
+     */
+    INHAND(2),
+    /**
+     * 处理完成
+     */
+    COMPLETEINHAND(3),
 
     /**
      * 待归档
      */
-    ARCHIVEING(2),
+    ARCHIVEING(4),
 
     /**
      * 归档
      */
-    ARCHIVED(3),
+    ARCHIVED(5),
 
     /**
      * 待审批
      */
-    INHAND(4),
+    APPROVE(6),
 
     /**
      * 删除

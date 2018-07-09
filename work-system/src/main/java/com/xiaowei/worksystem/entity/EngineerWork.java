@@ -31,7 +31,7 @@ public class EngineerWork extends BaseEntity{
     /**
      * 开始处理时间
      */
-    private Date BeginInhandTime;
+    private Date beginInhandTime;
     /**
      * 完成处理时间
      */
@@ -78,11 +78,11 @@ public class EngineerWork extends BaseEntity{
     }
 
     public Date getBeginInhandTime() {
-        return BeginInhandTime;
+        return beginInhandTime;
     }
 
     public void setBeginInhandTime(Date beginInhandTime) {
-        BeginInhandTime = beginInhandTime;
+        this.beginInhandTime = beginInhandTime;
     }
 
     public Date getEndInhandTime() {

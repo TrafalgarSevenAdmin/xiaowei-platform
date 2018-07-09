@@ -37,7 +37,10 @@ public class ServiceItem extends BaseEntity{
      * 维修简介
      */
     private String serviceIntro;
-
+    /**
+     * 工作标准说明
+     */
+    private String standard;
     /**
      * 状态
      */
@@ -73,6 +76,14 @@ public class ServiceItem extends BaseEntity{
      * 预计时长
      */
     private Time predictTime;
+
+    public String getStandard() {
+        return standard;
+    }
+
+    public void setStandard(String standard) {
+        this.standard = standard;
+    }
 
     public Time getPredictTime() {
         return predictTime;
