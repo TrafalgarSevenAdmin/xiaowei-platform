@@ -5,7 +5,7 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import javax.persistence.*;
 
 /**
- * 设备实体
+ * 评价实体
  */
 @Entity
 @Table(name = "W_EVALUATE")
