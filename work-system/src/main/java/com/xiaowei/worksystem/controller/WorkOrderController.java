@@ -100,7 +100,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师处理完成")
     @AutoErrorHandler
     @PutMapping("/completeInhand/{workOrderId}")
-    public Result inhandDoneWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+    public Result completeInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.inhandDone(workOrderId);
         return Result.getSuccess();
     }
