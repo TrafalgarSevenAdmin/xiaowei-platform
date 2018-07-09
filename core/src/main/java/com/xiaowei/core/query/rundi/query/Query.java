@@ -1,5 +1,7 @@
 package com.xiaowei.core.query.rundi.query;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
  * @Version 1.0
  */
 
+@Data
 public class Query implements Serializable{
     /**
      * 目标实体class

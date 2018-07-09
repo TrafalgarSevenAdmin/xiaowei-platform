@@ -45,6 +45,7 @@
         <module>common-log4j</module>
         <module>common-upload</module>
         <module>work-system</module>
+        <module>common-dict</module>
     </modules>
 
     <dependencies>
