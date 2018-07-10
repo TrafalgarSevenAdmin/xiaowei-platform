@@ -37,4 +37,16 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     public Optional<WxUser> findByMobile(String mobile) {
         return wxUserRepository.findBySysUser_Mobile(mobile);
     }
+
+    @Override
+    public WxUser saveOrUpdate(WxUser user) {
+        //部分字段取自数据库,防止被更新
+        Optional<WxUser> optionalWxUser = this.findByOpenId(user.getOpenId());
+        if (optionalWxUser.isPresent()) {
+            WxUser tempUser = optionalWxUser.get();
+            user.setSysUser(tempUser.getSysUser());
+            user.setUnsubscribeTime(tempUser.getUnsubscribeTime());
+        }
+        return wxUserRepository.save(user);
+    }
 }

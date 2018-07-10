@@ -1,4 +1,4 @@
-package com.xiaowei.wechat;
+package com.xiaowei;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

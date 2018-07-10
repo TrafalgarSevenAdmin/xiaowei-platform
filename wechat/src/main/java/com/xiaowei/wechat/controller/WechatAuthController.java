@@ -47,7 +47,7 @@ public class WechatAuthController {
     private WxMpService wxMpService;
 
     @Resource
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     private IWxUserService wxUserService;
@@ -61,8 +61,11 @@ public class WechatAuthController {
     @Value("${server.pre.index}")
     private String serverPreIndex;
 
-    @ApiOperation("绑定手机号")
-    @PostMapping("bind")
+    @Value("${server.pre.bind}")
+    private String serverPreBind;
+
+    @ApiOperation(value = "绑定手机号",notes = "绑定成功后，前端应该再次调用登陆接口，并可以指定回调地址。")
+    @PostMapping("/bind")
     public Result bind(String mobile,String nickName,HttpServletRequest request) {
         //绑定手机号
         String openId = (String)request.getSession().getAttribute("openId");
@@ -94,7 +97,7 @@ public class WechatAuthController {
             wxUserService.save(user);
         }
         //绑定成功后，交给前端做路由
-        return Result.getSuccess();
+        return Result.getSuccess(request.getSession().getAttribute("redirect"));
     }
 
     @GetMapping("/back/info")
@@ -106,18 +109,21 @@ public class WechatAuthController {
         }
         try {
             WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
-            Optional<WxUser> wxUser = wxUserService.findByOpenId(wxMpOAuth2AccessToken.getOpenId());
+            Optional<WxUser> wxUserOptional = wxUserService.findByOpenId(wxMpOAuth2AccessToken.getOpenId());
+            WxUser user;
             //如果在数据库中找不到了这个用户的信息
-            if (!wxUser.isPresent()) {
+            if (!wxUserOptional.isPresent()) {
                 //去尝试请求这个用户的详细信息
                 WxMpUser wxMpUser;
                 try {
+                    //在关注了公众号后才会允许获得用户详情
                     wxMpUser = wxMpService.getUserService().userInfo(wxMpOAuth2AccessToken.getOpenId());
                     //如果获取到该用户
                     if (wxMpUser != null) {
                         //保存用户数据到数据库中
-                        WxUser user = BeanCopyUtils.copy(wxMpUser, WxUser.class);
-                        wxUserService.save(user);
+                        user = BeanCopyUtils.copy(wxMpUser, WxUser.class);
+                        //原来的绑定信息不清除
+                        user = wxUserService.saveOrUpdate(user);
                     } else {
                         throw new BusinessException("获取不到用户的信息，请重新授权");
                     }
@@ -127,18 +133,23 @@ public class WechatAuthController {
                         state = UUID.randomUUID().toString();
                     }
                     //如果次数存在就判断是否超过了两次
-                    int number = 0;
-                    if (redisTemplate.hasKey(MagicValueStore.wxStatesNumberPro + state)) {
-                        String numbers = redisTemplate.opsForValue().get(MagicValueStore.wxStatesNumberPro + state);
+                    int number = 1;
+                    if (stringRedisTemplate.hasKey(MagicValueStore.wxStatesNumberPro + state)) {
+                        String numbers = stringRedisTemplate.opsForValue().get(MagicValueStore.wxStatesNumberPro + state);
                         number = NumberUtils.toInt(numbers,0);
                         if (number > 2) {
                             //在这里报错
                             log.warning("用户信息获取错误！用户信息拉取已超过两次！");
                             throw new BusinessException("用户信息获取错误！请检查是否已经授权");
                         }
+                        number++;
                     }
                     //追加操作
-                    redisTemplate.opsForValue().set(MagicValueStore.wxStatesNumberPro, "" + number);
+
+                    String key = MagicValueStore.wxStatesNumberPro + state;
+                    stringRedisTemplate.opsForValue().set(key, "" + number);
+                    //此信息1分钟后过期
+                    stringRedisTemplate.expire(key, 1, TimeUnit.MINUTES);
                     log.warning("没有获取到该openId:"+wxMpOAuth2AccessToken.getOpenId()+"的用户信息，正在重新拉取。错误信息："+e.getMessage());
                     //打印一下错误堆栈，方便查看
                     e.printStackTrace();
@@ -147,31 +158,48 @@ public class WechatAuthController {
                     response.sendRedirect(url);
                     return null;
                 }
-            } else if (wxUser.get().getSysUser() == null) {
+            } else {
+                user = wxUserOptional.get();
+            }
+            if (user.getSysUser() == null) {
                 //微信中的这个用户是否绑定了我们的系统用户
                 request.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
-                //在绑定后,重新调用登陆即可
-                response.sendRedirect("绑定手机号地址");
+                request.getSession().setAttribute("redirect", getLastCallBack(state));
+                //在绑定后,重新访问路由即可
+                response.sendRedirect(serverPreBind);
             } else {
                 //在此做登陆，就是向前端写统一的登陆cookies
-                String loginName = wxUser.get().getSysUser().getLoginName();
+                String loginName = wxUserOptional.get().getSysUser().getLoginName();
                 Subject subject = SecurityUtils.getSubject();
                 subject.login(new WxUserLoginToken(loginName));
                 AccountUtils.loadUser();
-                //然后重定向到之前的地址中
-                if (StringUtils.isEmpty(state) || !redisTemplate.hasKey(MagicValueStore.wxStatesValuePro + state)) {
-                    //如果之前的回调信息是空的,或者在redis中的信息已经超时，直接跳转到默认的首页
-                    response.sendRedirect(serverPreIndex);
-                } else {
-                    //重定向到回调地址
-                    String url = redisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
-                    response.sendRedirect(url);
-                }
+                String url  = getLastCallBack(state);
+                response.sendRedirect(url);
             }
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 通过state获取回调地址
+     * @param state
+     * @return
+     */
+    private String getLastCallBack(String state) {
+        String url;//然后重定向到之前的地址中
+        if (StringUtils.isEmpty(state) || !stringRedisTemplate.hasKey(MagicValueStore.wxStatesValuePro + state)) {
+            //如果之前的回调信息是空的,或者在redis中的信息已经超时，直接跳转到默认的首页
+            url = serverPreIndex;
+        } else {
+            //重定向到回调地址
+            url = stringRedisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
+        }
+        //获取过后就删除缓存
+        stringRedisTemplate.delete(MagicValueStore.wxStatesValuePro + state);
+        stringRedisTemplate.delete(MagicValueStore.wxStatesNumberPro + state);
+        return url;
     }
 
     /**
@@ -188,9 +216,9 @@ public class WechatAuthController {
             //保存到redis中。用于回调的跳转
             uid = UUID.randomUUID().toString();
             String key = MagicValueStore.wxStatesValuePro + uid;
-            redisTemplate.opsForValue().append(key, callback);
+            stringRedisTemplate.opsForValue().append(key, callback);
             //此信息是10分钟后过期
-            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
+            stringRedisTemplate.expire(key, 10, TimeUnit.MINUTES);
         }
         //首先获取当前登陆用户的openid，如果在数据库中有（在首次用户关注的时候就应该保存到数据库中），就不去获取用户的详细信息了。
         String url = wxMpService.oauth2buildAuthorizationUrl(serverHost + "/wechat/auth/back/info", "snsapi_base", uid);

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 订阅/关注公众号事件
@@ -21,54 +22,54 @@ import java.util.Map;
 @Component
 public class SubscribeHandler extends AbstractHandler {
 
-  @Autowired
-  private IWxUserService wxUserService;
+    @Autowired
+    private IWxUserService wxUserService;
 
-  @Override
-  public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
-                                  Map<String, Object> context, WxMpService weixinService,
-                                  WxSessionManager sessionManager) throws WxErrorException {
+    @Override
+    public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
+                                    Map<String, Object> context, WxMpService weixinService,
+                                    WxSessionManager sessionManager) throws WxErrorException {
 
-    this.logger.info("新关注用户 OPENID: " + wxMessage.getFromUser());
+        this.logger.info("新关注用户 OPENID: " + wxMessage.getFromUser());
 
-    // 获取微信用户基本信息
-    WxMpUser userWxInfo = weixinService.getUserService()
-        .userInfo(wxMessage.getFromUser(), null);
+        // 获取微信用户基本信息
+        WxMpUser userWxInfo = weixinService.getUserService()
+                .userInfo(wxMessage.getFromUser(), null);
 
-    if (userWxInfo != null) {
-      //添加关注用户到本地
-      WxUser user = BeanCopyUtils.copy(userWxInfo, WxUser.class);
-      wxUserService.save(user);
+        if (userWxInfo != null) {
+            WxUser user = BeanCopyUtils.copy(userWxInfo, WxUser.class);
+            //添加关注用户到本地
+            wxUserService.saveOrUpdate(user);
+        }
+
+
+        WxMpXmlOutMessage responseResult = null;
+        try {
+            responseResult = handleSpecial(wxMessage);
+        } catch (Exception e) {
+            this.logger.error(e.getMessage(), e);
+        }
+
+        if (responseResult != null) {
+            return responseResult;
+        }
+
+        try {
+            return new TextBuilder().build("感谢关注", wxMessage, weixinService);
+        } catch (Exception e) {
+            this.logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 
-
-    WxMpXmlOutMessage responseResult = null;
-    try {
-      responseResult = handleSpecial(wxMessage);
-    } catch (Exception e) {
-      this.logger.error(e.getMessage(), e);
+    /**
+     * 处理特殊请求，比如如果是扫码进来的，可以将其直接引导到保修工单页面
+     */
+    private WxMpXmlOutMessage handleSpecial(WxMpXmlMessage wxMessage)
+            throws Exception {
+        //TODO
+        return null;
     }
-
-    if (responseResult != null) {
-      return responseResult;
-    }
-
-    try {
-      return new TextBuilder().build("感谢关注", wxMessage, weixinService);
-    } catch (Exception e) {
-      this.logger.error(e.getMessage(), e);
-    }
-
-    return null;
-  }
-
-  /**
-   * 处理特殊请求，比如如果是扫码进来的，可以将其直接引导到保修工单页面
-   */
-  private WxMpXmlOutMessage handleSpecial(WxMpXmlMessage wxMessage)
-      throws Exception {
-    //TODO
-    return null;
-  }
 
 }

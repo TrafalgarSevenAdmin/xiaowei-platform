@@ -3,7 +3,9 @@ server:
   pre:
     # 前端用户页面主页地址，在自动登陆后跳转
     index: http://www.baidu.com
-  host: http://b7876ac9.ngrok.io
+    # 前端绑定地址
+    bind: http://www.baidu.com
+  host: http://3ceb9d34.ngrok.io
   port: 9004
   servlet:
     context-path: /wechat

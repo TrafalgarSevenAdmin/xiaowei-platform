@@ -1,12 +1,12 @@
 package com.xiaowei.account.authorization;
 
-import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
  * 微信用户直接登录，不需要使用密码
  * @author qinyongliang
  */
-public class WxUserLoginToken implements AuthenticationToken {
+public class WxUserLoginToken extends UsernamePasswordToken {
 
     private String loginName;
 
@@ -21,6 +21,6 @@ public class WxUserLoginToken implements AuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return null;
+        return "".toCharArray();
     }
 }

@@ -118,7 +118,7 @@ public class WechatMpConfiguration {
     // 取消关注事件
     newRouter.rule().async(false).msgType(XmlMsgType.EVENT)
         .event(EventType.UNSUBSCRIBE)
-        .handler(this.subscribeHandler).end();
+        .handler(this.unsubscribeHandler).end();
 
     // 上报地理位置事件
     newRouter.rule().async(false).msgType(XmlMsgType.EVENT)
