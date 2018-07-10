@@ -1,0 +1,43 @@
+profiles:  dev_environment
+server:
+  pre:
+    # 前端用户页面主页地址，在自动登陆后跳转
+    index: http://www.baidu.com
+  host: http://b7876ac9.ngrok.io
+  port: 9004
+  servlet:
+    context-path: /wechat
+spring:
+  datasource:
+    url: @datasource.url@
+    username: @datasource.username@
+    password: @datasource.password@
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: data-server
+  jpa:
+    generate-ddl: true
+    properties:
+      format_sql: true
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+  redis:
+    host: @redis.url@
+    port: 6379
+logging:
+  level:
+    com:
+      yulintu: DEBUG
+wechat:
+  config:
+    appId: wx496463b293af6996
+    secret: 0593b00bca702d8d458063f4758093bd
+    token: token
+    aesKey:
+

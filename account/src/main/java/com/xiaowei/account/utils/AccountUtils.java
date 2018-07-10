@@ -64,6 +64,7 @@ public class AccountUtils {
                 sysUser.getMobile(),
                 sysUser.getEmail(),
                 sysUser.getStatus(),
+                sysUser.getNickName(),
                 roles,
                 permissions,
                 companyBeans

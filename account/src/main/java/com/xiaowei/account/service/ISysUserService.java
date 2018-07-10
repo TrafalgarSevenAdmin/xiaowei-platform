@@ -4,6 +4,8 @@ package com.xiaowei.account.service;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.service.IBaseService;
 
+import java.util.Optional;
+
 /**
  * @author mocker
  * @Date 2018-03-20 14:49:59
@@ -13,6 +15,13 @@ import com.xiaowei.core.basic.service.IBaseService;
 public interface ISysUserService extends IBaseService<SysUser> {
 
     SysUser saveUser(SysUser user);
+
+    /**
+     * 通过手机号查找用户
+     * @param mobile
+     * @return
+     */
+    Optional<SysUser> findByMobile(String mobile);
 
     SysUser updateUser(SysUser user);
 

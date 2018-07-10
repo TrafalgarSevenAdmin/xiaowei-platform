@@ -1,7 +1,6 @@
 package com.xiaowei.worksystem.controller;
 
 
-import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
@@ -41,7 +40,6 @@ public class LoginController {
     public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult){
         Subject subject = SecurityUtils.getSubject();
         subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
-        SysUser sysUser = sysUserService.findByLoginName(loginSysUserDTO.getLoginName());
         AccountUtils.loadUser();
         return Result.getSuccess(LoginUserUtils.getLoginUser());
     }

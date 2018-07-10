@@ -46,6 +46,7 @@
         <module>common-upload</module>
         <module>work-system</module>
         <module>common-dict</module>
+        <module>wechat</module>
     </modules>
 
     <dependencies>

@@ -77,6 +77,7 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
      * @throws AuthenticationException
      */
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+
         String loginName = (String) authenticationToken.getPrincipal();
         String password = new String((char[])authenticationToken.getCredentials());
 
@@ -87,11 +88,17 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
             throw new UnknownAccountException("用户不存在!");
         }
 
-        //判断密码是否正确
-        String md5Password = DigestUtils.md5Hex( sysUser.getSalt() + password);
-        if(!md5Password.equals(sysUser.getPassword())){
-            throw new IncorrectCredentialsException("密码错误!");
+        /**
+         * 如果不是wx登录的请求，才判断密码是否正确，如果是微信直接登录，就不必判断
+         */
+        if (!(authenticationToken instanceof WxUserLoginToken)) {
+            //判断密码是否正确
+            String md5Password = DigestUtils.md5Hex( sysUser.getSalt() + password);
+            if(!md5Password.equals(sysUser.getPassword())){
+                throw new IncorrectCredentialsException("密码错误!");
+            }
         }
+
 
         //判断是否禁用
         if(UserStatus.FORBIDDEN.getStatus().equals(sysUser.getStatus())){

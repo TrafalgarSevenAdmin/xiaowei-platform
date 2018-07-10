@@ -1,0 +1,201 @@
+package com.xiaowei.wechat.controller;
+
+import com.xiaowei.account.authorization.WxUserLoginToken;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.result.Result;
+import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.wechat.consts.MagicValueStore;
+import com.xiaowei.wechat.entity.WxUser;
+import com.xiaowei.wechat.service.IWxUserService;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.java.Log;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+@Log
+@RestController
+@RequestMapping("/auth")
+public class WechatAuthController {
+
+    @Autowired
+    private WxMpService wxMpService;
+
+    @Resource
+    private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private IWxUserService wxUserService;
+
+    @Autowired
+    private ISysUserService sysUserService;
+
+    @Value("${server.host}")
+    private String serverHost;
+
+    @Value("${server.pre.index}")
+    private String serverPreIndex;
+
+    @ApiOperation("绑定手机号")
+    @PostMapping("bind")
+    public Result bind(String mobile,String nickName,HttpServletRequest request) {
+        //绑定手机号
+        String openId = (String)request.getSession().getAttribute("openId");
+        if (StringUtils.isEmpty(openId)) {
+            throw new BusinessException("来源错误！");
+        }
+        Optional<WxUser> wxUserByMobile = wxUserService.findByMobile(mobile);
+        EmptyUtils.assertOptionalNot(wxUserByMobile,"此手机已绑定微信号!");
+
+        //获取这个微信用户的信息
+        Optional<WxUser> wxUser = wxUserService.findByOpenId(openId);
+        //如果没有查出来该用户的信息，就说明此请求不是从登陆页面来的。。。
+        EmptyUtils.assertOptionalNot(wxUser,"来源错误！未获取到用户信息！");
+        Optional<SysUser> sysUseByMobile = sysUserService.findByMobile(mobile);
+        WxUser user = wxUser.get();
+        if (sysUseByMobile.isPresent()) {
+            //如果有用户，就绑定到一起
+            user.setSysUser(sysUseByMobile.get());
+            //绑定到一起
+            wxUserService.save(user);
+        } else {
+            //如果没有就新建一个系统用户，标识为普通用户
+            SysUser sysUser = new SysUser();
+            sysUser.setLoginName(mobile);
+            sysUser.setCreatedTime(new Date());
+            sysUser.setStatus(0);
+            sysUser.setNickName(nickName);
+            user.setSysUser(sysUser);
+            wxUserService.save(user);
+        }
+        //绑定成功后，交给前端做路由
+        return Result.getSuccess();
+    }
+
+    @GetMapping("/back/info")
+    public String authBackWithInfo(String code, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //在此不对调用方做限制，毕竟会通过code去查询用户的openid，相当于code就做了校验，但是在支付回调接口中必须对请求过来的服务器地址做校验，判断是否是微信服务器发起的请求
+        log.info("获取到微信回调的code:" + code);
+        if (StringUtils.isEmpty(code)) {
+            return "error";
+        }
+        try {
+            WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
+            Optional<WxUser> wxUser = wxUserService.findByOpenId(wxMpOAuth2AccessToken.getOpenId());
+            //如果在数据库中找不到了这个用户的信息
+            if (!wxUser.isPresent()) {
+                //去尝试请求这个用户的详细信息
+                WxMpUser wxMpUser;
+                try {
+                    wxMpUser = wxMpService.getUserService().userInfo(wxMpOAuth2AccessToken.getOpenId());
+                    //如果获取到该用户
+                    if (wxMpUser != null) {
+                        //保存用户数据到数据库中
+                        WxUser user = BeanCopyUtils.copy(wxMpUser, WxUser.class);
+                        wxUserService.save(user);
+                    } else {
+                        throw new BusinessException("获取不到用户的信息，请重新授权");
+                    }
+                } catch (Exception e) {
+                    // 判断是否拉取了很多次，如果超过了2次那么说明此用户没有授权或者其他错误什么的。
+                    if (StringUtils.isEmpty(state)) {
+                        state = UUID.randomUUID().toString();
+                    }
+                    //如果次数存在就判断是否超过了两次
+                    int number = 0;
+                    if (redisTemplate.hasKey(MagicValueStore.wxStatesNumberPro + state)) {
+                        String numbers = redisTemplate.opsForValue().get(MagicValueStore.wxStatesNumberPro + state);
+                        number = NumberUtils.toInt(numbers,0);
+                        if (number > 2) {
+                            //在这里报错
+                            log.warning("用户信息获取错误！用户信息拉取已超过两次！");
+                            throw new BusinessException("用户信息获取错误！请检查是否已经授权");
+                        }
+                    }
+                    //追加操作
+                    redisTemplate.opsForValue().set(MagicValueStore.wxStatesNumberPro, "" + number);
+                    log.warning("没有获取到该openId:"+wxMpOAuth2AccessToken.getOpenId()+"的用户信息，正在重新拉取。错误信息："+e.getMessage());
+                    //打印一下错误堆栈，方便查看
+                    e.printStackTrace();
+                    //再次拉取用户详细信息
+                    String url = wxMpService.oauth2buildAuthorizationUrl(serverHost + "/wechat/auth/back/info", "snsapi_userinfo", state);
+                    response.sendRedirect(url);
+                    return null;
+                }
+            } else if (wxUser.get().getSysUser() == null) {
+                //微信中的这个用户是否绑定了我们的系统用户
+                request.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
+                //在绑定后,重新调用登陆即可
+                response.sendRedirect("绑定手机号地址");
+            } else {
+                //在此做登陆，就是向前端写统一的登陆cookies
+                String loginName = wxUser.get().getSysUser().getLoginName();
+                Subject subject = SecurityUtils.getSubject();
+                subject.login(new WxUserLoginToken(loginName));
+                AccountUtils.loadUser();
+                //然后重定向到之前的地址中
+                if (StringUtils.isEmpty(state) || !redisTemplate.hasKey(MagicValueStore.wxStatesValuePro + state)) {
+                    //如果之前的回调信息是空的,或者在redis中的信息已经超时，直接跳转到默认的首页
+                    response.sendRedirect(serverPreIndex);
+                } else {
+                    //重定向到回调地址
+                    String url = redisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
+                    response.sendRedirect(url);
+                }
+            }
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 调用此接口登陆
+     *
+     * @param callback
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(path = "/login")
+    public void login(String callback, HttpServletResponse response) throws IOException {
+        String uid = null;
+        if (StringUtils.isNotEmpty(callback)) {
+            //保存到redis中。用于回调的跳转
+            uid = UUID.randomUUID().toString();
+            String key = MagicValueStore.wxStatesValuePro + uid;
+            redisTemplate.opsForValue().append(key, callback);
+            //此信息是10分钟后过期
+            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
+        }
+        //首先获取当前登陆用户的openid，如果在数据库中有（在首次用户关注的时候就应该保存到数据库中），就不去获取用户的详细信息了。
+        String url = wxMpService.oauth2buildAuthorizationUrl(serverHost + "/wechat/auth/back/info", "snsapi_base", uid);
+        //将微信网页从定向到登陆
+        response.sendRedirect(url);
+    }
+
+}
