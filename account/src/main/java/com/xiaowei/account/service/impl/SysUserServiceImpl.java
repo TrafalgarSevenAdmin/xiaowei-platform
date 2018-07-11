@@ -69,6 +69,11 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    public Optional<SysUser> findByMobile(String mobile) {
+        return sysUserRepository.findByMobile(mobile);
+    }
+
+    @Override
     @Transactional
     public SysUser updateUser(SysUser user) {
         judgeAttribute(user, JudgeType.UPDATE);

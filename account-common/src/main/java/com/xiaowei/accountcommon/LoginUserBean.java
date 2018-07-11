@@ -22,6 +22,11 @@ public class LoginUserBean implements Serializable {
      */
     private String email;
 
+    /**
+     * 真实名称
+     */
+    private String nickName;
+
     private Integer status;
 
     private List<RoleBean> roles;
@@ -33,12 +38,13 @@ public class LoginUserBean implements Serializable {
     public LoginUserBean() {
     }
 
-    public LoginUserBean(String id,String loginName, String mobile, String email, Integer status, List<RoleBean> roles, List<PermissionBean> permissions,List<CompanyBean> companyBeans) {
+    public LoginUserBean(String id,String loginName, String mobile, String email, Integer status, String nickName,List<RoleBean> roles, List<PermissionBean> permissions,List<CompanyBean> companyBeans) {
         this.id = id;
         this.loginName = loginName;
         this.mobile = mobile;
         this.email = email;
         this.status = status;
+        this.nickName = nickName;
         this.roles = roles;
         this.permissions = permissions;
         this.companyBeans = companyBeans;
@@ -107,5 +113,13 @@ public class LoginUserBean implements Serializable {
 
     public void setPermissions(List<PermissionBean> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

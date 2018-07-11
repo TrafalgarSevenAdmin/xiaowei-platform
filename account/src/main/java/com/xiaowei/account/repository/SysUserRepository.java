@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author mocker
@@ -31,5 +32,12 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
      * @return
      */
     SysUser findByLoginName(String loginName);
+
+    /**
+     * 通过手机号查找用户
+     * @param mobile
+     * @return
+     */
+    Optional<SysUser> findByMobile(String mobile);
 
 }
