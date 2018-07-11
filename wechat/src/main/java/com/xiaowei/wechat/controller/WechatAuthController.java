@@ -8,7 +8,10 @@ import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.wechat.consts.MagicValueStore;
+import com.xiaowei.wechat.consts.ServerInfoProperties;
+import com.xiaowei.wechat.dto.BindMobileDTO;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
 import io.swagger.annotations.ApiOperation;
@@ -22,12 +25,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -55,31 +56,26 @@ public class WechatAuthController {
     @Autowired
     private ISysUserService sysUserService;
 
-    @Value("${server.host}")
-    private String serverHost;
-
-    @Value("${server.pre.index}")
-    private String serverPreIndex;
-
-    @Value("${server.pre.bind}")
-    private String serverPreBind;
+    @Autowired
+    private ServerInfoProperties serverInfoProperties;
 
     @ApiOperation(value = "绑定手机号",notes = "绑定成功后，前端应该再次调用登陆接口，并可以指定回调地址。")
+    @AutoErrorHandler
     @PostMapping("/bind")
-    public Result bind(String mobile,String nickName,HttpServletRequest request) {
+    public Result bind(@RequestBody @Validated BindMobileDTO bindMobileDTO, BindingResult result, HttpServletRequest request) {
         //绑定手机号
         String openId = (String)request.getSession().getAttribute("openId");
         if (StringUtils.isEmpty(openId)) {
             throw new BusinessException("来源错误！");
         }
-        Optional<WxUser> wxUserByMobile = wxUserService.findByMobile(mobile);
+        Optional<WxUser> wxUserByMobile = wxUserService.findByMobile(bindMobileDTO.getMobile());
         EmptyUtils.assertOptionalNot(wxUserByMobile,"此手机已绑定微信号!");
 
         //获取这个微信用户的信息
         Optional<WxUser> wxUser = wxUserService.findByOpenId(openId);
         //如果没有查出来该用户的信息，就说明此请求不是从登陆页面来的。。。
-        EmptyUtils.assertOptionalNot(wxUser,"来源错误！未获取到用户信息！");
-        Optional<SysUser> sysUseByMobile = sysUserService.findByMobile(mobile);
+        EmptyUtils.assertOptional(wxUser,"来源错误！未获取到用户信息！");
+        Optional<SysUser> sysUseByMobile = sysUserService.findByMobile(bindMobileDTO.getMobile());
         WxUser user = wxUser.get();
         if (sysUseByMobile.isPresent()) {
             //如果有用户，就绑定到一起
@@ -89,10 +85,10 @@ public class WechatAuthController {
         } else {
             //如果没有就新建一个系统用户，标识为普通用户
             SysUser sysUser = new SysUser();
-            sysUser.setLoginName(mobile);
+            sysUser.setLoginName(bindMobileDTO.getMobile());
             sysUser.setCreatedTime(new Date());
             sysUser.setStatus(0);
-            sysUser.setNickName(nickName);
+            sysUser.setNickName(bindMobileDTO.getName());
             user.setSysUser(sysUser);
             wxUserService.save(user);
         }
@@ -154,7 +150,7 @@ public class WechatAuthController {
                     //打印一下错误堆栈，方便查看
                     e.printStackTrace();
                     //再次拉取用户详细信息
-                    String url = wxMpService.oauth2buildAuthorizationUrl(serverHost + "/wechat/auth/back/info", "snsapi_userinfo", state);
+                    String url = wxMpService.oauth2buildAuthorizationUrl(serverInfoProperties.getHost() + "/wechat/auth/back/info", "snsapi_userinfo", state);
                     response.sendRedirect(url);
                     return null;
                 }
@@ -166,7 +162,7 @@ public class WechatAuthController {
                 request.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
                 request.getSession().setAttribute("redirect", getLastCallBack(state));
                 //在绑定后,重新访问路由即可
-                response.sendRedirect(serverPreBind);
+                response.sendRedirect(serverInfoProperties.getPreBind());
             } else {
                 //在此做登陆，就是向前端写统一的登陆cookies
                 String loginName = wxUserOptional.get().getSysUser().getLoginName();
@@ -191,7 +187,7 @@ public class WechatAuthController {
         String url;//然后重定向到之前的地址中
         if (StringUtils.isEmpty(state) || !stringRedisTemplate.hasKey(MagicValueStore.wxStatesValuePro + state)) {
             //如果之前的回调信息是空的,或者在redis中的信息已经超时，直接跳转到默认的首页
-            url = serverPreIndex;
+            url = serverInfoProperties.getPreIndex();
         } else {
             //重定向到回调地址
             url = stringRedisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
@@ -221,7 +217,7 @@ public class WechatAuthController {
             stringRedisTemplate.expire(key, 10, TimeUnit.MINUTES);
         }
         //首先获取当前登陆用户的openid，如果在数据库中有（在首次用户关注的时候就应该保存到数据库中），就不去获取用户的详细信息了。
-        String url = wxMpService.oauth2buildAuthorizationUrl(serverHost + "/wechat/auth/back/info", "snsapi_base", uid);
+        String url = wxMpService.oauth2buildAuthorizationUrl(serverInfoProperties.getHost() + "/wechat/auth/back/info", "snsapi_base", uid);
         //将微信网页从定向到登陆
         response.sendRedirect(url);
     }
