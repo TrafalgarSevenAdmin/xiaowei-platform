@@ -16,6 +16,7 @@ public class WorkOrder extends BaseEntity {
     /**
      * 工单编号
      */
+    @Column(unique = true)
     private String code;
     /**
      * 所属设备

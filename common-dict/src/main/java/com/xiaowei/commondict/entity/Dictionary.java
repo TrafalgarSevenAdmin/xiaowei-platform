@@ -3,6 +3,7 @@ package com.xiaowei.commondict.entity;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -13,6 +14,7 @@ public class Dictionary extends BaseEntity{
     /**
      * 字典的完整编码
      */
+    @Column(unique = true)
     private String code;
     /**
      * 字典独立编码
