@@ -23,6 +23,15 @@ public class PredicateBuilder<T> {
     private List<Specification<T>> specifications;
     private Class<T> targetClass;
     private Boolean distinct = false;
+    private ThreadLocal<Boolean> fetch = new ThreadLocal();
+
+    public Boolean getFetch() {
+        return fetch.get();
+    }
+
+    public void setFetch(Boolean fetch) {
+        this.fetch.set(fetch);
+    }
 
     public Class<T> getTargetClass() {
         return targetClass;
@@ -148,7 +157,12 @@ public class PredicateBuilder<T> {
         return (root, query, cb) -> {
             Predicate[] predicates = new Predicate[specifications.size()];
             query.distinct(distinct);
-            setFetch(root);
+            Boolean fetch = this.fetch.get();
+            if (fetch == null || fetch) {
+                setFetch(root);
+            }else{
+                setFetch(true);
+            }
             for (int i = 0; i < specifications.size(); i++) {
                 predicates[i] = specifications.get(i).toPredicate(root, query, cb);
             }
@@ -158,11 +172,13 @@ public class PredicateBuilder<T> {
 
     /**
      * 设置root的fetch条件,用于查询时立即加载从表对象
+     *
      * @param root
      */
     private void setFetch(Root<T> root) {
+        setFetch(false);
         Class<T> targetClass = this.getTargetClass();
-        if(targetClass==null){
+        if (targetClass == null) {
             return;
         }
         //获取所有字段
@@ -172,7 +188,7 @@ public class PredicateBuilder<T> {
             field.setAccessible(true);
             Fetch fetch = field.getAnnotation(Fetch.class);
             //如果fetch时join,那么root设置此字段得到fetch以便于立即加载,否则就不管
-            if(fetch!=null&& FetchMode.JOIN.equals(fetch.value())){
+            if (fetch != null && FetchMode.JOIN.equals(fetch.value())) {
                 root.fetch(field.getName(), JoinType.LEFT);
             }
             field.setAccessible(false);

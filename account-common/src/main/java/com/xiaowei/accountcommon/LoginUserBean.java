@@ -5,6 +5,8 @@ import java.util.List;
 
 public class LoginUserBean implements Serializable {
 
+    private static final long serialVersionUID = -4112542381818773302L;
+
     private String id;
 
     /**
