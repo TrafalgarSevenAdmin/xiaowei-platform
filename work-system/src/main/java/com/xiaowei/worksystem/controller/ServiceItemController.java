@@ -48,4 +48,11 @@ public class ServiceItemController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
     }
 
+    @ApiOperation(value = "质检服务项目")
+    @PutMapping("/{serviceItemId}/quality")
+    public Result qualityServiceItem(@PathVariable("serviceItemId") String serviceItemId, FieldsView fieldsView) throws Exception {
+        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
+    }
+
 }
