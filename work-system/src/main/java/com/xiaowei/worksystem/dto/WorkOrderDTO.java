@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class WorkOrderDTO {
+    public interface DistributeWorkOrder{}
     /**
      * 工单编号
      */
@@ -71,11 +72,13 @@ public class WorkOrderDTO {
      * 后台处理人
      */
     @ApiModelProperty(value = "后台处理人")
+    @NotNull(groups = {WorkOrderDTO.DistributeWorkOrder.class},message = "后台处理人必填!")
     private SysUser backgrounder;
     /**
      * 处理工程师
      */
     @ApiModelProperty(value = "处理工程师")
+    @NotNull(groups = {WorkOrderDTO.DistributeWorkOrder.class},message = "处理工程师必填!")
     private SysUser engineer;
 
     public String getCode() {

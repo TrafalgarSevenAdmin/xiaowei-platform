@@ -30,4 +30,5 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder finishInhand(String workOrderId);
 
+    WorkOrder distributeWorkOrder(WorkOrder workOrder);
 }

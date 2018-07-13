@@ -73,6 +73,17 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "派单")
+    @AutoErrorHandler
+    @PutMapping("/distribute/{workOrderId}")
+    public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO, FieldsView fieldsView) throws Exception {
+        WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
+        workOrder.setId(workOrderId);
+        workOrderService.distributeWorkOrder(workOrder);
+        return Result.getSuccess();
+    }
+
+
     @ApiOperation(value = "用户付费项目")
     @AutoErrorHandler
     @PutMapping("/pay/{workOrderId}")

@@ -345,6 +345,46 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
+     * 派单
+     *
+     * @param workOrder
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder distributeWorkOrder(WorkOrder workOrder) {
+        //验证派单工单的属性
+        judgeDistributeWorkOrder(workOrder);
+
+        Optional<WorkOrder> optional = workOrderRepository.findById(workOrder.getId());
+        EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+        WorkOrder one = optional.get();
+        //待派发
+        if (!one.getSystemStatus().equals(WorkOrderSystemStatus.DISTRIBUTE.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        one.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//变更状态为待接单
+        one.setEngineer(workOrder.getEngineer());
+        one.setBackgrounder(workOrder.getBackgrounder());
+        return workOrderRepository.save(one);
+    }
+
+    /**
+     * 验证派单工单的属性
+     *
+     * @param workOrder
+     */
+    private void judgeDistributeWorkOrder(WorkOrder workOrder) {
+        EmptyUtils.assertString(workOrder.getId(), "没有传入对象id");
+        val engineer = workOrder.getEngineer();
+        val backgrounder = workOrder.getBackgrounder();
+        EmptyUtils.assertObject(engineer, "处理工程师为空");
+        EmptyUtils.assertObject(backgrounder, "后台处理人为空");
+        EmptyUtils.assertString(engineer.getId(), "处理工程师id为空");
+        EmptyUtils.assertString(backgrounder.getId(), "后台处理人id为空");
+    }
+
+    /**
      * 检查服务项目是否已经全部完成
      *
      * @param workOrder
