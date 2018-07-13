@@ -151,7 +151,7 @@ public class CompanyController {
     @ApiOperation("根据id获取公司")
     @GetMapping("/{companyId}")
     public Result findById(@PathVariable("companyId") String companyId, FieldsView fieldsView) {
-        //根据id获取角色只能获取当前登录用户所拥有的角色
+        //根据id获取角色只能获取当前登录用户所拥有的公司
         if (!LoginUserUtils.hasCompanyId(companyId)) {
             throw new UnauthorizedException("查询失败:没有权限查询该公司");
         }

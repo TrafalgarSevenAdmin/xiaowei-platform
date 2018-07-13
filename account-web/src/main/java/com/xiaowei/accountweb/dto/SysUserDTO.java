@@ -1,6 +1,7 @@
 package com.xiaowei.accountweb.dto;
 
 import com.xiaowei.account.entity.Company;
+import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.core.constants.PatternConstant;
 import com.xiaowei.core.validate.V;
@@ -48,6 +49,9 @@ public class SysUserDTO {
 
     @ApiModelProperty(value = "用户的公司")
     private List<Company> companies;
+
+    @ApiModelProperty(value = "用户的部门")
+    private List<Department> departments;
 
     @ApiModelProperty(value = "真实名称")
     private String nickName;

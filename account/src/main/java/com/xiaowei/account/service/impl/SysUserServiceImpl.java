@@ -12,6 +12,7 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -103,10 +104,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         if (StringUtils.isEmpty(userId)) {
             throw new BusinessException("删除失败:没有传入对象id");
         }
-        SysUser one = sysUserRepository.getOne(userId);
-        if (one == null) {
-            throw new BusinessException("删除失败:没有查询到需要删除的对象");
-        }
+        Optional<SysUser> sysUser = sysUserRepository.findById(userId);
+        EmptyUtils.assertOptional(sysUser,"没有查询到需要删除的对象");
+        SysUser one = sysUser.get();
         //admin不允许伪删除
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
             throw new BusinessException("删除失败:不允许删除超级管理员");

@@ -2,6 +2,7 @@ package com.xiaowei.accountweb.dto;
 
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonlog4j.annotation.ParamField;
+import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Range;
 
@@ -13,7 +14,7 @@ public class CompanyDTO {
     public interface UpdateStatus{}
 
     @ApiModelProperty(value = "公司名称")
-    @NotBlank(message = "公司名称必填!")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "公司名称必填!")
     @ParamField("公司名称")
     private String companyName;
 

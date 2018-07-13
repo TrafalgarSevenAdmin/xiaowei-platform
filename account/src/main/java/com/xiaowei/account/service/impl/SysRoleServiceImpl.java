@@ -1,16 +1,17 @@
 package com.xiaowei.account.service.impl;
 
-import com.xiaowei.account.entity.Company;
+import com.xiaowei.account.consts.RoleType;
+import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
-import com.xiaowei.account.repository.CompanyRepository;
+import com.xiaowei.account.repository.DepartmentRepository;
 import com.xiaowei.account.repository.SysRoleRepository;
-import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,12 +38,9 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     private SysRoleRepository sysRoleRepository;
 
     @Autowired
-    private SysUserRepository sysUserRepository;
+    private DepartmentRepository departmentRepository;
 
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    public SysRoleServiceImpl(@Qualifier("sysRoleRepository")BaseRepository repository) {
+    public SysRoleServiceImpl(@Qualifier("sysRoleRepository") BaseRepository repository) {
         super(repository);
     }
 
@@ -86,18 +84,9 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     }
 
     private void judgeAttribute(SysRole role, JudgeType judgeType) {
-        //判断name是否唯一
-        String name = role.getName();
-        if (StringUtils.isEmpty(name)) {
-            throw new BusinessException("保存失败:角色名为空");
-        }
-
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             role.setId(null);
-            SysRole byName = sysRoleRepository.findByName(name);
-            if (byName != null) {
-                throw new BusinessException("保存失败:角色名重复");
-            }
+
             //设置code
             role.setCode(UUID.randomUUID().toString());
             //设置创建时间
@@ -115,28 +104,29 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             }
 
             //修改角色判断当前登录用户是否拥有被修改的角色的权限
-            if(!LoginUserUtils.hasRoleId(roleId)){
+            if (!LoginUserUtils.hasRoleId(roleId)) {
                 throw new UnauthorizedException("保存失败:没有权限修改该角色");
             }
 
-            //如果名称没有修改,则不发sql验证,否则发送sql验证name唯一性
-            if (!one.getName().equals(name)) {
-                SysRole byName = sysRoleRepository.findByName(name);
-                if (byName != null) {
-                    throw new BusinessException("保存失败:角色名重复");
-                }
-            }
-
         }
+        //验证所属部门
+        judgeDepartment(role);
 
-        //验证所属公司
-        String companyId = role.getCompany().getId();
-        if(StringUtils.isEmpty(companyId)){
-            throw new BusinessException("保存失败:所属公司不能为空");
-        }
-        Company company = companyRepository.getOne(companyId);
-        if(company==null){
-            throw new BusinessException("保存失败:没有查询到所属公司");
+
+    }
+
+    /**
+     * 验证所属部门
+     *
+     * @param role
+     */
+    private void judgeDepartment(SysRole role) {
+        Department department = role.getDepartment();
+        if (department == null || StringUtils.isEmpty(department.getId())) {//托管角色
+            role.setRoleType(RoleType.TRUSTEESHIPROLE.getStatus());
+        } else {//部门角色
+            EmptyUtils.assertOptional(departmentRepository.findById(role.getDepartment().getId()),"没有查询到所属部门");
+            role.setRoleType(RoleType.DEPARTMENTROLE.getStatus());
         }
 
     }
@@ -161,7 +151,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             throw new BusinessException("删除失败:没有查询到需要删除的对象");
         }
         //删除角色判断当前登录用户是否拥有被删除的角色的权限
-        if(!LoginUserUtils.hasRoleId(roleId)){
+        if (!LoginUserUtils.hasRoleId(roleId)) {
             throw new UnauthorizedException("保存失败:没有权限删除该角色");
         }
 

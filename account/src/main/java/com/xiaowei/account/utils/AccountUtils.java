@@ -1,14 +1,8 @@
 package com.xiaowei.account.utils;
 
 import com.xiaowei.account.consts.SuperUser;
-import com.xiaowei.account.entity.Company;
-import com.xiaowei.account.entity.SysPermission;
-import com.xiaowei.account.entity.SysRole;
-import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.account.service.ICompanyService;
-import com.xiaowei.account.service.ISysPermissionService;
-import com.xiaowei.account.service.ISysRoleService;
-import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.account.entity.*;
+import com.xiaowei.account.service.*;
 import com.xiaowei.accountcommon.*;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
@@ -41,6 +35,7 @@ public class AccountUtils {
         List<RoleBean> roles = new ArrayList<>();
         List<PermissionBean> permissions = new ArrayList<>();
         List<CompanyBean> companyBeans = new ArrayList<>();
+        List<DepartmentBean> departmentBeans = new ArrayList<>();
         //构建登录用户信息
         if(SuperUser.ADMINISTRATOR_NAME.equals(sysUser.getLoginName())){
             //如果是超级管理员则拥有所有的权限和角色
@@ -50,12 +45,15 @@ public class AccountUtils {
             permissions.addAll(BeanCopyUtils.copyList(sysPermissions, PermissionBean.class));
             List<Company> companies = ContextUtils.getApplicationContext().getBean(ICompanyService.class).findAll();
             companyBeans.addAll(BeanCopyUtils.copyList(companies, CompanyBean.class));
+            List<Department> departments = ContextUtils.getApplicationContext().getBean(IDepartmentService.class).findAll();
+            departmentBeans.addAll(BeanCopyUtils.copyList(departments, DepartmentBean.class));
         }else{
             sysUser.getRoles().forEach(sysRole -> {
                 roles.add(BeanCopyUtils.copy(sysRole, RoleBean.class));
                 permissions.addAll(BeanCopyUtils.copyList(sysRole.getPermissions(), PermissionBean.class));
             });
             companyBeans.addAll(BeanCopyUtils.copyList(sysUser.getCompanies(),CompanyBean.class));
+            departmentBeans.addAll(BeanCopyUtils.copyList(sysUser.getDepartments(),DepartmentBean.class));
         }
 
         LoginUserBean loginUserBean = new LoginUserBean(
@@ -67,7 +65,8 @@ public class AccountUtils {
                 sysUser.getNickName(),
                 roles,
                 permissions,
-                companyBeans
+                companyBeans,
+                departmentBeans
         );
         return loginUserBean;
     }

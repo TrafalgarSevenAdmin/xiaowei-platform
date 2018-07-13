@@ -1,13 +1,12 @@
 package com.xiaowei.accountweb.dto;
 
-import com.xiaowei.account.entity.Company;
+import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -26,16 +25,15 @@ public class SysRoleDTO {
     @ApiModelProperty(value = "角色的权限")
     private List<SysPermission> permissions;
 
-    @ApiModelProperty(value = "所属公司")
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "所属公司必填!")
-    private Company company;
+    @ApiModelProperty(value = "所属部门")
+    private Department department;
 
-    public Company getCompany() {
-        return company;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public List<SysPermission> getPermissions() {

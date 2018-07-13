@@ -78,4 +78,15 @@ public class SysUser extends BaseEntity {
     @JsonIgnore
     private List<Company> companies;
 
+    /**
+     * 用户与部门的多对多
+     */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="sys_user_company",
+            joinColumns={@JoinColumn(name="USER_ID")},
+            inverseJoinColumns={@JoinColumn(name="DEPARTMENT_ID")})
+    @JsonIgnore
+    private List<Department> departments;
+
 }

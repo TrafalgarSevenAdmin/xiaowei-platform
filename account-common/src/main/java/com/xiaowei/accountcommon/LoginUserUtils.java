@@ -60,6 +60,19 @@ public class LoginUserUtils {
     }
 
     /**
+     * 判断是否有该部门
+     * @param departmentId
+     * @return
+     * @throws UnauthenticatedException
+     */
+    public static boolean hasDepartmentId(String departmentId) throws UnauthenticatedException{
+        return getLoginUser().getDepartmentBeans().stream()
+                .filter(departmentBean -> departmentBean.getId().equals(departmentId))
+                .findAny()
+                .isPresent();
+    }
+
+    /**
      * 当前用户是否有此权限Id
      * @return
      * @throws UnauthenticatedException

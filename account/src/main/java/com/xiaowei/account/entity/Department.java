@@ -10,58 +10,48 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * 系统公司表
+ * 系统部门表
  */
 @Data
-@Table(name = "sys_company")
+@Table(name = "SYS_DEPARTMENT")
 @Entity
-public class Company extends BaseEntity {
-    /**
-     * 公司名称
-     */
-    private String companyName;
-
+public class Department extends BaseEntity {
     /**
      * 编号
      */
     @Column(updatable = false)
     private String code;
-
     /**
-     * 地址
+     * 部门名称
      */
-    private String address;
-
+    private String departmentName;
     /**
      * 状态:0表示正常,1表示停用,99代表删除
      */
     private Integer status;
-
     /**
-     * 公司下的员工
-     */
-    @Fetch(FetchMode.SUBSELECT)
-    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "companies")
-    @JsonIgnore
-    private List<SysUser> users;
-
-    /**
-     * 公司logo
+     * 部门logo
      */
     private String logo;
-
-    /**
-     * 负责人
-     */
-    @ManyToOne(targetEntity = SysUser.class)
-    @JoinColumn(name = "principal_id")
-    @Fetch(FetchMode.JOIN)
-    private SysUser principal;
-
     /**
      * 简介
      */
     private String intro;
+    /**
+     * 所属公司
+     */
+    @ManyToOne(targetEntity = Company.class)
+    @JoinColumn(name = "company_id")
+    @Fetch(FetchMode.JOIN)
+    private Company company;
+
+    /**
+     * 部门下的员工
+     */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "departments")
+    @JsonIgnore
+    private List<SysUser> users;
 
     @Transient
     private String logoPath;

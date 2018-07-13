@@ -1,8 +1,11 @@
 package com.xiaowei.accountcommon;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
 
+@Data
 public class LoginUserBean implements Serializable {
 
     private static final long serialVersionUID = -4112542381818773302L;
@@ -37,10 +40,13 @@ public class LoginUserBean implements Serializable {
 
     private List<CompanyBean> companyBeans;
 
+    private List<DepartmentBean> departmentBeans;
+
     public LoginUserBean() {
     }
 
-    public LoginUserBean(String id,String loginName, String mobile, String email, Integer status, String nickName,List<RoleBean> roles, List<PermissionBean> permissions,List<CompanyBean> companyBeans) {
+    public LoginUserBean(String id,String loginName, String mobile, String email, Integer status, String nickName,List<RoleBean> roles, List<PermissionBean> permissions,List<CompanyBean> companyBeans,
+                         List<DepartmentBean> departmentBeans) {
         this.id = id;
         this.loginName = loginName;
         this.mobile = mobile;
@@ -50,78 +56,6 @@ public class LoginUserBean implements Serializable {
         this.roles = roles;
         this.permissions = permissions;
         this.companyBeans = companyBeans;
-    }
-
-
-    public String getLoginName() {
-        return loginName;
-    }
-
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public List<RoleBean> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleBean> roles) {
-        this.roles = roles;
-    }
-
-    public List<PermissionBean> getPermissions() {
-        return permissions;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<CompanyBean> getCompanyBeans() {
-        return companyBeans;
-    }
-
-    public void setCompanyBeans(List<CompanyBean> companyBeans) {
-        this.companyBeans = companyBeans;
-    }
-
-    public void setPermissions(List<PermissionBean> permissions) {
-        this.permissions = permissions;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+        this.departmentBeans = departmentBeans;
     }
 }

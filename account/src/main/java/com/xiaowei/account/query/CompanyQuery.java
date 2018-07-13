@@ -1,6 +1,6 @@
 package com.xiaowei.account.query;
 
-import com.xiaowei.account.consts.UserStatus;
+import com.xiaowei.account.consts.CompanyStatus;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +16,7 @@ public class CompanyQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addFilter(new Filter("status", Filter.Operator.neq, UserStatus.DELETE.getStatus()));
+        addFilter(new Filter("status", Filter.Operator.neq, CompanyStatus.DELETE.getStatus()));
         //根据用户id查询公司
         if (StringUtils.isNotEmpty(userId)) {
             addFilter(new Filter("users.id", Filter.Operator.eq, userId));
