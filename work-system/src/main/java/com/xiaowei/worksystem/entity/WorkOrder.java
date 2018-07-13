@@ -51,10 +51,6 @@ public class WorkOrder extends BaseEntity {
      */
     private Integer userStatus;
     /**
-     * 针对工程师状态
-     */
-    private Integer engineerStatus;
-    /**
      * 创建方式
      */
     private Integer createdType;
@@ -158,14 +154,6 @@ public class WorkOrder extends BaseEntity {
 
     public void setUserStatus(Integer userStatus) {
         this.userStatus = userStatus;
-    }
-
-    public Integer getEngineerStatus() {
-        return engineerStatus;
-    }
-
-    public void setEngineerStatus(Integer engineerStatus) {
-        this.engineerStatus = engineerStatus;
     }
 
     public String getCode() {

@@ -17,7 +17,6 @@ import com.xiaowei.worksystem.repository.ServiceItemRepository;
 import com.xiaowei.worksystem.repository.WorkOrderRepository;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import com.xiaowei.worksystem.status.ServiceItemStatus;
-import com.xiaowei.worksystem.status.WorkOrderEngineerStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
@@ -84,13 +83,11 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void setSaveWorkOrderStatus(WorkOrder workOrder) {
         //如果没有指定工程师,则为待指派状态,否则为待接单状态
         if (workOrder.getEngineer() == null) {
-            workOrder.setSystemStatus(WorkOrderSystemStatus.ASSIGNED.getStatus());//后台状态为待指派
-            workOrder.setEngineerStatus(null);//工程师状态为空
-            workOrder.setUserStatus(WorkOrderUserStatus.ASSIGNED.getStatus());//用户状态为待指派
+            workOrder.setSystemStatus(WorkOrderSystemStatus.DISTRIBUTE.getStatus());//后台状态为待指派
+            workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());//用户状态为正常
         } else {
-            workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//后台状态为处理中
-            workOrder.setEngineerStatus(WorkOrderEngineerStatus.RECEIVED.getStatus());//工程师状态为待接单
-            workOrder.setUserStatus(WorkOrderUserStatus.RECEIVED.getStatus());//用户状态为待接单
+            workOrder.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//后台状态为待接单
+            workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());//用户状态为待接单
         }
     }
 
@@ -130,8 +127,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要删除的对象");
         WorkOrder workOrder = one.get();
-        workOrder.setUserStatus(WorkOrderUserStatus.COMPLETED.getStatus());
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.COMPLETED.getStatus());
+        workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());
         workOrder.setSystemStatus(WorkOrderSystemStatus.DELETE.getStatus());
         workOrderRepository.save(workOrder);
     }
@@ -148,12 +144,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        //如果已经完成,则不允许修改
-        if (workOrder.getUserStatus().equals(WorkOrderUserStatus.COMPLETED.getStatus())) {
-            throw new BusinessException("该工单已经完成!");
-        }
+
         //待确认
-        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.CONFIRMED.getStatus())) {
+        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.AFFIRM.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         onConfirmed(workOrder, serviceItemIds);
@@ -173,10 +166,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        //如果已经完成,则不允许修改
-        if (workOrder.getUserStatus().equals(WorkOrderUserStatus.COMPLETED.getStatus())) {
-            throw new BusinessException("该工单已经完成!");
-        }
         //待付款
         if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.PAIED.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -201,15 +190,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //待接单
-        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.RECEIVED.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         EngineerWork engineerWork = new EngineerWork();//新建工程师处理工单附表
         engineerWork.setReceivedTime(new Date());
         engineerWorkRepository.save(engineerWork);
         workOrder.setEngineerWork(engineerWork);
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.APPOINTING.getStatus());//工程师状态变更为预约中
-        workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());//用户状态变更为处理中
+        workOrder.setSystemStatus(WorkOrderSystemStatus.APPOINTING.getStatus());//工程师状态变更为预约中
         return workOrderRepository.save(workOrder);
     }
 
@@ -225,15 +213,15 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        //待接单
-        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.APPOINTING.getStatus())) {
+        //预约中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.APPOINTING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setAppointTime(new Date());//预约时间
         engineerWorkRepository.save(engineerWork);
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.DEPARTED.getStatus());//工程师状态变更为预约中
+        workOrder.setSystemStatus(WorkOrderSystemStatus.DEPART.getStatus());//工程师状态变更为待出发
         return workOrderRepository.save(workOrder);
     }
 
@@ -250,8 +238,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        //待接单
-        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.DEPARTED.getStatus())) {
+        //预约中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.APPOINTING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
@@ -259,7 +247,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         engineerWork.setDeparteTime(new Date());//出发时间
         engineerWork.setStartShape(shape);//出发地
         engineerWorkRepository.save(engineerWork);
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.TRIPING.getStatus());//工程师状态变更为行程中
+        workOrder.setSystemStatus(WorkOrderSystemStatus.TRIPING.getStatus());//工程师状态变更为行程中
         return workOrderRepository.save(workOrder);
     }
 
@@ -277,7 +265,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //行程中
-        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.TRIPING.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.TRIPING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
@@ -286,7 +274,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         engineerWork.setArriveShape(shape);//目的地
         setFirstServiceItem(workOrderId);
         engineerWorkRepository.save(engineerWork);
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.INHAND.getStatus());//工程师状态变更为处理中
+        workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//工程师状态变更为处理中
         return workOrderRepository.save(workOrder);
     }
 
@@ -311,6 +299,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 设置第一个服务项目的开始处理时间
+     *
      * @param workOrderId
      */
     private void setFirstServiceItem(String workOrderId) {
@@ -336,18 +325,17 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      */
     @Override
     @Transactional
-    public WorkOrder completeInhand(String workOrderId) {
+    public WorkOrder finishInhand(String workOrderId) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //处理中
-        if (!workOrder.getEngineerStatus().equals(WorkOrderEngineerStatus.INHAND.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.INHAND.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         //检查服务项目是否已经全部完成
         judgeServiceItemIsDone(workOrder);
-        workOrder.setEngineerStatus(WorkOrderEngineerStatus.COMPLETEINHAND.getStatus());//工程师状态为处理完成
-        workOrder.setSystemStatus(WorkOrderSystemStatus.COMPLETEINHAND.getStatus());//后台状态为处理完成
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
         workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());//用户状态为待付费
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
@@ -383,7 +371,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onPaied(WorkOrder workOrder) {
-        workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());
+        workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
             return;
@@ -396,7 +384,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onConfirmed(WorkOrder workOrder, List<String> serviceItemIds) {
-        workOrder.setUserStatus(WorkOrderUserStatus.INHAND.getStatus());//用户状态变更为处理中
+        workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());//用户状态变更为正常
         //待确认的新增项目
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.CONFIRMED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {

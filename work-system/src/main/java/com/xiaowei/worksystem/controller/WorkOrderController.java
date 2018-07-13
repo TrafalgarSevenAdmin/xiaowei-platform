@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 设备管理
+ * 工单管理
  */
 @Api(tags = "工单接口")
 @RestController
@@ -99,9 +99,9 @@ public class WorkOrderController {
 
     @ApiOperation(value = "工程师处理完成")
     @AutoErrorHandler
-    @PutMapping("/completeInhand/{workOrderId}")
-    public Result completeInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.completeInhand(workOrderId);
+    @PutMapping("/finishInhand/{workOrderId}")
+    public Result finishInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.finishInhand(workOrderId);
         return Result.getSuccess();
     }
 

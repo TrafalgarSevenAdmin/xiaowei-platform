@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 维修项目管理
@@ -39,8 +38,7 @@ public class ServiceItemController {
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         List<ServiceItem> serviceItems = FastJsonUtils.objectToList(serviceItemDTOs, ServiceItem.class);
         serviceItems = serviceItemService.saveByEngineer(workOrderId,serviceItems);
-        List<Map<String, Object>> maps = ObjectToMapUtils.listToMap(serviceItems, fieldsView);
-        return Result.getSuccess(maps);
+        return Result.getSuccess(ObjectToMapUtils.listToMap(serviceItems, fieldsView));
     }
 
     @ApiOperation(value = "工程师执行服务项目")

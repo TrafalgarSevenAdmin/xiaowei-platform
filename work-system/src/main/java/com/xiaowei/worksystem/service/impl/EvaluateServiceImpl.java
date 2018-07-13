@@ -39,7 +39,7 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         }
         evaluate.setCreatedTime(new Date());
         workOrder.setEvaluate(evaluateRepository.save(evaluate));
-        workOrder.setUserStatus(WorkOrderUserStatus.COMPLETED.getStatus());//修改为完成状态
+        workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());//修改为正常
         workOrderRepository.save(workOrder);
         return evaluate;
     }

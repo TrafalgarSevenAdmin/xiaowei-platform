@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.xiaowei.commonjts.bean.Gps;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,6 +220,9 @@ public class GeometryUtil {
      */
     public static Geometry transWKT(String wkt) throws ParseException {
         Geometry geometry = null;
+        if(StringUtils.isEmpty(wkt)){
+            return geometry;
+        }
         if (wkt != null && !"".equals(wkt)) {
             WKTReader wktReader = new WKTReader();
             geometry = wktReader.read(wkt);

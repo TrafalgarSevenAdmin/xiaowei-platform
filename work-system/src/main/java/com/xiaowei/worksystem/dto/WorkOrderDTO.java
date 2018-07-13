@@ -57,11 +57,6 @@ public class WorkOrderDTO {
     @ApiModelProperty(value = "针对用户状态")
     private Integer userStatus;
     /**
-     * 针对工程师状态
-     */
-    @ApiModelProperty(value = "针对工程师状态")
-    private Integer engineerStatus;
-    /**
      * 创建方式
      */
     @ApiModelProperty(value = "创建方式,0代表用户创建,1代表后台工作人员创建,2代表自动创建")
@@ -145,14 +140,6 @@ public class WorkOrderDTO {
 
     public void setUserStatus(Integer userStatus) {
         this.userStatus = userStatus;
-    }
-
-    public Integer getEngineerStatus() {
-        return engineerStatus;
-    }
-
-    public void setEngineerStatus(Integer engineerStatus) {
-        this.engineerStatus = engineerStatus;
     }
 
     public Integer getCreatedType() {

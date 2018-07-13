@@ -66,7 +66,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             serviceItem.setCreatedTime(new Date());
             serviceItemRepository.save(serviceItem);
         }
-        workOrder.setUserStatus(WorkOrderUserStatus.CONFIRMED.getStatus());//工单用户状态设置为待确认
+        workOrder.setUserStatus(WorkOrderUserStatus.AFFIRM.getStatus());//工单用户状态设置为待确认
         workOrderRepository.save(workOrder);
         return serviceItems;
     }
@@ -144,7 +144,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         if (serviceItem.getAudit()) {//需要审核
             serviceItem.setStatus(ServiceItemStatus.AUDITED.getStatus());//待审核状态
             WorkOrder workOrder = serviceItem.getWorkOrder();
-            workOrder.setSystemStatus(WorkOrderSystemStatus.APPROVED.getStatus());
+            workOrder.setSystemStatus(WorkOrderSystemStatus.QUALITY.getStatus());//工单状态设置为质检中
             workOrderRepository.save(workOrder);
             return true;
         } else {//不需要审核

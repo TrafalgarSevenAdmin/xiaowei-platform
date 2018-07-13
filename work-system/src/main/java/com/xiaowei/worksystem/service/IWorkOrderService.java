@@ -28,6 +28,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder inhandWorkOrder(String workOrderId, Geometry shape);
 
-    WorkOrder completeInhand(String workOrderId);
+    WorkOrder finishInhand(String workOrderId);
 
 }

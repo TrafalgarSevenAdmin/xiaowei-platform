@@ -2,39 +2,21 @@ package com.xiaowei.worksystem.status;
 
 public enum WorkOrderUserStatus {
     /**
-     * 待指派
+     * 正常
      */
-    ASSIGNED(0),
-
-    /**
-     * 待接单
-     */
-    RECEIVED(1),
-
+    NORMAO(0),
     /**
      * 待确认
      */
-    CONFIRMED(2),
-
+    AFFIRM(1),
     /**
      * 待付款
      */
-    PAIED(3),
-
+    PAIED(2),
     /**
      * 待评价
      */
-    EVALUATED(4),
-
-    /**
-     * 处理中
-     */
-    INHAND(5),
-
-    /**
-     * 完成
-     */
-    COMPLETED(6);
+    EVALUATED(3);
 
     private Integer status;
 
