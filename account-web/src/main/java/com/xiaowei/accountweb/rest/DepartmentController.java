@@ -125,7 +125,6 @@ public class DepartmentController {
     public Result query(DepartmentQuery departmentQuery, FieldsView fieldsView) {
         //查询公司设置默认条件
         setDefaultCondition(departmentQuery);
-
         if (departmentQuery.isNoPage()) {
             List<Department> departments = departmentService.query(departmentQuery, Department.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(setListLogoPath(departments), fieldsView));//以list形式返回,没有层级
