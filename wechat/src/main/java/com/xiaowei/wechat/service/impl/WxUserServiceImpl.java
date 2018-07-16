@@ -38,6 +38,12 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         return wxUserRepository.findBySysUser_Mobile(mobile);
     }
 
+
+    @Override
+    public Optional<WxUser> findByUserId(String userId) {
+        return wxUserRepository.findBySysUser_Id(userId);
+    }
+
     @Override
     public WxUser saveOrUpdate(WxUser user) {
         //部分字段取自数据库,防止被更新

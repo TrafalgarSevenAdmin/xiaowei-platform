@@ -5,7 +5,6 @@ server:
     index: /catalog
     # 前端绑定地址
     bind: /user/bindPhone
-  host: http://3c36cccb.ngrok.io
   port: 9004
   servlet:
     context-path: /wechat
@@ -32,6 +31,13 @@ spring:
   redis:
     host: @redis.url@
     port: 6379
+  rabbitmq:
+    host: @rabbitmq.host@
+    port: @rabbitmq.port@
+    username: @rabbitmq.username@
+    password: @rabbitmq.password@
+    publisher-confirms: true
+    virtual-host: /
 logging:
   level:
     com:
