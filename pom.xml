@@ -46,7 +46,6 @@
         <module>common-upload</module>
         <module>work-system</module>
         <module>common-dict</module>
-        <module>mq-core</module>
         <module>wechat</module>
     </modules>
 
@@ -70,10 +69,6 @@
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>admin</datasource.password>
                 <redis.url>127.0.0.1</redis.url>
-                <rabbitmq.host>192.168.1.218</rabbitmq.host>
-                <rabbitmq.port>5672</rabbitmq.port>
-                <rabbitmq.username>xw</rabbitmq.username>
-                <rabbitmq.password>xw123456789</rabbitmq.password>
             </properties>
         </profile>
         <profile>
@@ -83,10 +78,6 @@
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>192.168.1.218</redis.url>
-                <rabbitmq.host>192.168.1.218</rabbitmq.host>
-                <rabbitmq.port>5672</rabbitmq.port>
-                <rabbitmq.username>xw</rabbitmq.username>
-                <rabbitmq.password>xw123456789</rabbitmq.password>
             </properties>
         </profile>
     </profiles>

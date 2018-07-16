@@ -206,12 +206,7 @@ public class WechatAuthController {
      * @throws IOException
      */
     @GetMapping(path = "/login")
-    public void login(String callback,HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (StringUtils.isEmpty(serverInfoProperties.getHost())) {
-            String url = request.getRequestURL().toString();
-            String host = url.substring(0, url.indexOf(request.getRequestURI()));
-            serverInfoProperties.setHost(host);
-        }
+    public void login(String callback, HttpServletResponse response) throws IOException {
         String uid = null;
         if (StringUtils.isNotEmpty(callback)) {
             //保存到redis中。用于回调的跳转

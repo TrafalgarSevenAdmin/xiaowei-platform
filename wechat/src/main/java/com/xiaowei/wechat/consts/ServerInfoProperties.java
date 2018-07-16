@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerInfoProperties {
 
-    @Value("${server.host:}")
+    @Value("${server.host}")
     private String host;
 
     @Value("${server.pre.index}")

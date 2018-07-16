@@ -19,13 +19,6 @@ public interface IWxUserService extends IBaseService<WxUser> {
     Optional<WxUser> findByMobile(String mobile);
 
     /**
-     * 通过用户id查找绑定的微信的用户信息
-     * @param userId
-     * @return
-     */
-    Optional<WxUser> findByUserId(String userId);
-
-    /**
      * 保存或更新微信发过来的用户信息
      * @param user
      */

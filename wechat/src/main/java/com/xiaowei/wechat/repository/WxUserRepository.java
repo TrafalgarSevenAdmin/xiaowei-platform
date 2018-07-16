@@ -20,6 +20,4 @@ public interface WxUserRepository extends BaseRepository<WxUser> {
     @Modifying
     @Query("update WxUser set subscribe = false,unsubscribeTime=:unsubscribeTime where openId =:openid")
     void unsubscribe(@Param("openid") String openid, @Param("unsubscribeTime") Date unsubscribeTime);
-
-    Optional<WxUser> findBySysUser_Id(String userId);
 }
