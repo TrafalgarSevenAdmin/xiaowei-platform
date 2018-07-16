@@ -31,11 +31,6 @@ public class WorkFlowItem extends BaseEntity{
      */
     private String standard;
     /**
-     * 状态
-     */
-    private Integer status;
-
-    /**
      * 收费
      */
     private Double toll;

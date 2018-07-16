@@ -40,9 +40,12 @@ public class WorkOrderController {
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
     @PostMapping("")
-    public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderDTO workOrderDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+    public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderDTO workOrderDTO,
+                         BindingResult bindingResult,
+                         String workFlowId,
+                         FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
-        workOrder = workOrderService.saveWorkOrder(workOrder);
+        workOrder = workOrderService.saveWorkOrder(workOrder,workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
@@ -58,10 +61,14 @@ public class WorkOrderController {
     @ApiOperation(value = "修改工单")
     @AutoErrorHandler
     @PutMapping("/{workOrderId}")
-    public Result update(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Update.class) WorkOrderDTO workOrderDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+    public Result update(@PathVariable("workOrderId") String workOrderId,
+                         @RequestBody @Validated(V.Update.class) WorkOrderDTO workOrderDTO,
+                         BindingResult bindingResult,
+                         String workFlowId,
+                         FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrder = workOrderService.updateWorkOrder(workOrder);
+        workOrder = workOrderService.updateWorkOrder(workOrder,workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
@@ -76,10 +83,13 @@ public class WorkOrderController {
     @ApiOperation(value = "派单")
     @AutoErrorHandler
     @PutMapping("/distribute/{workOrderId}")
-    public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO, FieldsView fieldsView) throws Exception {
+    public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,
+                                      @RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO,
+                                      BindingResult bindingResult,
+                                      String workFlowId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrderService.distributeWorkOrder(workOrder);
+        workOrderService.distributeWorkOrder(workOrder,workFlowId);
         return Result.getSuccess();
     }
 

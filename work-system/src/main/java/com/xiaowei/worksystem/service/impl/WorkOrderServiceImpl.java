@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.service.impl;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
+import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
@@ -15,7 +16,9 @@ import com.xiaowei.worksystem.repository.EngineerWorkRepository;
 import com.xiaowei.worksystem.repository.EquipmentRepository;
 import com.xiaowei.worksystem.repository.ServiceItemRepository;
 import com.xiaowei.worksystem.repository.WorkOrderRepository;
+import com.xiaowei.worksystem.repository.flow.WorkFlowItemRepository;
 import com.xiaowei.worksystem.service.IWorkOrderService;
+import com.xiaowei.worksystem.status.ServiceItemSource;
 import com.xiaowei.worksystem.status.ServiceItemStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
@@ -23,6 +26,7 @@ import com.xiaowei.worksystem.utils.ServiceItemUtils;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -45,6 +49,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private ServiceItemRepository serviceItemRepository;
     @Autowired
     private EngineerWorkRepository engineerWorkRepository;
+    @Autowired
+    private WorkFlowItemRepository workFlowItemRepository;
 
     public WorkOrderServiceImpl(@Qualifier("workOrderRepository") BaseRepository repository) {
         super(repository);
@@ -53,10 +59,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     @Override
     @Transactional
-    public WorkOrder saveWorkOrder(WorkOrder workOrder) {
+    public WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId) {
         //判定参数是否合规
         judgeAttribute(workOrder, JudgeType.INSERT);
         workOrderRepository.save(workOrder);
+        if (StringUtils.isNotEmpty(workFlowId)) {
+            //设置服务项目
+            setServiceItems(workOrder, workFlowId);
+        }
         return workOrder;
     }
 
@@ -108,10 +118,16 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     @Override
     @Transactional
-    public WorkOrder updateWorkOrder(WorkOrder workOrder) {
+    public WorkOrder updateWorkOrder(WorkOrder workOrder, String workFlowId) {
         //判定参数是否合规
         judgeAttribute(workOrder, JudgeType.UPDATE);
         workOrderRepository.save(workOrder);
+        if (StringUtils.isNotEmpty(workFlowId)) {
+            //先删除服务项目
+            serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
+            //再重新保存服务项目
+            setServiceItems(workOrder, workFlowId);
+        }
         return workOrder;
     }
 
@@ -348,11 +364,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 派单
      *
      * @param workOrder
+     * @param workFlowId
      * @return
      */
     @Override
     @Transactional
-    public WorkOrder distributeWorkOrder(WorkOrder workOrder) {
+    public WorkOrder distributeWorkOrder(WorkOrder workOrder, String workFlowId) {
         //验证派单工单的属性
         judgeDistributeWorkOrder(workOrder);
 
@@ -366,7 +383,34 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         one.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//变更状态为待接单
         one.setEngineer(workOrder.getEngineer());
         one.setBackgrounder(workOrder.getBackgrounder());
-        return workOrderRepository.save(one);
+        workOrderRepository.save(one);
+        if (StringUtils.isNotEmpty(workFlowId)) {
+            //设置服务项目
+            setServiceItems(workOrder, workFlowId);
+        }
+
+        return workOrder;
+    }
+
+    /**
+     * 设置服务项目
+     *
+     * @param workOrder
+     * @param workFlowId
+     */
+    private void setServiceItems(WorkOrder workOrder, String workFlowId) {
+        val workFlowItems = workFlowItemRepository.findByWorkFlowId(workFlowId);
+        if (CollectionUtils.isEmpty(workFlowItems)) {
+            return;
+        }
+        List<ServiceItem> serviceItems = BeanCopyUtils.copyList(workFlowItems, ServiceItem.class);
+        serviceItems.stream().forEach(serviceItem -> {
+            serviceItem.setWorkOrder(workOrder);
+            serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());//状态正常
+            serviceItem.setSource(ServiceItemSource.BACKGROUNDER.getStatus());//后台创建来源
+            serviceItem.setCreatedTime(new Date());//创建时间
+            serviceItemRepository.save(serviceItem);
+        });
     }
 
     /**
@@ -398,7 +442,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             }
             if (!paid) {
                 //检查用户状态是否该设置为待付费
-                if (serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus()) && serviceItem.getCharge()) {
+                if (serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus()) && serviceItem.getIsCharge()) {
                     workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());
                     paid = true;
                 }

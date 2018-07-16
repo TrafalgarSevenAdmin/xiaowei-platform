@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
-    WorkOrder saveWorkOrder(WorkOrder workOrder);
+    WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId);
 
-    WorkOrder updateWorkOrder(WorkOrder workOrder);
+    WorkOrder updateWorkOrder(WorkOrder workOrder, String workFlowId);
 
     void fakeDelete(String workOrderId);
 
-    WorkOrder confirmed(String workOrderId,List<String> serviceItemIds);
+    WorkOrder confirmed(String workOrderId, List<String> serviceItemIds);
 
     WorkOrder payServiceItem(String workOrderId);
 
@@ -30,5 +30,5 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder finishInhand(String workOrderId);
 
-    WorkOrder distributeWorkOrder(WorkOrder workOrder);
+    WorkOrder distributeWorkOrder(WorkOrder workOrder, String workFlowId);
 }
