@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -14,13 +15,14 @@ import java.util.Date;
 /**
  * 维修项目实体
  */
+@Data
 @Entity
 @Table(name = "W_SERVICEITEM")
 public class ServiceItem extends BaseEntity{
     /**
      * 是否收费
      */
-    private Boolean isCharge;
+    private Boolean charge;
     /**
      * 维修顺序
      */
@@ -77,107 +79,10 @@ public class ServiceItem extends BaseEntity{
      */
     private Time predictTime;
 
-    public String getStandard() {
-        return standard;
-    }
+    /**
+     * 版本号
+     */
+    private String version;
 
-    public void setStandard(String standard) {
-        this.standard = standard;
-    }
 
-    public Time getPredictTime() {
-        return predictTime;
-    }
-
-    public void setPredictTime(Time predictTime) {
-        this.predictTime = predictTime;
-    }
-
-    public Date getBeginTime() {
-        return beginTime;
-    }
-
-    public void setBeginTime(Date beginTime) {
-        this.beginTime = beginTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public Boolean getAudit() {
-        return audit;
-    }
-
-    public void setAudit(Boolean audit) {
-        this.audit = audit;
-    }
-
-    public Boolean getCharge() {
-        return isCharge;
-    }
-
-    public void setCharge(Boolean charge) {
-        isCharge = charge;
-    }
-
-    public Integer getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public Integer getSource() {
-        return source;
-    }
-
-    public void setSource(Integer source) {
-        this.source = source;
-    }
-
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
-    }
-
-    public String getServiceIntro() {
-        return serviceIntro;
-    }
-
-    public void setServiceIntro(String serviceIntro) {
-        this.serviceIntro = serviceIntro;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public WorkOrder getWorkOrder() {
-        return workOrder;
-    }
-
-    public void setWorkOrder(WorkOrder workOrder) {
-        this.workOrder = workOrder;
-    }
-
-    public Double getToll() {
-        return toll;
-    }
-
-    public void setToll(Double toll) {
-        this.toll = toll;
-    }
 }

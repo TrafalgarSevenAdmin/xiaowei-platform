@@ -442,7 +442,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             }
             if (!paid) {
                 //检查用户状态是否该设置为待付费
-                if (serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus()) && serviceItem.getIsCharge()) {
+                if (serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus()) && serviceItem.getCharge()) {
                     workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());
                     paid = true;
                 }
