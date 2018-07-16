@@ -29,6 +29,13 @@ spring:
   redis:
     host: @redis.url@
     port: 6379
+  rabbitmq:
+    host: @rabbitmq.host@
+    port: @rabbitmq.port@
+    username: @rabbitmq.username@
+    password: @rabbitmq.password@
+    publisher-confirms: true
+    virtual-host: /
   servlet:
     multipart:
       max-file-size: 1024MB

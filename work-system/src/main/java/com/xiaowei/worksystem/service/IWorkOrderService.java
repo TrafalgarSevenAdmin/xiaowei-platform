@@ -31,4 +31,10 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder finishInhand(String workOrderId);
 
     WorkOrder distributeWorkOrder(WorkOrder workOrder, String workFlowId);
+
+    /**
+     * 将工单变成待归档状态
+     * @param workOrderId
+     */
+    void workOrderToPrepigeonhole(String workOrderId);
 }

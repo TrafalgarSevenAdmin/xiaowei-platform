@@ -1,5 +1,6 @@
 package com.xiaowei.mq.bean;
 
+import com.xiaowei.mq.constant.TaskType;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,6 +10,24 @@ import java.util.Date;
  */
 @Data
 public class TaskMessage implements MessageBean {
-    public String taskName;
-    public Date startTime = new Date();
+
+    /**
+     * 工单id
+     */
+    private String workOrderId;
+
+    /**
+     * 此消息的创建时间
+     */
+    private Date startTime = new Date();
+
+    /**
+     * 任务类型
+     */
+    private TaskType taskType;
+
+
+    public TaskMessage(String workOrderId) {
+        this.workOrderId = workOrderId;
+    }
 }

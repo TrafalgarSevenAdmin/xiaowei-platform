@@ -8,6 +8,8 @@ import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
+import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.entity.ServiceItem;
@@ -51,6 +53,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private EngineerWorkRepository engineerWorkRepository;
     @Autowired
     private WorkFlowItemRepository workFlowItemRepository;
+
+    /**
+     * 消息发送服务
+     */
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     public WorkOrderServiceImpl(@Qualifier("workOrderRepository") BaseRepository repository) {
         super(repository);
@@ -357,7 +365,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setEndInhandTime(new Date());//处理完成时间
         engineerWorkRepository.save(engineerWork);
-        return workOrderRepository.save(workOrder);
+        WorkOrder save = workOrderRepository.save(workOrder);
+        //设置为24小时后自动完成此工单
+        messagePushSender.sendDelayTask(new TaskMessage(workOrderId),1000*60*60*24);
+        return save;
     }
 
     /**
@@ -390,6 +401,23 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
 
         return workOrder;
+    }
+
+    /**
+     * 将工单变成待归档状态
+     * @param workOrderId
+     */
+    public void workOrderToPrepigeonhole(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的工单");
+        WorkOrder workOrder = one.get();
+        //处理中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+            throw new BusinessException("工单状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());
+
+
     }
 
     /**
