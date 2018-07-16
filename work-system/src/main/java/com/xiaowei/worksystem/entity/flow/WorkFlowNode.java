@@ -14,7 +14,7 @@ public class WorkFlowNode extends BaseEntity {
     /**
      * 是否收费
      */
-    private Boolean isCharge;
+    private Boolean charge;
     /**
      * 维修类型
      */

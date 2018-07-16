@@ -15,7 +15,7 @@ public class WorkFlowNodeDTO {
      */
     @ApiModelProperty(value = "是否收费")
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "是否收费必填!")
-    private Boolean isCharge;
+    private Boolean charge;
     /**
      * 维修类型
      */
