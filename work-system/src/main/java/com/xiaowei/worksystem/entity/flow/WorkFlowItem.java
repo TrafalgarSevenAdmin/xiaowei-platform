@@ -7,10 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.sql.Time;
 
+/**
+ * 模板流程明细
+ */
 @Data
 @Entity
-@Table(name = "W_WORKFLOWNODE")
-public class WorkFlowNode extends BaseEntity {
+@Table(name = "W_WORKFLOWITEM")
+public class WorkFlowItem extends BaseEntity{
     /**
      * 是否收费
      */
@@ -27,6 +30,11 @@ public class WorkFlowNode extends BaseEntity {
      * 工作标准说明
      */
     private String standard;
+    /**
+     * 状态
+     */
+    private Integer status;
+
     /**
      * 收费
      */
@@ -45,4 +53,12 @@ public class WorkFlowNode extends BaseEntity {
      * 版本号
      */
     private String version;
+    /**
+     * 维修顺序
+     */
+    private Integer orderNumber;
+    /**
+     * 所属模板
+     */
+    private String workFlowId;
 }

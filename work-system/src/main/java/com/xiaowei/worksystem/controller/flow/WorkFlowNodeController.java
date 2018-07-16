@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = "流程节点接口")
+@Api(tags = "节点池接口")
 @RestController
 @RequestMapping("/api/flowNode")
 public class WorkFlowNodeController {

@@ -7,4 +7,9 @@ import com.xiaowei.worksystem.entity.flow.WorkFlow;
 
 public interface IWorkFlowService extends IBaseService<WorkFlow> {
 
+    WorkFlow saveWorkFlow(WorkFlow workFlow);
+
+    WorkFlow updateWorkFlow(WorkFlow workFlow);
+
+    void deleteWorkFlow(String workFlowId);
 }

@@ -7,7 +7,6 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Time;
-import java.util.Date;
 
 @Data
 public class WorkFlowNodeDTO {
@@ -26,19 +25,18 @@ public class WorkFlowNodeDTO {
     /**
      * 维修简介
      */
+    @ApiModelProperty(value = "维修简介")
     private String serviceIntro;
     /**
      * 工作标准说明
      */
+    @ApiModelProperty(value = "工作标准说明")
     private String standard;
-    /**
-     * 状态
-     */
-    private Integer status;
 
     /**
      * 收费
      */
+    @ApiModelProperty(value = "收费")
     private Double toll;
 
     /**
@@ -51,13 +49,11 @@ public class WorkFlowNodeDTO {
     /**
      * 预计时长
      */
+    @ApiModelProperty(value = "预计时长")
     private Time predictTime;
     /**
      * 版本号
      */
+    @ApiModelProperty(value = "版本号")
     private String version;
-    /**
-     * 创建时间
-     */
-    private Date createdTime;
 }
