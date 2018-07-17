@@ -62,7 +62,7 @@
     </dependencies>
 
     <build>
-        <finalName>wechat-system</finalName>
+        <finalName>wechat</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
