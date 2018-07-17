@@ -297,8 +297,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setBeginInhandTime(new Date());//开始处理时间
         engineerWork.setArriveShape(shape);//目的地
-        setFirstServiceItem(workOrderId);
+        val firstOrderNumber = setFirstServiceItem(workOrderId);
         engineerWorkRepository.save(engineerWork);
+        workOrder.setCurrentOrderNumber(firstOrderNumber);//当前处理步骤
         workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//工程师状态变更为处理中
         return workOrderRepository.save(workOrder);
     }
@@ -326,20 +327,22 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 设置第一个服务项目的开始处理时间
      *
      * @param workOrderId
+     * @return 返回第一个需要处理的服务项目的排序号,没有则返回0
      */
-    private void setFirstServiceItem(String workOrderId) {
+    private Integer setFirstServiceItem(String workOrderId) {
         ServiceItem serviceItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(workOrderId, 1);
         if (serviceItem == null) {//如果一条服务项目都没有,则返回
-            return;
+            return 0;
         }
         if (serviceItem.getStatus().equals(ServiceItemStatus.INEXECUTION.getStatus())) {//如果是不执行,则查询下一条
             serviceItem = findNextItem(serviceItem);
         }
         if (serviceItem == null) {//如果没有服务项目,则返回
-            return;
+            return 0;
         }
         serviceItem.setBeginTime(new Date());
         serviceItemRepository.save(serviceItem);
+        return serviceItem.getOrderNumber();
     }
 
     /**
@@ -368,7 +371,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         engineerWorkRepository.save(engineerWork);
         WorkOrder save = workOrderRepository.save(workOrder);
         //设置为24小时后自动完成此工单
-        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE),1000*60*60*24);
+        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE), 1000 * 60 * 60 * 24);
         return save;
     }
 
@@ -406,6 +409,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     /**
      * 将工单变成待归档状态
+     *
      * @param workOrderId
      */
     public void workOrderToPrepigeonhole(String workOrderId) {

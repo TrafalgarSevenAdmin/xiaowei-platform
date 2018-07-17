@@ -76,6 +76,19 @@ public class WorkOrder extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private SysUser engineer;
 
+    /**
+     * 当前处理步骤
+     */
+    private Integer currentOrderNumber;
+
+    public Integer getCurrentOrderNumber() {
+        return currentOrderNumber;
+    }
+
+    public void setCurrentOrderNumber(Integer currentOrderNumber) {
+        this.currentOrderNumber = currentOrderNumber;
+    }
+
     public Evaluate getEvaluate() {
         return evaluate;
     }

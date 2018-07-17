@@ -66,6 +66,10 @@ public class ServiceItem extends BaseEntity{
      */
     private Boolean audit;
     /**
+     * 审核次数
+     */
+    private Integer auditCount;
+    /**
      * 开始处理时间
      */
     private Date beginTime;

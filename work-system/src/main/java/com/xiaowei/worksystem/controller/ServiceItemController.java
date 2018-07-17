@@ -37,7 +37,7 @@ public class ServiceItemController {
     @PostMapping("/{workOrderId}/engineer")
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         List<ServiceItem> serviceItems = FastJsonUtils.objectToList(serviceItemDTOs, ServiceItem.class);
-        serviceItems = serviceItemService.saveByEngineer(workOrderId,serviceItems);
+        serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
         return Result.getSuccess(ObjectToMapUtils.listToMap(serviceItems, fieldsView));
     }
 
@@ -50,8 +50,8 @@ public class ServiceItemController {
 
     @ApiOperation(value = "质检服务项目")
     @PutMapping("/{serviceItemId}/quality")
-    public Result qualityServiceItem(@PathVariable("serviceItemId") String serviceItemId, FieldsView fieldsView) throws Exception {
-        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId);
+    public Result qualityServiceItem(@PathVariable("serviceItemId") String serviceItemId, @RequestBody Boolean audit, FieldsView fieldsView) throws Exception {
+        ServiceItem serviceItem = serviceItemService.qualityServiceItem(serviceItemId, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
     }
 
