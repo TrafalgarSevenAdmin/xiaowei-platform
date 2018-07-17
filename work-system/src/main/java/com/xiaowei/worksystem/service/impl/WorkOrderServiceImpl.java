@@ -422,7 +422,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());
 
-
+        workOrderRepository.save(workOrder);
     }
 
     /**
