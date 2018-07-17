@@ -12,9 +12,9 @@ import java.util.Date;
 public class TaskMessage implements MessageBean {
 
     /**
-     * 工单id
+     * 目标id
      */
-    private String workOrderId;
+    private String objectId;
 
     /**
      * 此消息的创建时间
@@ -26,8 +26,8 @@ public class TaskMessage implements MessageBean {
      */
     private TaskType taskType;
 
-    public TaskMessage(String workOrderId, TaskType taskType) {
-        this.workOrderId = workOrderId;
+    public TaskMessage(String objectId, TaskType taskType) {
+        this.objectId = objectId;
         this.taskType = taskType;
     }
 }

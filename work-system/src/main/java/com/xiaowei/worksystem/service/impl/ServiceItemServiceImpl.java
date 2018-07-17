@@ -4,6 +4,9 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.constant.TaskType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.entity.ServiceItem;
 import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.repository.ServiceItemRepository;
@@ -34,6 +37,9 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
 
     @Autowired
     private WorkOrderRepository workOrderRepository;
+
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     public ServiceItemServiceImpl(@Qualifier("serviceItemRepository") BaseRepository repository) {
         super(repository);
@@ -232,6 +238,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             WorkOrder workOrder = serviceItem.getWorkOrder();
             workOrder.setSystemStatus(WorkOrderSystemStatus.QUALITY.getStatus());//工单状态设置为质检中
             workOrderRepository.save(workOrder);
+            //设置为1分钟后自动质检通过
+            messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * 1);
             return true;
         } else {//不需要审核
             //状态更改为待收费还是完成由第四步确认

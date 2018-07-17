@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.receiver;
 
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.MqQueueConstant;
+import com.xiaowei.worksystem.service.IServiceItemService;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import lombok.extern.java.Log;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -23,6 +24,8 @@ public class DelayTaskReceiver {
 
     @Autowired
     private IWorkOrderService workOrderService;
+    @Autowired
+    private IServiceItemService serviceItemService;
 
     /**
      * 处理延迟任务
@@ -35,14 +38,20 @@ public class DelayTaskReceiver {
         switch (messageBean.getTaskType()) {
             case AUTO_PREPIGEONHOLE:
                 try {
-                    workOrderService.workOrderToPrepigeonhole(messageBean.getWorkOrderId());
+                    workOrderService.workOrderToPrepigeonhole(messageBean.getObjectId());
                 } catch (Exception e) {
                     log.warning("延时任务处理过程中错误："+e.getMessage());
                     e.printStackTrace();
                 }
                 break;
             case AUTO_PASS_QUALITY_CHACK:
-                //定时通过质检
+                try {
+                    //定时通过质检
+                    serviceItemService.qualityServiceItem(messageBean.getObjectId(),true);
+                } catch (Exception e) {
+                    log.warning("自动通过质检过程中错误："+e.getMessage());
+                    e.printStackTrace();
+                }
                 break;
         }
 
