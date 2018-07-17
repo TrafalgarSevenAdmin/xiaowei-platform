@@ -26,8 +26,8 @@ public class TaskMessage implements MessageBean {
      */
     private TaskType taskType;
 
-
-    public TaskMessage(String workOrderId) {
+    public TaskMessage(String workOrderId, TaskType taskType) {
         this.workOrderId = workOrderId;
+        this.taskType = taskType;
     }
 }

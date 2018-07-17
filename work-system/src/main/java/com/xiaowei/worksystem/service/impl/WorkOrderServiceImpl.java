@@ -9,6 +9,7 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
@@ -367,7 +368,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         engineerWorkRepository.save(engineerWork);
         WorkOrder save = workOrderRepository.save(workOrder);
         //设置为24小时后自动完成此工单
-        messagePushSender.sendDelayTask(new TaskMessage(workOrderId),1000*60*60*24);
+        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE),1000*60*60*24);
         return save;
     }
 
