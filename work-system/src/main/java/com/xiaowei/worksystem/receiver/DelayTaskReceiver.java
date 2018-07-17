@@ -33,7 +33,7 @@ public class DelayTaskReceiver {
      */
     @RabbitHandler
     public void messageReceiver(TaskMessage messageBean) {
-        log.log(Level.INFO,MessageFormat.format("收到延时消息，一共延时:{1}s",  (new Date().getTime() - messageBean.getStartTime().getTime()/1000)));
+        log.log(Level.INFO,MessageFormat.format("收到延时消息，一共延时:{0}s",  (new Date().getTime() - messageBean.getStartTime().getTime()/1000)));
 
         switch (messageBean.getTaskType()) {
             case AUTO_PREPIGEONHOLE:
