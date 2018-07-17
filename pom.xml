@@ -34,6 +34,10 @@
             <id>xwmaven</id>
             <url>http://192.168.1.218:7777/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </repository>
     </repositories>
 
     <modules>
@@ -84,6 +88,19 @@
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>192.168.1.218</redis.url>
                 <rabbitmq.host>192.168.1.218</rabbitmq.host>
+                <rabbitmq.port>5672</rabbitmq.port>
+                <rabbitmq.username>xw</rabbitmq.username>
+                <rabbitmq.password>xw123456789</rabbitmq.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <datasource.url>jdbc:postgresql://119.23.224.29:5432/xiaowei?characterEncoding=utf-8</datasource.url>
+                <datasource.username>postgres</datasource.username>
+                <datasource.password>xw123456789</datasource.password>
+                <redis.url>119.23.224.29</redis.url>
+                <rabbitmq.host>119.23.224.29</rabbitmq.host>
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
