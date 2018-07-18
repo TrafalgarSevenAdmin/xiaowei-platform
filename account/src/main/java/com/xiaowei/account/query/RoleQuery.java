@@ -17,6 +17,7 @@ import java.util.Set;
  */
 @Data
 public class RoleQuery extends Query {
+
     private String name;
     private Set<String> userIds = new HashSet<>();
     private String departmentId;
