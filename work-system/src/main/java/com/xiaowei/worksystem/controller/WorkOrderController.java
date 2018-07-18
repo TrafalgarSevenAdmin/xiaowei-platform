@@ -135,6 +135,23 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工单待归档")
+    @AutoErrorHandler
+    @PutMapping("/prePigeonhole/{workOrderId}")
+    public Result prePigeonhole(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.prePigeonhole(workOrderId);
+        return Result.getSuccess();
+    }
+
+    @ApiOperation(value = "工单终审")
+    @AutoErrorHandler
+    @PutMapping("/pigeonholed/{workOrderId}")
+    public Result pigeonholed(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.pigeonholed(workOrderId);
+        return Result.getSuccess();
+    }
+
+
     @ApiOperation(value = "工程师预约")
     @AutoErrorHandler
     @PutMapping("/appointing/{workOrderId}")

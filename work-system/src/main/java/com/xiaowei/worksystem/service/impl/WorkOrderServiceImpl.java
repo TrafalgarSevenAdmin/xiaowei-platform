@@ -327,7 +327,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 设置第一个服务项目的开始处理时间
      *
      * @param workOrderId
-     * @return 返回第一个需要处理的服务项目的排序号,没有则返回0
+     * @return 返回第一个需要处理的服务项目的排序号, 没有则返回0
      */
     private Integer setFirstServiceItem(String workOrderId) {
         ServiceItem serviceItem = serviceItemRepository.findByWorkOrderIdAndOrderNumber(workOrderId, 1);
@@ -423,6 +423,46 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());
 
         workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 工单待归档
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder prePigeonhole(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //处理完成
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());//工单状态变更为待归档
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 工单终审
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder pigeonholed(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //处理完成
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.PIGEONHOLED.getStatus());//工单状态变更为待归档
+        return workOrderRepository.save(workOrder);
     }
 
     /**

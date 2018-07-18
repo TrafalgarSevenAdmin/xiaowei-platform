@@ -37,4 +37,8 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
      * @param workOrderId
      */
     void workOrderToPrepigeonhole(String workOrderId);
+
+    WorkOrder prePigeonhole(String workOrderId);
+
+    WorkOrder pigeonholed(String workOrderId);
 }
