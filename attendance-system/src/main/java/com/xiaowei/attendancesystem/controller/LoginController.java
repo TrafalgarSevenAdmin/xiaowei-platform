@@ -3,6 +3,7 @@ package com.xiaowei.attendancesystem.controller;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
+import com.xiaowei.accountcommon.PermissionBean;
 import com.xiaowei.attendancesystem.dto.LoginSysUserDTO;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = "登录接口")
 @RestController
@@ -60,6 +64,18 @@ public class LoginController {
     @GetMapping("/userInfo")
     public Result userInfo(){
         return Result.getSuccess(LoginUserUtils.getLoginUser());
+    }
+
+    /**
+     * 获取当前登录用户的信息
+     * @param
+     * @return
+     */
+    @ApiOperation("获取当前登录用户的信息")
+    @GetMapping("/perCodes")
+    public Result perCodes(){
+        List<PermissionBean> permissions = LoginUserUtils.getLoginUser().getPermissions();
+        return Result.getSuccess(permissions.stream().map(PermissionBean::getSymbol).collect(Collectors.toSet()));
     }
 
 }
