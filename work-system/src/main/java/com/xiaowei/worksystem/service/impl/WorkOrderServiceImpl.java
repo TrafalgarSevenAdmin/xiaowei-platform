@@ -264,7 +264,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //预约中
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.APPOINTING.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.DEPART.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
