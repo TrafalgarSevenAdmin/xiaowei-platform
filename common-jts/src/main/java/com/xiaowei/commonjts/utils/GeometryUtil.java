@@ -145,6 +145,17 @@ public class GeometryUtil {
     }
 
     /**
+     * 点对象转换成gps
+     * @param point
+     * @return
+     */
+    public static Gps getGps(Point point) {
+        Coordinate coordinate = point.getCoordinate();
+        return new Gps(coordinate.y,coordinate.x);
+    }
+
+
+    /**
      * 把点的字符串数组转换成点对象数组
      *
      * @param shapea

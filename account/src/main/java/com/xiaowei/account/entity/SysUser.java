@@ -83,7 +83,7 @@ public class SysUser extends BaseEntity {
      */
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="sys_user_company",
+    @JoinTable(name="SYS_USER_DEPARTMENT",
             joinColumns={@JoinColumn(name="USER_ID")},
             inverseJoinColumns={@JoinColumn(name="DEPARTMENT_ID")})
     @JsonIgnore
