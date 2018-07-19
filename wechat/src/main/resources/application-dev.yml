@@ -44,8 +44,8 @@ logging:
       yulintu: DEBUG
 wechat:
   config:
-    appId: wx496463b293af6996
-    secret: 0593b00bca702d8d458063f4758093bd
-    token: token
-    aesKey:
+    appId: wx319e805e2640bbf2
+    secret: fd3ea4f364a0da910b2bab3af07c8d28
+    token: md4YoeT4mVRQN2Rd244IOdQzqyDS4us2
+    aesKey: e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4
 
