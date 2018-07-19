@@ -11,7 +11,6 @@ public class WorkOrderQuery extends Query {
     private String backgrounderId;
     private String engineerId;
     private String[] userStatus;
-    private String[] engineerStatus;
     private String[] systemStatus;
 
     @Override
@@ -32,10 +31,6 @@ public class WorkOrderQuery extends Query {
         //用户状态过滤
         if(ArrayUtils.isNotEmpty(userStatus)){
             addFilter(new Filter("userStatus", Filter.Operator.in,userStatus));
-        }
-        //工程师状态过滤
-        if(ArrayUtils.isNotEmpty(engineerStatus)){
-            addFilter(new Filter("engineerStatus", Filter.Operator.in,engineerStatus));
         }
         //后台状态过滤
         if(ArrayUtils.isNotEmpty(systemStatus)){
@@ -73,14 +68,6 @@ public class WorkOrderQuery extends Query {
 
     public void setUserStatus(String[] userStatus) {
         this.userStatus = userStatus;
-    }
-
-    public String[] getEngineerStatus() {
-        return engineerStatus;
-    }
-
-    public void setEngineerStatus(String[] engineerStatus) {
-        this.engineerStatus = engineerStatus;
     }
 
     public String[] getSystemStatus() {

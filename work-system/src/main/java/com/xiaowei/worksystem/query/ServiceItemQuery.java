@@ -7,7 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class ServiceItemQuery extends Query {
+
     private String workOrderId;
+
     @Override
     public void generateCondition() {
         if(StringUtils.isNotEmpty(workOrderId)){
