@@ -39,7 +39,6 @@ public class LoginController {
         return Result.getSuccess(LoginUserUtils.getLoginUser());
     }
 
-
     /**
      * 退出登录
      * @param
