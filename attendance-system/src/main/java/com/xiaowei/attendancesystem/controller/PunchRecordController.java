@@ -2,10 +2,12 @@ package com.xiaowei.attendancesystem.controller;
 
 import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
+import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
+import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
@@ -15,10 +17,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags = "打卡记录接口")
 @RestController
@@ -38,6 +39,25 @@ public class PunchRecordController {
         punchRecord = punchRecordService.savePunchRecord(punchRecord,
                 GeometryUtil.transWKT(punchRecordDTO.getWkt()));
         return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
+    @ApiOperation("打卡记录查询接口")
+    @GetMapping("")
+    public Result query(PunchRecordQuery punchRecordQuery, FieldsView fieldsView) {
+        //查询办公点设置默认条件
+        setDefaultCondition(punchRecordQuery);
+        if (punchRecordQuery.isNoPage()) {
+            List<PunchRecord> punchRecords = punchRecordService.query(punchRecordQuery, PunchRecord.class);
+            return Result.getSuccess(ObjectToMapUtils.listToMap(punchRecords, fieldsView));//以list形式返回,没有层级
+        } else {
+            PageResult pageResult = punchRecordService.queryPage(punchRecordQuery, PunchRecord.class);
+            pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
+            return Result.getSuccess(pageResult);//以分页列表形式返回
+        }
+    }
+
+    private void setDefaultCondition(PunchRecordQuery punchRecordQuery) {
+
     }
 
 }
