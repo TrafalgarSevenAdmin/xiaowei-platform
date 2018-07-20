@@ -59,6 +59,17 @@ public class WechatAuthController {
     @Autowired
     private ServerInfoProperties serverInfoProperties;
 
+    /**
+     * 获取jsapi所需要的签名
+     * @param url
+     * @return
+     * @throws WxErrorException
+     */
+    @GetMapping("jsapiSignature")
+    public Result getJsapiSignature(String url) throws WxErrorException {
+        return Result.getSuccess(wxMpService.createJsapiSignature(url));
+    }
+
     @ApiOperation(value = "绑定手机号",notes = "绑定成功后，前端应该再次调用登陆接口，并可以指定回调地址。")
     @AutoErrorHandler
     @PostMapping("/bind")
@@ -84,13 +95,15 @@ public class WechatAuthController {
             wxUserService.save(user);
         } else {
             //如果没有就新建一个系统用户，标识为普通用户
-            SysUser sysUser = new SysUser();
-            sysUser.setLoginName(bindMobileDTO.getMobile());
-            sysUser.setCreatedTime(new Date());
-            sysUser.setStatus(0);
-            sysUser.setNickName(bindMobileDTO.getName());
-            user.setSysUser(sysUser);
-            wxUserService.save(user);
+//            SysUser sysUser = new SysUser();
+//            sysUser.setLoginName(bindMobileDTO.getMobile());
+//            sysUser.setCreatedTime(new Date());
+//            sysUser.setStatus(0);
+//            sysUser.setNickName(bindMobileDTO.getName());
+//            user.setSysUser(sysUser);
+//            sysUserService.saveUser(sysUser);
+//            wxUserService.save(user);
+            throw new BusinessException("此手机号不属于此公司，请联系管理员");
         }
         //绑定成功后，交给前端做路由
         return Result.getSuccess(request.getSession().getAttribute("redirect"));
@@ -141,7 +154,6 @@ public class WechatAuthController {
                         number++;
                     }
                     //追加操作
-
                     String key = MagicValueStore.wxStatesNumberPro + state;
                     stringRedisTemplate.opsForValue().set(key, "" + number);
                     //此信息1分钟后过期
@@ -190,7 +202,14 @@ public class WechatAuthController {
             url = serverInfoProperties.getPreIndex();
         } else {
             //重定向到回调地址
-            url = stringRedisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
+            String callbackUrl = stringRedisTemplate.opsForValue().get(MagicValueStore.wxStatesValuePro + state);
+            //如果回调是一个网站
+            if (callbackUrl.indexOf(".") > 0) {
+                url = callbackUrl;
+            } else {
+                //否者拼装成一个网址
+                url = serverInfoProperties.getHost() + callbackUrl;
+            }
         }
         //获取过后就删除缓存
         stringRedisTemplate.delete(MagicValueStore.wxStatesValuePro + state);

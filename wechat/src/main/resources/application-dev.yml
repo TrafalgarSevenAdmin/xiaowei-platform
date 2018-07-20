@@ -1,10 +1,11 @@
 profiles:  dev_environment
 server:
+  host: http://gongdan.xwseries.com
   pre:
     # 前端用户页面主页地址，在自动登陆后跳转
     index: /catalog
     # 前端绑定地址
-    bind: /user/bindPhone
+    bind: /common/bindPhone
   port: 9004
   servlet:
     context-path: /wechat
