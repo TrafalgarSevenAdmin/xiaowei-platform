@@ -86,9 +86,9 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         } else if (chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockOutTime().compareTo(currentTime) == 1) {
             //下班打卡
             //判断是否已经下班打卡
-            if (currentPunchRecord.getPunchCount() != 1) {
-                throw new BusinessException("已经下班打卡!");
-            }
+//            if (currentPunchRecord.getPunchCount() != 1) {
+//                throw new BusinessException("已经下班打卡!");
+//            }
             currentPunchRecord.setClockOutTime(currentTime);
             Integer punchCount = currentPunchRecord.getPunchCount();
             if (punchCount == null) {
