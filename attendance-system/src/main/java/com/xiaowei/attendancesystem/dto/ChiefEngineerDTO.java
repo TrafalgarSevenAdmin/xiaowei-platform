@@ -63,7 +63,7 @@ public class ChiefEngineerDTO {
     private Time endClockOutTime;
 
     @ApiModelProperty(value = "办公点的wkt字符串")
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "办公点的wkt字符串必填!")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "办公点的wkt字符串必填!")
     private String wkt;
 
     @ApiModelProperty(value = "办公点状态:0代表正常,1代表禁用")
