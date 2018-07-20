@@ -7,15 +7,19 @@ variables:
  WORK_PORT: 9003
  WECHAT_PACKAGE_NAME: 'wechat'
  WECHAT_PORT: 9004
+ ATTENDANCE_PACKAGE_NAME: 'attendance'
+ ATTENDANCE_PORT: 9005
 
 stages:
  - run_work
  - run_account
  - run_wechat
+ - run_attendance
 
  - release_work
  - release_account
  - release_wechat
+ - release_attendance
 
 run_work:
  stage: run_work
@@ -53,6 +57,19 @@ run_wechat:
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
    - docker run -d -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+ tags:
+   - dev
+
+run_attendance:
+ stage: run_attendance
+ only:
+   - master
+ script:
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd $ATTENDANCE_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
+   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
+   - docker run -d -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
  tags:
    - dev
 
@@ -94,5 +111,18 @@ release_wechat:
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
    - docker run -d -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+ tags:
+   - aliyun
+
+release_attendance:
+ stage: release_attendance
+ only:
+   - release
+ script:
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd $ATTENDANCE_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
+   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
+   - docker run -d -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
  tags:
    - aliyun
