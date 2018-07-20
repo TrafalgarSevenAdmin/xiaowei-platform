@@ -89,8 +89,10 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         Optional<ServiceItem> one = serviceItemRepository.findById(serviceItemId);
         EmptyUtils.assertOptional(one, "没有查询到需要执行的服务项目");
         ServiceItem serviceItem = one.get();
-        //1.判断工单当前处理步骤是否是执行的步骤
-        judgeCurrentOrderNumber(serviceItem);
+        if (!serviceItem.getSource().equals(ServiceItemSource.ENGINEER.getStatus())) {
+            //1.判断工单当前处理步骤是否是执行的步骤
+            judgeCurrentOrderNumber(serviceItem);
+        }
         //2.判断上一步是否已经做完
         judgeLateIsDone(serviceItem);
         //3.判断当前步状态是否正常
