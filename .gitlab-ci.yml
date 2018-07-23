@@ -119,7 +119,7 @@ release_attendance:
  only:
    - release
  script:
-   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - mvn  -Dmaven.test.skip=true -P release clean package
    - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
    - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
