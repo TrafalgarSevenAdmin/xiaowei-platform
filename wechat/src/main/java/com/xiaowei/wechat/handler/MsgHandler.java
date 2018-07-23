@@ -22,9 +22,6 @@ import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType;
 @Component
 public class MsgHandler extends AbstractHandler {
 
-  @Autowired
-  private WxMpService wxMpService;
-
   @Override
   public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                   Map<String, Object> context, WxMpService weixinService,
@@ -37,17 +34,6 @@ public class MsgHandler extends AbstractHandler {
 
     //当用户输入关键词如“你好”，“客服”等，并且有客服在线时，把消息转发给在线客服
     try {
-      if (StringUtils.startsWithAny(wxMessage.getContent(), "通知")) {
-        WxMpTemplateMessage template = new WxMpTemplateMessage();
-        template.setTemplateId("s_AZ6iMdu2cp7Lfj9JgHcH_1jox8nQvt-7-wh5hsKbI");
-        List<WxMpTemplateData> data = new ArrayList<>();
-        data.add(new WxMpTemplateData("Engineer", "张三", "#9932CC"));
-        template.setData(data);
-        template.setToUser(wxMessage.getFromUser());
-//        template.setUrl("www.baidu.com");
-        wxMpService.getTemplateMsgService().sendTemplateMsg(template);
-        return null;
-      }
       if (StringUtils.startsWithAny(wxMessage.getContent(), "你好", "客服")
           && weixinService.getKefuService().kfOnlineList()
           .getKfOnlineList().size() > 0) {
