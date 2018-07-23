@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.query;
 
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
+import com.xiaowei.core.query.rundi.query.Sort;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ public class WorkOrderQuery extends Query {
 
     @Override
     public void generateCondition() {
+        addSort(Sort.Dir.desc, "createdTime");
         addFilter(new Filter("systemStatus", Filter.Operator.neq, WorkOrderSystemStatus.DELETE.getStatus()));
         //申请处理人过滤
         if(StringUtils.isNotEmpty(proposerId)){

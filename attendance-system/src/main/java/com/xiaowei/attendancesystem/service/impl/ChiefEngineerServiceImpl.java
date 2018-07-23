@@ -45,8 +45,11 @@ public class ChiefEngineerServiceImpl extends BaseServiceImpl<ChiefEngineer> imp
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             String chiefEngineerId = chiefEngineer.getId();
             EmptyUtils.assertString(chiefEngineerId, "没有传入对象id");
-            Optional<ChiefEngineer> one = chiefEngineerRepository.findById(chiefEngineerId);
-            EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+            Optional<ChiefEngineer> optional = chiefEngineerRepository.findById(chiefEngineerId);
+            EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+            ChiefEngineer one = optional.get();
+            //设置无法修改的字段
+            chiefEngineer.setStatus(one.getStatus());//状态无法在此处修改
         }
     }
 
@@ -66,6 +69,8 @@ public class ChiefEngineerServiceImpl extends BaseServiceImpl<ChiefEngineer> imp
         Optional<ChiefEngineer> optional = chiefEngineerRepository.findById(chiefEngineerId);
         EmptyUtils.assertOptional(optional,"没有查询到需要删除的对象");
         ChiefEngineer one = optional.get();
+        //删除中间表信息
+        one.setDepartments(null);
         one.setStatus(ChiefEngineerStatus.DELETE.getStatus());
         one.setDepartments(null);
         chiefEngineerRepository.save(one);

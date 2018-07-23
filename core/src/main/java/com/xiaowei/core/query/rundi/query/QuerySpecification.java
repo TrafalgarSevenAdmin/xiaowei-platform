@@ -259,6 +259,6 @@ public class QuerySpecification<T>{
             }
             return builder.build();
         }
-        return null;
+        return org.springframework.data.domain.Sort.unsorted();
     }
 }
