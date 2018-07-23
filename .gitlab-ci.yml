@@ -66,7 +66,7 @@ run_attendance:
    - master
  script:
    - mvn  -Dmaven.test.skip=true -P dev clean package
-   - cd $ATTENDANCE_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
    - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
    - docker run -d -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
@@ -120,7 +120,7 @@ release_attendance:
    - release
  script:
    - mvn  -Dmaven.test.skip=true -P dev clean package
-   - cd $ATTENDANCE_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
+   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
    - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
    - docker run -d -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME

@@ -17,7 +17,7 @@ import static me.chanjar.weixin.common.api.WxConsts.*;
  * 微信请求分发
  */
 @Configuration
-@ConditionalOnClass(WxMpService.class)
+//@ConditionalOnClass(WxMpService.class)
 @EnableConfigurationProperties(WechatProperties.class)
 public class WechatMpConfiguration {
 
