@@ -1,9 +1,9 @@
 package com.xiaowei.worksystem.controller;
 
+import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
-import com.xiaowei.core.utils.FastJsonUtils;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
@@ -38,7 +38,7 @@ public class ServiceItemController {
     @AutoErrorHandler
     @PostMapping("/{workOrderId}/engineer")
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
-        List<ServiceItem> serviceItems = FastJsonUtils.objectToList(serviceItemDTOs, ServiceItem.class);
+        List<ServiceItem> serviceItems = BeanCopyUtils.copyList(serviceItemDTOs, ServiceItem.class);
         serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
         return Result.getSuccess(ObjectToMapUtils.listToMap(serviceItems, fieldsView));
     }

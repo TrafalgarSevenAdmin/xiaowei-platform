@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "打卡记录接口")
 @RestController
@@ -67,6 +68,11 @@ public class PunchRecordController {
     public Result punchForm(@Validated PunchFormDTO punchFormDTO,BindingResult bindingResult) throws Exception {
         //查询一个公司下所有人某个月份的打卡记录
         List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(),punchFormDTO.getSelectMonth());
+
+        return Result.getSuccess(getPunchFormMap(punchRecords));
+    }
+
+    private Map<String,Object> getPunchFormMap(List<PunchRecord> punchRecords) {
         return null;
     }
 

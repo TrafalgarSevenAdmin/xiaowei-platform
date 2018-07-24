@@ -80,15 +80,15 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     public List<PunchRecord> findByCompanyIdAndMonth(String companyId, Date selectMonth) throws Exception {
         Optional<Company> optional = companyRepository.findById(companyId);
         EmptyUtils.assertOptional(optional, "没有查询到该公司");
-        List<SysUser> users = optional.get().getUsers();//该公司下所有的人员
+        val users = optional.get().getUsers();//该公司下所有的人员
         if (CollectionUtils.isEmpty(users)) {
             return null;
         }
-        Calendar cal = Calendar.getInstance();
+        val cal = Calendar.getInstance();
         cal.setTime(selectMonth);
         val firstDayOfMonth = DateUtils.getFirstDayOfMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
         val lastDayOfMonth = DateUtils.getLastDayOfMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        val formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         return punchRecordRepository.findByUserIdsBetweenPunchTime(users.stream().map(SysUser::getId).collect(Collectors.toSet()),
                 formatter.parse(firstDayOfMonth),formatter.parse(lastDayOfMonth));
