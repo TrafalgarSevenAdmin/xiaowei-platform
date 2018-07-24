@@ -94,7 +94,7 @@
                     <!-- 详见：https://github.com/spotify/docker-maven-plugin    Invalid repository name ... only [a-z0-9-_.] are allowed-->
                     <imageName>${project.build.finalName}</imageName>
                     <baseImage>kdvolder/jdk8</baseImage>
-                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar","-Duser.timezone=GMT+08"]</entryPoint>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
