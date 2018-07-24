@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Time;
 
 @Data
 public class ServiceItemDTO implements Serializable{
@@ -52,5 +53,23 @@ public class ServiceItemDTO implements Serializable{
      */
     @ApiModelProperty(value = "是否需要审核")
     private Boolean audit;
+
+    /**
+     * 预计时长
+     */
+    @ApiModelProperty(value = "预计时长")
+    private Time predictTime;
+
+    /**
+     * 版本号
+     */
+    @ApiModelProperty(value = "版本号")
+    private String version;
+
+    /**
+     * 工作标准说明
+     */
+    @ApiModelProperty(value = "工作标准说明")
+    private String standard;
 
 }

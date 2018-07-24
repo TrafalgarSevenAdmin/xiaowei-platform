@@ -2,7 +2,9 @@ package com.xiaowei.attendancesystem.service.impl;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.attendancesystem.entity.ChiefEngineer;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
@@ -14,7 +16,10 @@ import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
+import lombok.val;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> implements IPunchRecordService {
@@ -34,6 +43,8 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     private SysUserRepository userRepository;
     @Autowired
     private ChiefEngineerRepository chiefEngineerRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Value("${punch.distance}")
     private Double distance;
@@ -56,6 +67,31 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         ChiefEngineer chiefEngineer = judgeWithinRange(currentPunchRecord, shape);
         judgePunchTime(currentPunchRecord, chiefEngineer);
         return punchRecordRepository.save(currentPunchRecord);
+    }
+
+    /**
+     * 查询一个公司下所有人某个月份的打卡记录
+     *
+     * @param companyId
+     * @param selectMonth
+     * @return
+     */
+    @Override
+    public List<PunchRecord> findByCompanyIdAndMonth(String companyId, Date selectMonth) throws Exception {
+        Optional<Company> optional = companyRepository.findById(companyId);
+        EmptyUtils.assertOptional(optional, "没有查询到该公司");
+        List<SysUser> users = optional.get().getUsers();//该公司下所有的人员
+        if (CollectionUtils.isEmpty(users)) {
+            return null;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(selectMonth);
+        val firstDayOfMonth = DateUtils.getFirstDayOfMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+        val lastDayOfMonth = DateUtils.getLastDayOfMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        return punchRecordRepository.findByUserIdsBetweenPunchTime(users.stream().map(SysUser::getId).collect(Collectors.toSet()),
+                formatter.parse(firstDayOfMonth),formatter.parse(lastDayOfMonth));
     }
 
     /**

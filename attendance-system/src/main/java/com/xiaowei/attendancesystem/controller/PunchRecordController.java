@@ -1,5 +1,6 @@
 package com.xiaowei.attendancesystem.controller;
 
+import com.xiaowei.attendancesystem.dto.PunchFormDTO;
 import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
@@ -58,6 +59,15 @@ public class PunchRecordController {
 
     private void setDefaultCondition(PunchRecordQuery punchRecordQuery) {
 
+    }
+
+    @ApiOperation("打卡记录报表统计")
+    @GetMapping("/form")
+    @AutoErrorHandler
+    public Result punchForm(@Validated PunchFormDTO punchFormDTO,BindingResult bindingResult) throws Exception {
+        //查询一个公司下所有人某个月份的打卡记录
+        List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(),punchFormDTO.getSelectMonth());
+        return null;
     }
 
 }
