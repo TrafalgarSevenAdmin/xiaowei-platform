@@ -19,6 +19,9 @@ public class PunchRecordQuery extends Query {
     private Date b_punchTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date e_punchTime;
+    private Boolean beLate;
+    private Boolean clockInIsNull;
+    private Boolean clockOutIsNull;
 
     @Override
     public void generateCondition() {
@@ -34,6 +37,26 @@ public class PunchRecordQuery extends Query {
         //根据打卡时间范围过滤
         if (b_punchTime != null && e_punchTime != null) {
             addFilter(new Filter("punchDate", Filter.Operator.between, b_punchTime, e_punchTime));
+        }
+        //是否迟到
+        if (beLate != null) {
+            addFilter(new Filter("beLate", Filter.Operator.eq, beLate));
+        }
+        //上班未打卡
+        if (clockInIsNull != null) {
+            if (clockInIsNull) {
+                addFilter(new Filter("clockInTime", Filter.Operator.isNull));
+            } else {
+                addFilter(new Filter("clockInTime", Filter.Operator.notNull));
+            }
+        }
+        //下班未打卡
+        if (clockOutIsNull != null) {
+            if (clockOutIsNull) {
+                addFilter(new Filter("clockOutTime", Filter.Operator.isNull));
+            } else {
+                addFilter(new Filter("clockOutTime", Filter.Operator.notNull));
+            }
         }
 
     }

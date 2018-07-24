@@ -66,5 +66,6 @@ public class PunchRecord extends BaseEntity{
         this.sysUser = sysUser;
         this.punchDate = new Date();
         this.punchCount = 0;
+        this.beLate = false;
     }
 }

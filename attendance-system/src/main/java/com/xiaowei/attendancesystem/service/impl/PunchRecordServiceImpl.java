@@ -94,7 +94,9 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             if (punchCount == null) {
                 punchCount = 0;
             }
-            currentPunchRecord.setPunchCount(punchCount + 1);
+            if (punchCount != 2) {
+                currentPunchRecord.setPunchCount(punchCount + 1);
+            }
         } else {
             //非打卡时间
             throw new BusinessException("现在是非打卡时间!");
