@@ -64,10 +64,11 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         for (int i = 0; i < serviceItems.size(); i++) {
             ServiceItem serviceItem = serviceItems.get(i);
             EmptyUtils.assertObject(serviceItem.getCharge(), "是否收费必填");
+            EmptyUtils.assertObject(serviceItem.getAudit(), "是否审核必填");
             EmptyUtils.assertString(serviceItem.getServiceType(), "服务项目类型必填");
             serviceItem.setStatus(ServiceItemStatus.CONFIRMED.getStatus());//待确认状态
             serviceItem.setSource(ServiceItemSource.ENGINEER.getStatus());//工程师来源
-            serviceItem.setAudit(true);//需要审核
+//            serviceItem.setAudit(true);//需要审核
             serviceItem.setWorkOrder(workOrder);//所属工单
             serviceItem.setOrderNumber(++maxOrderNumber);//顺序
             serviceItem.setCreatedTime(new Date());
