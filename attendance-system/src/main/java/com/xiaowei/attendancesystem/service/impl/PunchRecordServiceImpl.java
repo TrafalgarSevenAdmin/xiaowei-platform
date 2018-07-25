@@ -148,6 +148,10 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     private ChiefEngineer judgeWithinRange(PunchRecord currentPunchRecord, Geometry shape) {
         //chiefEngineers 当前用户的办公点集合
         List<ChiefEngineer> chiefEngineers = chiefEngineerRepository.findByUserId(currentPunchRecord.getSysUser().getId());
+        if(CollectionUtils.isEmpty(chiefEngineers)){
+            throw new BusinessException("没有查询到任何打卡点");
+        }
+
         Double shortest = 0.00;
         for (int i = 0; i < chiefEngineers.size(); i++) {
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
