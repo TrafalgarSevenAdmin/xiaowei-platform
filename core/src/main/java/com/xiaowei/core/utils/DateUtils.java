@@ -1,7 +1,10 @@
 package com.xiaowei.core.utils;
 
+import lombok.val;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtils {
 
@@ -50,5 +53,22 @@ public class DateUtils {
         String lastDayOfMonth = sdf.format(cal.getTime());
         return lastDayOfMonth;
     }
+
+    /**
+     * 获得该月最后一天
+     *
+     * @param month
+     * @return
+     */
+    public static Integer getLastDayOfMonth(Date month) {
+        val cal = Calendar.getInstance();
+        cal.setTime(month);
+        final String lastDayOfMonth = getLastDayOfMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+
+        return Integer.valueOf(lastDayOfMonth.substring(8,lastDayOfMonth.length()));
+    }
+
+
+
 
 }

@@ -1,32 +1,36 @@
 package com.xiaowei.attendancesystem.controller;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import com.xiaowei.attendancesystem.bean.ExcelBean;
+import com.xiaowei.account.entity.Company;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.attendancesystem.bean.PunchFormCountBean;
 import com.xiaowei.attendancesystem.dto.PunchFormDTO;
 import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
+import com.xiaowei.attendancesystem.status.PunchRecordType;
+import com.xiaowei.attendancesystem.utils.PunchMonthExcelUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(tags = "打卡记录接口")
 @RestController
@@ -35,6 +39,8 @@ public class PunchRecordController {
 
     @Autowired
     private IPunchRecordService punchRecordService;
+    @Autowired
+    private ICompanyService companyService;
 
     @ApiOperation(value = "添加打卡记录")
     @AutoErrorHandler
@@ -101,30 +107,58 @@ public class PunchRecordController {
     @AutoErrorHandler
     public void download(@Validated PunchFormDTO punchFormDTO, BindingResult bindingResult,
                          HttpServletResponse response) throws Exception {
-//            InputStream inputStream = new FileInputStream("E:/picture/红心海贼团.jpg");
-//            if(inputStream == null){
-//                throw new FileNotFoundException();
-//            }
-//            int length  = inputStream.available();
-//            byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
-//            MultiValueMap<String,String> valueMap = new HttpHeaders();
-//            String fileName = URLEncoder.encode("红心海贼团.jps", "UTF-8");
-//            valueMap.put("Content-Disposition", Arrays.asList(new String[]{"attachment;filename=" + fileName}));
-//            valueMap.put("Content-Length", Arrays.asList(new String[]{length + ""}));
-//            return new ResponseEntity<byte[]>(bytes,valueMap,HttpStatus.OK);
-        List<ExcelBean> excelBeans = new ArrayList<>();
-        ExcelBean excelBean = new ExcelBean();
-        excelBean.setBirthday(new Date());
-        excelBean.setName("袁玮");
-        excelBean.setRegistrationDate(new Date());
-        excelBean.setSex(1);
-        excelBeans.add(excelBean);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("计算机一班学生", "学生"),
-                ExcelBean.class, excelBeans);
-        String fileName=new String(("xxx" + ".xls").getBytes("utf-8"),"iso-8859-1"); //解决中文乱码问题
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName+ "\"");
+        //查询一个公司下所有人某个月份的打卡记录
+        List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(), punchFormDTO.getSelectMonth());
+        final Company company = companyService.findById(punchFormDTO.getCompanyId());
+        final List<SysUser> users = company.getUsers();
+        List<Object[]> totalDatas = new ArrayList<>();
+        //获取当前天的时间格式化对象
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
+        users.stream().forEach(sysUser -> {
+            List<Object> datas = new ArrayList<>();
+            datas.add("");
+            datas.add(sysUser.getNickName());
+            final List<PunchRecord> userPunchs = punchRecords.stream().
+                    filter(punchRecord -> punchRecord.getSysUser().getId().equals(sysUser.getId()))
+                    .collect(Collectors.toList());
+            //本月的最大天数
+            final Integer lastDayOfMonth = DateUtils.getLastDayOfMonth(punchFormDTO.getSelectMonth());
+            for (int i = 1; i < lastDayOfMonth + 1; i++) {
+                //过滤出当天打卡记录 如果没有 则输出"没有记录" 如果有,则判断打卡情况
+                int finalI = i;
+                final Optional<PunchRecord> optionalRecord = userPunchs.stream()
+                        .filter(punchRecord -> Integer.valueOf(simpleDateFormat.format(punchRecord.getPunchDate())) == finalI)
+                        .findFirst();
+                if (optionalRecord.isPresent()) {
+                    datas.add(judgePunchRecordType(optionalRecord.get()));
+                } else {
+                    datas.add(PunchRecordType.NOPUNCH);
+                }
+            }
+            totalDatas.add(datas.toArray());
+        });
+        new PunchMonthExcelUtils(company.getCompanyName() + new SimpleDateFormat("yyyy年MM月").format(punchFormDTO.getSelectMonth()) + "考勤", totalDatas, response).export();
 
-        workbook.write(response.getOutputStream());
+    }
+
+    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {
+        //判断是否上班未打卡,下班未打卡,上下班均未打卡,上班迟到,上班迟到且下班未打卡
+        if (punchRecord.getClockInTime() == null && punchRecord.getClockOutTime() == null) {
+            return PunchRecordType.CLOCKINISNULLANDCLOCKOUTISNULL;//上下班均未打卡
+        }
+        if (punchRecord.getBeLate() && punchRecord.getClockOutTime() == null) {
+            return PunchRecordType.BELATEANDCLOCKOUTISNULL;//迟到且下班未打卡
+        }
+        if (punchRecord.getClockOutTime() == null) {
+            return PunchRecordType.CLOCKOUTISNULL;//下班未打卡
+        }
+        if (punchRecord.getClockInTime() == null) {
+            return PunchRecordType.CLOCKINISNULL;//上班未打卡
+        }
+        if (punchRecord.getBeLate()) {
+            return PunchRecordType.BELATE;//迟到
+        }
+        return PunchRecordType.NORMAL;
     }
 
 }

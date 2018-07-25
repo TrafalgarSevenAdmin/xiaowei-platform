@@ -14,7 +14,6 @@ public class ServiceItemQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addSort(Sort.Dir.desc, "createdTime");
         //根据排序号进行排序
         if(Sort.Dir.desc.equals(orderNumber)){
             addSort(Sort.Dir.desc, "orderNumber");
