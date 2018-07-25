@@ -1,16 +1,23 @@
 package com.xiaowei.wechat.service.impl;
 
+import com.xiaowei.account.entity.SysRole;
+import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.repository.WxUserRepository;
 import com.xiaowei.wechat.service.IWxUserService;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.tag.WxUserTag;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -18,6 +25,9 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
 
     @Autowired
     private WxUserRepository wxUserRepository;
+
+    @Autowired
+    private WxMpService wxMpService;
 
     public WxUserServiceImpl(@Qualifier("wxUserRepository")BaseRepository repository) {
         super(repository);
@@ -55,4 +65,71 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         }
         return wxUserRepository.save(user);
     }
+
+    /**
+     * 同步用户标签
+     * @param user  必须要含有roles
+     * @param openId
+     */
+    @Override
+    public void syncUserTag(SysUser user, String openId) throws WxErrorException {
+        //获取这个用户的角色，并将角色名作为标签
+        Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role));
+        //获得所有的标签
+        List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();
+        Set<String> allTagsName = allTags.stream().map(WxUserTag::getName).collect(Collectors.toSet());
+        //找到没有创建的标签
+        Collection<String> haventTag = CollectionUtils.subtract(collect.keySet(), allTagsName);
+        for (String tag : haventTag) {
+            //创建标签
+            wxMpService.getUserTagService().tagCreate(tag);
+        }
+        Map<Long, WxUserTag> idMapTag = allTags.stream().collect(Collectors.toMap(v -> v.getId(), v -> v));
+        Map<String, Long> tagMapId = wxMpService.getUserTagService().tagGet().stream().collect(Collectors.toMap(WxUserTag::getName,WxUserTag::getId));
+        //获取这个用户含有的标签
+        List<Long> tagIds = wxMpService.getUserTagService().userTagList(openId);
+        Set<WxUserTag> haveTag = tagIds.stream().map(idMapTag::get).collect(Collectors.toSet());
+        //增量更新用户标签
+        Collection<Serializable> addTags = CollectionUtils.subtract(collect.keySet(), haveTag);
+        Collection<Serializable> deleteTags = CollectionUtils.subtract(haveTag,collect.keySet());
+        for (Serializable addTag : addTags) {
+            wxMpService.getUserTagService().batchTagging(tagMapId.get(addTag), new String[]{openId});
+        }
+        for (Serializable deleteTag : deleteTags) {
+            wxMpService.getUserTagService().batchUntagging(tagMapId.get(deleteTag), new String[]{openId});
+        }
+    }
+
+    /**
+     * 设置用户标签
+     * @param openId
+     * @param tag
+     * @throws WxErrorException
+     */
+    @Override
+    public void setUserTag(String openId, String tag, List<WxUserTag> wxUserTags) throws WxErrorException {
+        Optional<WxUserTag> first = wxUserTags.stream().filter(wxTag -> !wxTag.getName().equals(tag)).findFirst();
+        WxUserTag wxUserTag = null;
+        if (first.isPresent()) {
+            wxUserTag = wxMpService.getUserTagService().tagCreate(tag);
+        } else {
+            wxUserTag = first.get();
+        }
+        wxMpService.getUserTagService().batchTagging(wxUserTag.getId(), new String[]{openId});
+    }
+
+    /**
+     * 设置用户标签
+     * @param openId
+     * @param tag
+     * @throws WxErrorException
+     */
+    @Override
+    public void setUserTag(String openId, String tag) throws WxErrorException {
+        List<WxUserTag> wxUserTags = wxMpService.getUserTagService().tagGet();
+        this.setUserTag(openId, tag, wxUserTags);
+    }
+
+
+
 }
