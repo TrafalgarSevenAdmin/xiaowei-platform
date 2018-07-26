@@ -26,7 +26,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +71,7 @@ public class WechatAuthController {
     @ApiOperation(value = "绑定手机号",notes = "绑定成功后，前端应该再次调用登陆接口，并可以指定回调地址。")
     @AutoErrorHandler
     @PostMapping("/bind")
-    public Result bind(@RequestBody @Validated BindMobileDTO bindMobileDTO, BindingResult result, HttpServletRequest request) {
+    public Result bind(@RequestBody @Validated BindMobileDTO bindMobileDTO, HttpServletRequest request) throws WxErrorException {
         //绑定手机号
         String openId = (String)request.getSession().getAttribute("openId");
         if (StringUtils.isEmpty(openId)) {
@@ -93,13 +91,16 @@ public class WechatAuthController {
             user.setSysUser(sysUseByMobile.get());
             //绑定到一起
             wxUserService.save(user);
+            //将系统中的角色绑定到微信中的标签中
+            wxUserService.syncUserTag(sysUseByMobile.get(), user.getOpenId());
         } else {
+//            sysUserService.saveUser()
             //如果没有就新建一个系统用户，标识为普通用户
 //            SysUser sysUser = new SysUser();
 //            sysUser.setLoginName(bindMobileDTO.getMobile());
 //            sysUser.setCreatedTime(new Date());
 //            sysUser.setStatus(0);
-//            sysUser.setNickName(bindMobileDTO.getName());
+//            sysUser.setNickName(name);
 //            user.setSysUser(sysUser);
 //            sysUserService.saveUser(sysUser);
 //            wxUserService.save(user);

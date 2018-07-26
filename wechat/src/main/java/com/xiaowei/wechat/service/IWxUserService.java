@@ -1,8 +1,12 @@
 package com.xiaowei.wechat.service;
 
+import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.service.IBaseService;
 import com.xiaowei.wechat.entity.WxUser;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,4 +34,16 @@ public interface IWxUserService extends IBaseService<WxUser> {
      * @param user
      */
     WxUser saveOrUpdate(WxUser user);
+
+    void syncUserTag(SysUser user, String openId) throws WxErrorException;
+
+    void setUserTag(String openId, String tag, List<WxUserTag> wxUserTags) throws WxErrorException;
+
+    /**
+     * 添加用户标签
+     * @param openId
+     * @param tag
+     * @throws WxErrorException
+     */
+    void setUserTag(String openId, String tag) throws WxErrorException;
 }
