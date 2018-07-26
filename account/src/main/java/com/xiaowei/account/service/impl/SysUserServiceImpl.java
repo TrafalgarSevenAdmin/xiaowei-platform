@@ -4,6 +4,7 @@ import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.LoginUserUtils;
@@ -37,6 +38,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
 
     @Autowired
     private SysUserRepository sysUserRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     public SysUserServiceImpl(@Qualifier("sysUserRepository")BaseRepository repository) {
         super(repository);
@@ -67,6 +70,15 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     @Override
     public SysUser findByLoginName(String loginName) {
         return sysUserRepository.findByLoginName(loginName);
+    }
+
+    @Override
+    public List<SysUser> findFromCompanys() {
+        Set<String> userIds = sysUserRepository.findFromCompanies();
+        if(CollectionUtils.isEmpty(userIds)){
+            return null;
+        }
+        return sysUserRepository.findByIds(userIds);
     }
 
     @Override

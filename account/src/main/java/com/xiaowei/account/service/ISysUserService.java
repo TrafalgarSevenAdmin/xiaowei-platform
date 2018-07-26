@@ -4,6 +4,7 @@ package com.xiaowei.account.service;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.service.IBaseService;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -35,4 +36,7 @@ public interface ISysUserService extends IBaseService<SysUser> {
      * @return
      */
     SysUser findByLoginName(String loginName);
+
+    List<SysUser> findFromCompanys();
+
 }

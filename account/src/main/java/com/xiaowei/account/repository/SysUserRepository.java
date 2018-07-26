@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author mocker
@@ -40,4 +41,9 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
      */
     Optional<SysUser> findByMobile(String mobile);
 
+    @Query(value = "select USER_ID from sys_user_company",nativeQuery = true)
+    Set<String> findFromCompanies();
+
+    @Query("select u from SysUser u where u.id in ?1")
+    List<SysUser> findByIds(Set<String> userIds);
 }

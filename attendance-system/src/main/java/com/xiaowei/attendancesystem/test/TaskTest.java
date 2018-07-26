@@ -1,7 +1,7 @@
 package com.xiaowei.attendancesystem.test;
 
 import com.xiaowei.AttendanceSystemApplication;
-import com.xiaowei.account.repository.SysUserRepository;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.attendancesystem.repository.ChiefEngineerRepository;
 import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
 import org.junit.Test;
@@ -23,12 +23,13 @@ public class TaskTest {
     private ChiefEngineerRepository chiefEngineerRepository;
 
     @Autowired
-    private SysUserRepository userRepository;
+    private ISysUserService userService;
 
     @Test
     public void test(){
 //        PunchRecord byUserIdAndCurrentDate = punchRecordRepository.findByUserIdAndCurrentDate("1");
 //        List<ChiefEngineer> chiefEngineers = chiefEngineerRepository.findByUserId("1");
+//        final List<SysUser> fromCompanys = userService.findFromCompanys();
     }
 
 
