@@ -82,7 +82,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         EmptyUtils.assertOptional(optional, "没有查询到该公司");
         val users = optional.get().getUsers();//该公司下所有的人员
         if (CollectionUtils.isEmpty(users)) {
-            return null;
+            throw new BusinessException("该公司下没有任何员工");
         }
         val cal = Calendar.getInstance();
         cal.setTime(selectMonth);
