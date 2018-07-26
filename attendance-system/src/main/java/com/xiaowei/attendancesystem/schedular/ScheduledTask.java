@@ -2,7 +2,7 @@ package com.xiaowei.attendancesystem.schedular;
 
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
-import com.xiaowei.attendancesystem.service.IPunchRecordService;
+import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +20,10 @@ public class ScheduledTask {
     private ISysUserService userService;
 
     @Autowired
-    private IPunchRecordService punchRecordService;
+    private PunchRecordRepository punchRecordRepository;
 
     private static final Logger log = LoggerFactory.getLogger(ScheduledTask.class);
+
     /**
      * 每天早上1点创建当天所有公司的所有员工的考勤记录
      */
@@ -30,7 +31,12 @@ public class ScheduledTask {
     public void createAllCurrentDatePunch() {
         val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         log.info("批量创建当天考勤记录 {}", dateFormat.format(new Date()));
-        val users =  userService.findFromCompanys();
-        users.stream().forEach(sysUser -> punchRecordService.save(new PunchRecord(sysUser)));
+        val users = userService.findFromCompanys();
+        users.stream().forEach(sysUser -> {
+            if (punchRecordRepository.findByUserIdAndCurrentDate(sysUser.getId()) == null) {
+                punchRecordRepository.save(new PunchRecord(sysUser));
+            }
+
+        });
     }
 }
