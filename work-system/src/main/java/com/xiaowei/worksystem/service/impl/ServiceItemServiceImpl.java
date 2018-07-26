@@ -242,7 +242,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             workOrder.setSystemStatus(WorkOrderSystemStatus.QUALITY.getStatus());//工单状态设置为质检中
             workOrderRepository.save(workOrder);
             //设置为1分钟后自动质检通过
-            messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * 1);
+            messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * 60);
             return true;
         } else {//不需要审核
             //状态更改为待收费还是完成由第四步确认
