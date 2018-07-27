@@ -363,8 +363,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         //检查服务项目是否已经全部完成
         judgeServiceItemIsDone(workOrder);
-        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
-        workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());//用户状态为待付费
+        //检查是否需要设置为待付费状态
+        judgeIsPaied(workOrder);
+
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setEndInhandTime(new Date());//处理完成时间
@@ -373,6 +374,22 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         //设置为24小时后自动完成此工单
         messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE), 1000 * 60 * 60 * 24);
         return save;
+    }
+
+    /**
+     * 检查是否需要设置为待付费状态
+     *
+     * @param workOrder
+     */
+    private void judgeIsPaied(WorkOrder workOrder) {
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
+        val serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
+        if (CollectionUtils.isEmpty(serviceItems)) {
+            workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
+        } else {
+            workOrder.setUserStatus(WorkOrderUserStatus.PAIED.getStatus());//用户状态为待付费
+        }
+
     }
 
     /**
