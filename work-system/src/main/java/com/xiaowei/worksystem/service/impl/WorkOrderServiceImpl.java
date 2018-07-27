@@ -227,7 +227,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }else{//拒绝接单
             workOrder.setEngineer(null);
             workOrder.setBackgrounder(null);
-            workOrder.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//系统状态变更为待接单
+            workOrder.setSystemStatus(WorkOrderSystemStatus.DISTRIBUTE.getStatus());//系统状态变更为待派发
             //删除工单服务项目
             serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
         }
