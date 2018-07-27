@@ -45,12 +45,8 @@ logging:
       yulintu: DEBUG
 wechat:
   config:
-#    晓维商城
-    appId: wx319e805e2640bbf2
-    secret: fd3ea4f364a0da910b2bab3af07c8d28
-#    晓维快修
-#    appId: wxdc9a8fccf12be0e8
-#    secret: a1f045dc2459e949cb3e63a37f011a21
-    token: md4YoeT4mVRQN2Rd244IOdQzqyDS4us2
-    aesKey: e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4
+    appId: @wechat.appId@
+    secret: @wechat.secret@
+    token: @wechat.token@
+    aesKey: @wechat.aesKey@
 
