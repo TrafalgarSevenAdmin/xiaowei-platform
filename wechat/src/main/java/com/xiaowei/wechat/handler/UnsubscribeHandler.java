@@ -1,5 +1,6 @@
 package com.xiaowei.wechat.handler;
 
+import com.xiaowei.core.helper.SpringContextHelper;
 import com.xiaowei.wechat.service.IWxUserService;
 import com.xiaowei.wechat.service.impl.WxUserServiceImpl;
 import me.chanjar.weixin.common.session.WxSessionManager;
@@ -17,13 +18,12 @@ import java.util.Map;
 @Component
 public class UnsubscribeHandler extends AbstractHandler {
 
-  @Autowired
-  private IWxUserService wxUserService;
 
   @Override
   public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                   Map<String, Object> context, WxMpService wxMpService,
                                   WxSessionManager sessionManager) {
+    IWxUserService wxUserService = (IWxUserService) SpringContextHelper.getApplicationContext().getAutowireCapableBeanFactory().getBean("wxUserService");
     String openId = wxMessage.getFromUser();
     this.logger.info("取消关注用户 OPENID: " + openId);
     wxUserService.unsubscribe(openId);
