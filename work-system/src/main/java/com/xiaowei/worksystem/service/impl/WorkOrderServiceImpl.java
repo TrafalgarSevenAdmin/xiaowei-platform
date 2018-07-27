@@ -210,19 +210,28 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      */
     @Override
     @Transactional
-    public WorkOrder receivedWorkOrder(String workOrderId) {
+    public WorkOrder receivedWorkOrder(String workOrderId, Boolean receive) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        //待接单
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
-            throw new BusinessException("状态错误!");
+        if(receive){//同意接单
+            //待接单
+            if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
+                throw new BusinessException("状态错误!");
+            }
+            EngineerWork engineerWork = new EngineerWork();//新建工程师处理工单附表
+            engineerWork.setReceivedTime(new Date());
+            engineerWorkRepository.save(engineerWork);
+            workOrder.setEngineerWork(engineerWork);
+            workOrder.setSystemStatus(WorkOrderSystemStatus.APPOINTING.getStatus());//系统状态变更为预约中
+        }else{//拒绝接单
+            workOrder.setEngineer(null);
+            workOrder.setBackgrounder(null);
+            workOrder.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//系统状态变更为待接单
+            //删除工单服务项目
+            serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
         }
-        EngineerWork engineerWork = new EngineerWork();//新建工程师处理工单附表
-        engineerWork.setReceivedTime(new Date());
-        engineerWorkRepository.save(engineerWork);
-        workOrder.setEngineerWork(engineerWork);
-        workOrder.setSystemStatus(WorkOrderSystemStatus.APPOINTING.getStatus());//工程师状态变更为预约中
+
         return workOrderRepository.save(workOrder);
     }
 

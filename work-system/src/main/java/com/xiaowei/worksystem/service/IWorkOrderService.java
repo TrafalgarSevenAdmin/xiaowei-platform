@@ -20,7 +20,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder payServiceItem(String workOrderId);
 
-    WorkOrder receivedWorkOrder(String workOrderId);
+    WorkOrder receivedWorkOrder(String workOrderId, Boolean receive);
 
     WorkOrder appointingWorkOrder(String workOrderId);
 

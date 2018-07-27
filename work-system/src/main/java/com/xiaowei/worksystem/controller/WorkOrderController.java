@@ -45,7 +45,7 @@ public class WorkOrderController {
                          String workFlowId,
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
-        workOrder = workOrderService.saveWorkOrder(workOrder,workFlowId);
+        workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
@@ -54,7 +54,7 @@ public class WorkOrderController {
     @PostMapping("/{workOrderId}/evaluate")
     public Result insertEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
-        evaluate = evaluateService.saveEvaluate(workOrderId,evaluate);
+        evaluate = evaluateService.saveEvaluate(workOrderId, evaluate);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
     }
 
@@ -68,15 +68,15 @@ public class WorkOrderController {
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrder = workOrderService.updateWorkOrder(workOrder,workFlowId);
+        workOrder = workOrderService.updateWorkOrder(workOrder, workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
     @ApiOperation(value = "用户确认项目")
     @AutoErrorHandler
     @PutMapping("/confirmed/{workOrderId}")
-    public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId,@RequestBody  List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
-        workOrderService.confirmed(workOrderId,serviceItemIds);
+    public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId, @RequestBody List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
+        workOrderService.confirmed(workOrderId, serviceItemIds);
         return Result.getSuccess();
     }
 
@@ -89,7 +89,7 @@ public class WorkOrderController {
                                       String workFlowId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrderService.distributeWorkOrder(workOrder,workFlowId);
+        workOrderService.distributeWorkOrder(workOrder, workFlowId);
         return Result.getSuccess();
     }
 
@@ -105,16 +105,16 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师出发")
     @AutoErrorHandler
     @PutMapping("/departe/{workOrderId}")
-    public Result departeWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody String wkt, FieldsView fieldsView) throws Exception {
-        workOrderService.departeWorkOrder(workOrderId,GeometryUtil.transWKT(wkt));
+    public Result departeWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
+        workOrderService.departeWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
         return Result.getSuccess();
     }
 
     @ApiOperation(value = "工程师开始处理")
     @AutoErrorHandler
     @PutMapping("/inhand/{workOrderId}")
-    public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId,@RequestBody String wkt, FieldsView fieldsView) throws Exception {
-        workOrderService.inhandWorkOrder(workOrderId,GeometryUtil.transWKT(wkt));
+    public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
+        workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
         return Result.getSuccess();
     }
 
@@ -130,8 +130,8 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师接单")
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")
-    public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.receivedWorkOrder(workOrderId);
+    public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody Boolean receive, FieldsView fieldsView) throws Exception {
+        workOrderService.receivedWorkOrder(workOrderId, receive);
         return Result.getSuccess();
     }
 
