@@ -11,6 +11,7 @@ import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.repository.ChiefEngineerRepository;
 import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
+import com.xiaowei.attendancesystem.status.ChiefEngineerStatus;
 import com.xiaowei.commonjts.utils.CalculateUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.basic.repository.BaseRepository;
@@ -91,7 +92,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         val formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         return punchRecordRepository.findByUserIdsBetweenPunchTime(users.stream().map(SysUser::getId).collect(Collectors.toSet()),
-                formatter.parse(firstDayOfMonth),formatter.parse(lastDayOfMonth));
+                formatter.parse(firstDayOfMonth), formatter.parse(lastDayOfMonth));
     }
 
     /**
@@ -148,17 +149,23 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     private ChiefEngineer judgeWithinRange(PunchRecord currentPunchRecord, Geometry shape) {
         //chiefEngineers 当前用户的办公点集合
         List<ChiefEngineer> chiefEngineers = chiefEngineerRepository.findByUserId(currentPunchRecord.getSysUser().getId());
-        if(CollectionUtils.isEmpty(chiefEngineers)){
+        if (CollectionUtils.isEmpty(chiefEngineers)) {
             throw new BusinessException("没有查询到任何打卡点");
         }
 
         Double shortest = 0.00;
         for (int i = 0; i < chiefEngineers.size(); i++) {
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
+            //判断是否正常
+            if (ChiefEngineerStatus.NORMAL.equals(chiefEngineer)) {
+            }
             double v = CalculateUtils.GetDistance(GeometryUtil.getGps((Point) shape),
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
-            if (v < distance) {
-                return chiefEngineer;
+            //判断是否正常
+            if (ChiefEngineerStatus.NORMAL.equals(chiefEngineer)) {
+                if (v < distance) {
+                    return chiefEngineer;
+                }
             }
             if (shortest < v - distance) {//验算最小距离
                 shortest = v - distance;
