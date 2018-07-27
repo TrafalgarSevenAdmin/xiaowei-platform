@@ -156,13 +156,10 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         Double shortest = 0.00;
         for (int i = 0; i < chiefEngineers.size(); i++) {
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
-            //判断是否正常
-            if (ChiefEngineerStatus.NORMAL.equals(chiefEngineer)) {
-            }
             double v = CalculateUtils.GetDistance(GeometryUtil.getGps((Point) shape),
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
             //判断是否正常
-            if (ChiefEngineerStatus.NORMAL.equals(chiefEngineer)) {
+            if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer)) {
                 if (v < distance) {
                     return chiefEngineer;
                 }
