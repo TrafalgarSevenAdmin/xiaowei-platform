@@ -80,6 +80,7 @@
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
                 <upload.path>C:/upload</upload.path>
+                <upload.accessUrlRoot>127.0.0.1:7000</upload.accessUrlRoot>
             </properties>
         </profile>
         <profile>
@@ -99,6 +100,7 @@
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
                 <upload.path>/root/upload</upload.path>
+                <upload.accessUrlRoot>192.168.1.218:7000</upload.accessUrlRoot>
             </properties>
         </profile>
         <profile>
@@ -118,6 +120,7 @@
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
                 <upload.path>/root/upload</upload.path>
+                <upload.accessUrlRoot>119.23.224.29:7000</upload.accessUrlRoot>
             </properties>
         </profile>
     </profiles>

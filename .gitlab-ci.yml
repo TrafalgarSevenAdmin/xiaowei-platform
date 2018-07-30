@@ -30,7 +30,7 @@ run_work:
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
    - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - dev
 
@@ -84,7 +84,7 @@ release_work:
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
    - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - aliyun
 
