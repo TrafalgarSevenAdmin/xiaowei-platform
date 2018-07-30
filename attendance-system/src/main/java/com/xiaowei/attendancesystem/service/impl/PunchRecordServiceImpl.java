@@ -159,7 +159,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             double v = CalculateUtils.GetDistance(GeometryUtil.getGps((Point) shape),
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
             //判断是否正常
-            if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer)) {
+            if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
                 if (v < distance) {
                     return chiefEngineer;
                 }
