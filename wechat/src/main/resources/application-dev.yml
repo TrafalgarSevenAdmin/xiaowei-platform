@@ -1,6 +1,6 @@
 profiles:  dev_environment
 server:
-  host: http://gongdan.xwseries.com
+  host: @server.host@
   pre:
     # 前端用户页面主页地址，在自动登陆后跳转
     index: /xwkx-web/catalog
