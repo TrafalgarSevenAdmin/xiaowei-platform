@@ -102,4 +102,13 @@ public class ChiefEngineerController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(chiefEngineer, fieldsView));
     }
 
+    @ApiOperation("获取当前登录用户最近的办公点")
+    @GetMapping("/nearest")
+    public Result findNearest(@RequestParam String wkt, FieldsView fieldsView) throws Exception {
+        ChiefEngineer chiefEngineer = chiefEngineerService.findNearest(GeometryUtil.transWKT(wkt));
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(chiefEngineer, fieldsView));
+    }
+
+
+
 }
