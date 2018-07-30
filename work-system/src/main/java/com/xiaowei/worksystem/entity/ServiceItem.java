@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -89,4 +90,12 @@ public class ServiceItem extends BaseEntity{
     private String version;
 
 
+    /**
+     * 质检文件id(多文件以分号隔开)
+     */
+    private String qualityFileStore;
+
+    public String getQualityFileStore() {
+        return UploadConfigUtils.transIdsToPath(this.qualityFileStore);
+    }
 }

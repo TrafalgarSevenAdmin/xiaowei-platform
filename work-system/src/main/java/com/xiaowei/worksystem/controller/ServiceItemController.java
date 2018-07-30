@@ -45,8 +45,8 @@ public class ServiceItemController {
 
     @ApiOperation(value = "工程师执行服务项目")
     @PutMapping("/{serviceItemId}/execute")
-    public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, FieldsView fieldsView) throws Exception {
-        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId);
+    public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, String qualityFileStore, FieldsView fieldsView) throws Exception {
+        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId,qualityFileStore);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
     }
 

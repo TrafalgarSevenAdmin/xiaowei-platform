@@ -79,6 +79,7 @@
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <upload.path>C:/upload</upload.path>
             </properties>
         </profile>
         <profile>
@@ -97,6 +98,7 @@
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <upload.path>/root/upload</upload.path>
             </properties>
         </profile>
         <profile>
@@ -115,6 +117,7 @@
                 <wechat.secret>a1f045dc2459e949cb3e63a37f011a21</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <upload.path>/root/upload</upload.path>
             </properties>
         </profile>
     </profiles>
