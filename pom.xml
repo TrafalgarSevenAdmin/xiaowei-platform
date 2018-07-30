@@ -31,10 +31,6 @@
 
     <repositories>
         <repository>
-            <id>xwmaven</id>
-            <url>http://192.168.1.218:7777/repository/maven-public/</url>
-        </repository>
-        <repository>
             <id>aliyun</id>
             <url>http://maven.aliyun.com/nexus/content/groups/public</url>
         </repository>
@@ -79,6 +75,10 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <wechat.appId>wx319e805e2640bbf2</wechat.appId>
+                <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
+                <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
+                <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
             </properties>
         </profile>
         <profile>
@@ -92,6 +92,11 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <!--使用晓维商城作为测试公众号-->
+                <wechat.appId>wx319e805e2640bbf2</wechat.appId>
+                <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
+                <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
+                <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
             </properties>
         </profile>
         <profile>
@@ -105,6 +110,11 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <!--晓维快修-->
+                <wechat.appId>wxdc9a8fccf12be0e8</wechat.appId>
+                <wechat.secret>a1f045dc2459e949cb3e63a37f011a21</wechat.secret>
+                <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
+                <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
             </properties>
         </profile>
     </profiles>

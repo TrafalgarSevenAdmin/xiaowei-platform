@@ -1,6 +1,8 @@
 package com.xiaowei.wechat.handler;
 
+import com.xiaowei.core.SpringContext;
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.helper.SpringContextHelper;
 import com.xiaowei.wechat.builder.TextBuilder;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
@@ -22,14 +24,13 @@ import java.util.Optional;
 @Component
 public class SubscribeHandler extends AbstractHandler {
 
-    @Autowired
-    private IWxUserService wxUserService;
 
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                     Map<String, Object> context, WxMpService weixinService,
                                     WxSessionManager sessionManager) throws WxErrorException {
 
+        IWxUserService wxUserService = (IWxUserService) SpringContextHelper.getApplicationContext().getAutowireCapableBeanFactory().getBean("wxUserService");
         this.logger.info("新关注用户 OPENID: " + wxMessage.getFromUser());
 
         // 获取微信用户基本信息
