@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "W_WORKORDER")
 public class WorkOrder extends BaseEntity {
+
     /**
      * 工单编号
      */
@@ -100,7 +102,7 @@ public class WorkOrder extends BaseEntity {
     /**
      * 用户评价
      */
-    @OneToOne(targetEntity = Evaluate.class,fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = Evaluate.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "evaluate_id")
     @Fetch(FetchMode.JOIN)
     private Evaluate evaluate;
@@ -108,10 +110,23 @@ public class WorkOrder extends BaseEntity {
     /**
      * 工程师处理工单附表
      */
-    @OneToOne(targetEntity = EngineerWork.class,fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = EngineerWork.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "engineerWork_id")
     @Fetch(FetchMode.JOIN)
     private EngineerWork engineerWork;
+
+    /**
+     * 报修文件id(多文件以分号隔开)
+     */
+    private String repairFileStore;
+
+    public String getRepairFileStore() {
+        return UploadConfigUtils.transIdsToPath(this.repairFileStore);
+    }
+
+    public void setRepairFileStore(String repairFileStore) {
+        this.repairFileStore = repairFileStore;
+    }
 
     public EngineerWork getEngineerWork() {
         return engineerWork;

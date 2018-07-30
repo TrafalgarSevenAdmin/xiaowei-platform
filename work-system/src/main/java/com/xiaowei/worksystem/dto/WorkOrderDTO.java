@@ -81,6 +81,20 @@ public class WorkOrderDTO {
     @NotNull(groups = {WorkOrderDTO.DistributeWorkOrder.class},message = "处理工程师必填!")
     private SysUser engineer;
 
+    /**
+     * 报修文件id(多文件以分号隔开)
+     */
+    @ApiModelProperty(value = "报修文件id(多文件以分号隔开)")
+    private String repairFileStore;
+
+    public String getRepairFileStore() {
+        return repairFileStore;
+    }
+
+    public void setRepairFileStore(String repairFileStore) {
+        this.repairFileStore = repairFileStore;
+    }
+
     public String getCode() {
         return code;
     }

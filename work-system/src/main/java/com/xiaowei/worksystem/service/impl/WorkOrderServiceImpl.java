@@ -94,8 +94,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             String workOrderId = workOrder.getId();
             EmptyUtils.assertString(workOrderId, "没有传入对象id");
-            Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-            EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+            Optional<WorkOrder> optional = workOrderRepository.findById(workOrderId);
+            EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+            final WorkOrder one = optional.get();
+            //设置无法修改的字段
+            workOrder.setRepairFileStore(one.getRepairFileStore());//报修图片id无法修改
+
         }
     }
 

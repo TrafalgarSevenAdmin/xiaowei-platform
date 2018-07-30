@@ -1,5 +1,6 @@
 package com.xiaowei.attendancesystem.service;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.attendancesystem.entity.ChiefEngineer;
 import com.xiaowei.core.basic.service.IBaseService;
 
@@ -12,4 +13,6 @@ public interface IChiefEngineerService extends IBaseService<ChiefEngineer>{
     void fakeDeleteChiefEngineer(String chiefEngineerId);
 
     ChiefEngineer updateStatus(ChiefEngineer chiefEngineer);
+
+    ChiefEngineer findNearest(Geometry geometry);
 }
