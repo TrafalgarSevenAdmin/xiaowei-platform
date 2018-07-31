@@ -23,7 +23,6 @@ import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,9 +45,6 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     private ChiefEngineerRepository chiefEngineerRepository;
     @Autowired
     private CompanyRepository companyRepository;
-
-    @Value("${punch.distance}")
-    private Double distance;
 
     public PunchRecordServiceImpl(@Qualifier("punchRecordRepository") BaseRepository repository) {
         super(repository);
@@ -158,9 +154,14 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
             double v = CalculateUtils.GetDistance(GeometryUtil.getGps((Point) shape),
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
+
+            Integer distance = chiefEngineer.getDistance();
+            if(distance==null){
+                distance = 500;//默认500米
+            }
             //判断是否正常
             if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
-                if (v < distance) {
+                if (v < chiefEngineer.getDistance()) {
                     return chiefEngineer;
                 }
             }

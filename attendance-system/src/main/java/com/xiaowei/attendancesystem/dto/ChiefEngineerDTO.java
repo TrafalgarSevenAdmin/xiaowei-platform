@@ -74,4 +74,11 @@ public class ChiefEngineerDTO {
     @ApiModelProperty(value = "办公点下的部门")
     private List<Department> departments;
 
+    /**
+     * 办公点打卡距离(单位米)
+     */
+    @ApiModelProperty(value = "办公点打卡距离(单位米)")
+    @NotNull(groups = {V.Insert.class,V.Update.class},message = "办公点打卡距离必填!")
+    private Integer distance;
+
 }
