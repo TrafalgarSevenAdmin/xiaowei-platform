@@ -29,8 +29,6 @@ spring:
   redis:
     host: @redis.url@
     port: 6379
-punch:
-  distance: 1000
 #  rabbitmq:
 #    host: @rabbitmq.host@
 #    port: @rabbitmq.port@

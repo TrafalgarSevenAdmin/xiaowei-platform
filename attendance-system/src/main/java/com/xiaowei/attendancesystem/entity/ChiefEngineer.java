@@ -67,6 +67,11 @@ public class ChiefEngineer extends BaseEntity {
     private Time endClockOutTime;
 
     /**
+     * 办公点打卡距离(单位米)
+     */
+    private Integer distance;
+
+    /**
      * 办公点下的部门
      */
     @Fetch(FetchMode.SUBSELECT)
