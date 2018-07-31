@@ -152,6 +152,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         Double shortest = 0.00;
         for (int i = 0; i < chiefEngineers.size(); i++) {
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
+            //用户当前位置和打卡点位置的距离
             double v = CalculateUtils.GetDistance(GeometryUtil.getGps((Point) shape),
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
 
@@ -161,13 +162,15 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
             //判断是否正常
             if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
-                if (v < chiefEngineer.getDistance()) {
+                if (v < distance) {
                     return chiefEngineer;
+                }else{
+                    if (shortest < v - distance) {//验算最小距离
+                        shortest = v - distance;
+                    }
                 }
             }
-            if (shortest < v - distance) {//验算最小距离
-                shortest = v - distance;
-            }
+
             if (i == chiefEngineers.size() - 1) {//如果是最后一次
                 throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
             }
