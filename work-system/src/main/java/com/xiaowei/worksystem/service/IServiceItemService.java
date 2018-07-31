@@ -11,7 +11,7 @@ public interface IServiceItemService extends IBaseService<ServiceItem> {
 
     List<ServiceItem> saveByEngineer(String workOrderId, List<ServiceItem> serviceItems);
 
-    ServiceItem executeServiceItem(String serviceItemId, String qualityFileStore);
+    ServiceItem executeServiceItem(String serviceItemId, String qualityFileStore,String endingState);
 
     ServiceItem qualityServiceItem(String serviceItemId, Boolean audit);
 }

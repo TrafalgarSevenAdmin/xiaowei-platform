@@ -83,10 +83,12 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
      * 工程师执行服务项目
      *
      * @param serviceItemId
+     * @param qualityFileStore
+     * @param endingState
      */
     @Override
     @Transactional
-    public ServiceItem executeServiceItem(String serviceItemId, String qualityFileStore) {
+    public ServiceItem executeServiceItem(String serviceItemId, String qualityFileStore, String endingState) {
         Optional<ServiceItem> one = serviceItemRepository.findById(serviceItemId);
         EmptyUtils.assertOptional(one, "没有查询到需要执行的服务项目");
         ServiceItem serviceItem = one.get();
@@ -105,6 +107,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             judgeCurrentIsCharge(serviceItem);
         }
         serviceItem.setQualityFileStore(qualityFileStore);//设置质检拍照图片
+        serviceItem.setEndingState(endingState);//设置完成服务项目的描述
         return serviceItemRepository.save(serviceItem);
     }
 
@@ -166,6 +169,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         serviceItem.setBeginTime(new Date());//开始处理时间
         serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());//状态正常
         serviceItem.setQualityFileStore(null);//质检拍照文件重新设置
+        serviceItem.setEndingState(null);//完成服务项目的描述
         workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//处理中
         workOrder.setCurrentOrderNumber(serviceItem.getOrderNumber());//当前处理步骤
         workOrderRepository.save(workOrder);

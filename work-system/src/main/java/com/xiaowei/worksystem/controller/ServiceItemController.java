@@ -7,6 +7,7 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.worksystem.dto.ExecuteServiceItemDTO;
 import com.xiaowei.worksystem.dto.ServiceItemDTO;
 import com.xiaowei.worksystem.entity.ServiceItem;
 import com.xiaowei.worksystem.query.ServiceItemQuery;
@@ -45,8 +46,10 @@ public class ServiceItemController {
 
     @ApiOperation(value = "工程师执行服务项目")
     @PutMapping("/{serviceItemId}/execute")
-    public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, String qualityFileStore, FieldsView fieldsView) throws Exception {
-        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId,qualityFileStore);
+    public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, ExecuteServiceItemDTO executeServiceItemDTO, FieldsView fieldsView) throws Exception {
+        ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId,
+                executeServiceItemDTO.getQualityFileStore(),
+                executeServiceItemDTO.getEndingState());
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
     }
 

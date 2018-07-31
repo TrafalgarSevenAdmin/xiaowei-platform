@@ -89,6 +89,10 @@ public class ServiceItem extends BaseEntity{
      */
     private String version;
 
+    /**
+     * 完成服务项目的描述
+     */
+    private String endingState;
 
     /**
      * 质检文件id(多文件以分号隔开)
