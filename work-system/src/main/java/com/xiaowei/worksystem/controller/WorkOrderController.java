@@ -8,6 +8,9 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Evaluate;
@@ -22,7 +25,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工单管理
@@ -36,6 +42,8 @@ public class WorkOrderController {
     private IWorkOrderService workOrderService;
     @Autowired
     private IEvaluateService evaluateService;
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
@@ -89,8 +97,36 @@ public class WorkOrderController {
                                       String workFlowId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrderService.distributeWorkOrder(workOrder, workFlowId);
+        workOrder = workOrderService.distributeWorkOrder(workOrder, workFlowId);
+        //派单提醒通知
+        maintenanceOfDispatching(workOrder);
         return Result.getSuccess();
+    }
+
+    /**
+     * 派单提醒通知
+     *
+     * @param workOrder
+     */
+    private void maintenanceOfDispatching(WorkOrder workOrder) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getEngineer().getId());
+//        userMessageBean.setUrl();
+            userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
+            Map<String,UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("fitst",new UserMessageBean.Payload("您有新的派单通知,请尽快确认",null));
+            messageMap.put("keyword1",new UserMessageBean.Payload(workOrder.getCode(),null));
+            messageMap.put("keyword2",new UserMessageBean.Payload(workOrder.getErrorDescription(),null));
+            messageMap.put("keyword3",new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()),null));
+            messageMap.put("keyword4",new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()),null));
+            messageMap.put("keyword5",new UserMessageBean.Payload(workOrder.getEquipment().getAddress(),null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 

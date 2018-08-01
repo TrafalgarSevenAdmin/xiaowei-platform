@@ -433,8 +433,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             //设置服务项目
             setServiceItems(workOrder, workFlowId);
         }
-
-        return workOrder;
+        return one;
     }
 
     /**
