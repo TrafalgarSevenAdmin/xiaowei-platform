@@ -8,10 +8,6 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
-import com.xiaowei.mq.bean.UserMessageBean;
-import com.xiaowei.mq.constant.MessageType;
-import com.xiaowei.mq.sender.MessagePushSender;
-import com.xiaowei.mq.utils.MessageColor;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Evaluate;
@@ -26,9 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 工单管理
