@@ -112,18 +112,18 @@ public class WorkOrderController {
         try {
             UserMessageBean userMessageBean = new UserMessageBean();
             userMessageBean.setUserId(workOrder.getEngineer().getId());
-//        userMessageBean.setUrl();
+            userMessageBean.setUrl("www.baidu.com");
             userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
-            Map<String,UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("fitst",new UserMessageBean.Payload("您有新的派单通知,请尽快确认",null));
-            messageMap.put("keyword1",new UserMessageBean.Payload(workOrder.getCode(),null));
-            messageMap.put("keyword2",new UserMessageBean.Payload(workOrder.getErrorDescription(),null));
-            messageMap.put("keyword3",new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()),null));
-            messageMap.put("keyword4",new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()),null));
-            messageMap.put("keyword5",new UserMessageBean.Payload(workOrder.getEquipment().getAddress(),null));
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("firtst", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment().getAddress(), null));
             userMessageBean.setData(messageMap);
             messagePushSender.sendWxMessage(userMessageBean);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
