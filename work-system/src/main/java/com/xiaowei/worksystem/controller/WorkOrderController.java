@@ -11,7 +11,6 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MessageType;
 import com.xiaowei.mq.sender.MessagePushSender;
-import com.xiaowei.mq.utils.MessageColor;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Evaluate;
@@ -26,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,31 +110,18 @@ public class WorkOrderController {
      */
     private void maintenanceOfDispatching(WorkOrder workOrder) {
         try {
-//            UserMessageBean userMessageBean = new UserMessageBean();
-//            userMessageBean.setUserId(workOrder.getEngineer().getId());
-//            userMessageBean.setUrl("www.baidu.com");
-//            userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
-//            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
-//            messageMap.put("firtst", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
-//            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
-//            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
-//            messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
-//            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
-////            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment().getAddress(), null));
-//            userMessageBean.setData(messageMap);
-//            messagePushSender.sendWxMessage(userMessageBean);
-
-
             UserMessageBean userMessageBean = new UserMessageBean();
-            userMessageBean.setUserId("2c91808564c60dc70164d098a5a70006");
+            userMessageBean.setUserId(workOrder.getEngineer().getId());
             userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
-            Map<String,UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("first",new UserMessageBean.Payload("first",MessageColor.SUCCESS));
-            messageMap.put("keyword1",new UserMessageBean.Payload("keyword1",MessageColor.SUCCESS));
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("firtst", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment().getAddress(), null));
             userMessageBean.setData(messageMap);
-            userMessageBean.setUrl("www.baidu.com");
             messagePushSender.sendWxMessage(userMessageBean);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
