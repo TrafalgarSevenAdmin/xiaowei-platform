@@ -114,7 +114,7 @@ public class WorkOrderController {
             userMessageBean.setUserId(workOrder.getEngineer().getId());
             userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("firtst", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("first", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
@@ -149,7 +149,9 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/inhand/{workOrderId}")
     public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
-        workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
+        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
+        //到达通知
+        processingNotification(workOrder, "工程师已到达");
         return Result.getSuccess();
     }
 
@@ -157,7 +159,9 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/finishInhand/{workOrderId}")
     public Result finishInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.finishInhand(workOrderId);
+        WorkOrder workOrder = workOrderService.finishInhand(workOrderId);
+        //到达通知
+        processingNotification(workOrder, "工程师已处理完成");
         return Result.getSuccess();
     }
 
@@ -166,8 +170,36 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")
     public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody Boolean receive, FieldsView fieldsView) throws Exception {
-        workOrderService.receivedWorkOrder(workOrderId, receive);
+        WorkOrder workOrder = workOrderService.receivedWorkOrder(workOrderId, receive);
+        if (!receive) {
+            //接单提醒通知
+            processingNotification(workOrder, "已接单");
+        }
         return Result.getSuccess();
+    }
+
+    /**
+     * 工单处理通知
+     *
+     * @param workOrder
+     * @param status
+     */
+    private void processingNotification(WorkOrder workOrder, String status) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getProposer().getId());
+            userMessageBean.setMessageType(MessageType.PROCESSINGNOTIFICATION);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("您的工单有新的进度,请点击查看", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @ApiOperation(value = "工单待归档")
