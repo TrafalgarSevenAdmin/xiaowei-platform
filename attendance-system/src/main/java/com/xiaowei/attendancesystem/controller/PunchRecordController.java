@@ -1,5 +1,6 @@
 package com.xiaowei.attendancesystem.controller;
 
+import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ICompanyService;
@@ -114,7 +115,7 @@ public class PunchRecordController {
         List<Object[]> totalDatas = new ArrayList<>();
         //获取当前天的时间格式化对象
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
-        users.stream().forEach(sysUser -> {
+        users.stream().filter(sysUser -> UserStatus.NORMAL.getStatus().equals(sysUser.getStatus())).forEach(sysUser -> {
             List<Object> datas = new ArrayList<>();
             datas.add("");
             datas.add(sysUser.getNickName());

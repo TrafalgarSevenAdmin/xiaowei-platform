@@ -1,5 +1,6 @@
 package com.xiaowei.attendancesystem.schedular;
 
+import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
@@ -33,10 +34,11 @@ public class ScheduledTask {
         log.info("批量创建当天考勤记录 {}", dateFormat.format(new Date()));
         val users = userService.findFromCompanys();
         users.stream().forEach(sysUser -> {
-            if (punchRecordRepository.findByUserIdAndCurrentDate(sysUser.getId()) == null) {
-                punchRecordRepository.save(new PunchRecord(sysUser));
+            if(UserStatus.NORMAL.getStatus().equals(sysUser.getStatus())){
+                if (punchRecordRepository.findByUserIdAndCurrentDate(sysUser.getId()) == null) {
+                    punchRecordRepository.save(new PunchRecord(sysUser));
+                }
             }
-
         });
     }
 }
