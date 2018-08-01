@@ -2,8 +2,6 @@ package com.xiaowei.mq.bean;
 
 import com.xiaowei.mq.constant.MessageType;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Payload;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -31,9 +29,14 @@ public class UserMessageBean implements MessageBean {
     Map<String,Payload> data;
 
     @Data
-    public class Payload{
+    public static class Payload implements Serializable {
         public String data;
         public String color;
+
+        public Payload(String data, String color) {
+            this.data = data;
+            this.color = color;
+        }
     }
 
 }

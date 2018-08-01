@@ -11,7 +11,7 @@ public enum  MessageType {
     /**
      * 工单状态
      */
-    GD_STATUS("");
+    GD_STATUS("kheEs_KCgIc9veQvxl_YcjLcwUk2Zd9J4qYs0GJcyqw");
 
     // ===================================== 微信推送使用 ===================================
 

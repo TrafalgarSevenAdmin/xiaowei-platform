@@ -8,6 +8,9 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Evaluate;
@@ -22,7 +25,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工单管理
@@ -185,6 +190,24 @@ public class WorkOrderController {
     public Result findById(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
         WorkOrder workOrder = workOrderService.findById(workOrderId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
+    }
+
+
+    @Autowired
+    private MessagePushSender messagePushSender;
+    @ApiOperation("test")
+    @GetMapping("/test")
+    public Result test() {
+        UserMessageBean userMessageBean = new UserMessageBean();
+        userMessageBean.setUserId("2c91808564c60dc70164d098a5a70006");
+        userMessageBean.setMessageType(MessageType.GD_STATUS);
+        Map<String,UserMessageBean.Payload> messageMap = new HashMap<>();
+        messageMap.put("first",new UserMessageBean.Payload("first","red"));
+        messageMap.put("keyword1",new UserMessageBean.Payload("keyword1","blue"));
+        userMessageBean.setData(messageMap);
+        userMessageBean.setUrl("www.baidu.com");
+        messagePushSender.sendWxMessage(userMessageBean);
+        return Result.getSuccess();
     }
 
     @ApiOperation("删除工单")
