@@ -11,7 +11,7 @@ public enum  MessageType {
     /**
      * 工单状态
      */
-    MAINTENANCEOFDISPATCHING("yGkZz0WqHlSL1BjmPwISqfTG7pJPGS23cotuNEGA0vM");
+    MAINTENANCEOFDISPATCHING("kheEs_KCgIc9veQvxl_YcjLcwUk2Zd9J4qYs0GJcyqw");
 
     // ===================================== 微信推送使用 ===================================
 

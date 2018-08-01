@@ -120,7 +120,7 @@ public class WorkOrderController {
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
             messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
-            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment().getAddress(), null));
+//            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment().getAddress(), null));
             userMessageBean.setData(messageMap);
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
