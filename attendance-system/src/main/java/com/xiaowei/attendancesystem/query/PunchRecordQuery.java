@@ -15,6 +15,7 @@ import java.util.Date;
 public class PunchRecordQuery extends Query {
 
     private String userId;
+    private Integer userStatus;
     private String loginName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date b_punchTime;
@@ -27,9 +28,9 @@ public class PunchRecordQuery extends Query {
     @Override
     public void generateCondition() {
         addSort(Sort.Dir.desc, "createdTime");
+        addFilter(new Filter("sysUser.status", Filter.Operator.eq, userStatus != null ? userStatus : UserStatus.NORMAL.getStatus()));
         if (StringUtils.isNotEmpty(userId)) {
             addFilter(new Filter("sysUser.id", Filter.Operator.eq, userId));
-            addFilter(new Filter("sysUser.status", Filter.Operator.eq, UserStatus.NORMAL.getStatus()));
         }
         //根据打卡人名称过滤
         if (StringUtils.isNotEmpty(loginName)) {
