@@ -7,9 +7,13 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.worksystem.dto.ExecuteServiceItemDTO;
 import com.xiaowei.worksystem.dto.ServiceItemDTO;
 import com.xiaowei.worksystem.entity.ServiceItem;
+import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.query.ServiceItemQuery;
 import com.xiaowei.worksystem.service.IServiceItemService;
 import io.swagger.annotations.Api;
@@ -19,7 +23,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 维修项目管理
@@ -34,6 +40,8 @@ public class ServiceItemController {
      */
     @Autowired
     private IServiceItemService serviceItemService;
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     @ApiOperation(value = "工程师添加收费项目")
     @AutoErrorHandler
@@ -41,7 +49,38 @@ public class ServiceItemController {
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         List<ServiceItem> serviceItems = BeanCopyUtils.copyList(serviceItemDTOs, ServiceItem.class);
         serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
+        for (int i = 0; i < serviceItems.size(); i++) {
+            ServiceItem serviceItem = serviceItems.get(i);
+            if(serviceItem.getCharge()){
+                processingNotification(serviceItem.getWorkOrder(),"待确认");
+                break;
+            }
+        }
         return Result.getSuccess(ObjectToMapUtils.listToMap(serviceItems, fieldsView));
+    }
+
+    /**
+     * 工单处理通知
+     *
+     * @param workOrder
+     * @param status
+     */
+    private void processingNotification(WorkOrder workOrder, String status) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getProposer().getId());
+            userMessageBean.setMessageType(MessageType.PROCESSINGNOTIFICATION);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("您的工单新增收费项目,请尽快确认", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @ApiOperation(value = "工程师执行服务项目")

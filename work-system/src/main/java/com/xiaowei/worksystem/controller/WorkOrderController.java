@@ -133,8 +133,27 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/pay/{workOrderId}")
     public Result payServiceItem(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.payServiceItem(workOrderId);
+        WorkOrder workOrder = workOrderService.payServiceItem(workOrderId);
+        affirmedServiceItem(workOrder,"已确认");
         return Result.getSuccess();
+    }
+
+    private void affirmedServiceItem(WorkOrder workOrder, String status) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getEngineer().getId());
+            userMessageBean.setMessageType(MessageType.PROCESSINGNOTIFICATION);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("用户已确认收费项目,请尽快完成", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @ApiOperation(value = "工程师出发")
@@ -171,7 +190,7 @@ public class WorkOrderController {
     @PutMapping("/received/{workOrderId}")
     public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody Boolean receive, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.receivedWorkOrder(workOrderId, receive);
-        if (!receive) {
+        if (receive) {
             //接单提醒通知
             processingNotification(workOrder, "已接单");
         }
