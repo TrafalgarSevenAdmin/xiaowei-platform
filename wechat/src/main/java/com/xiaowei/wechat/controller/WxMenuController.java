@@ -1,5 +1,8 @@
 package com.xiaowei.wechat.controller;
 
+import com.xiaowei.core.result.Result;
+import com.xiaowei.wechat.dto.MeunDTO;
+import com.xiaowei.wechat.service.IMeunService;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -9,6 +12,8 @@ import me.chanjar.weixin.mp.bean.menu.WxMpGetSelfMenuInfoResult;
 import me.chanjar.weixin.mp.bean.menu.WxMpMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType;
 
@@ -20,7 +25,10 @@ import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType;
  */
 @RestController
 @RequestMapping("/menu")
-public class WxMenuController implements WxMpMenuService {
+public class WxMenuController {
+
+  @Autowired
+  private IMeunService menuCreate;
 
   @Autowired
   private WxMpService wxService;
@@ -32,70 +40,11 @@ public class WxMenuController implements WxMpMenuService {
    * 如果要创建个性化菜单，请设置matchrule属性
    * 详情请见：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1455782296&token=&lang=zh_CN
    * </pre>
-   *
-   * @param menu
-   * @return 如果是个性化菜单，则返回menuid，否则返回null
    */
-  @Override
   @PostMapping("/create")
-  public String menuCreate(@RequestBody WxMenu menu) throws WxErrorException {
-    return this.wxService.getMenuService().menuCreate(menu);
-  }
-
-
-  /**
-   * <pre>
-   * 自定义菜单创建接口
-   * 详情请见： https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141013&token=&lang=zh_CN
-   * 如果要创建个性化菜单，请设置matchrule属性
-   * 详情请见：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1455782296&token=&lang=zh_CN
-   * </pre>
-   *
-   * @param json
-   * @return 如果是个性化菜单，则返回menuid，否则返回null
-   */
-  @Override
-  @GetMapping("/create/{json}")
-  public String menuCreate(@PathVariable String json) throws WxErrorException {
-    return this.wxService.getMenuService().menuCreate(json);
-  }
-
-  /**
-   * <pre>
-   * 自定义菜单删除接口
-   * 详情请见: https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141015&token=&lang=zh_CN
-   * </pre>
-   */
-  @Override
-  @GetMapping("/delete")
-  public void menuDelete() throws WxErrorException {
-    this.wxService.getMenuService().menuDelete();
-  }
-
-  /**
-   * <pre>
-   * 删除个性化菜单接口
-   * 详情请见: https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1455782296&token=&lang=zh_CN
-   * </pre>
-   *
-   * @param menuId 个性化菜单的menuid
-   */
-  @Override
-  @GetMapping("/delete/{menuId}")
-  public void menuDelete(@PathVariable String menuId) throws WxErrorException {
-    this.wxService.getMenuService().menuDelete(menuId);
-  }
-
-  /**
-   * <pre>
-   * 自定义菜单查询接口
-   * 详情请见： https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141014&token=&lang=zh_CN
-   * </pre>
-   */
-  @Override
-  @GetMapping("/get")
-  public WxMpMenu menuGet() throws WxErrorException {
-    return this.wxService.getMenuService().menuGet();
+  public Result menuCreate(@RequestBody MeunDTO menus) throws WxErrorException {
+    menuCreate.individuationMeun(menus);
+    return Result.getSuccess();
   }
 
   /**
@@ -105,8 +54,8 @@ public class WxMenuController implements WxMpMenuService {
    * </pre>
    *
    * @param userid 可以是粉丝的OpenID，也可以是粉丝的微信号。
-   */
-  @Override
+   *
+   **/
   @GetMapping("/menuTryMatch/{userid}")
   public WxMenu menuTryMatch(@PathVariable String userid) throws WxErrorException {
     return this.wxService.getMenuService().menuTryMatch(userid);
@@ -127,7 +76,6 @@ public class WxMenuController implements WxMpMenuService {
    * https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=ACCESS_TOKEN
    * </pre>
    */
-  @Override
   @GetMapping("/getSelfMenuInfo")
   public WxMpGetSelfMenuInfoResult getSelfMenuInfo() throws WxErrorException {
     return this.wxService.getMenuService().getSelfMenuInfo();

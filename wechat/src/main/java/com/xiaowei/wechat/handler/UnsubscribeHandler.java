@@ -1,5 +1,6 @@
 package com.xiaowei.wechat.handler;
 
+import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.core.helper.SpringContextHelper;
 import com.xiaowei.wechat.service.IWxUserService;
 import com.xiaowei.wechat.service.impl.WxUserServiceImpl;
@@ -23,7 +24,7 @@ public class UnsubscribeHandler extends AbstractHandler {
   public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                   Map<String, Object> context, WxMpService wxMpService,
                                   WxSessionManager sessionManager) {
-    IWxUserService wxUserService = (IWxUserService) SpringContextHelper.getApplicationContext().getAutowireCapableBeanFactory().getBean("wxUserService");
+    IWxUserService wxUserService = ContextUtils.getApplicationContext().getBean(IWxUserService.class);
     String openId = wxMessage.getFromUser();
     this.logger.info("取消关注用户 OPENID: " + openId);
     wxUserService.unsubscribe(openId);

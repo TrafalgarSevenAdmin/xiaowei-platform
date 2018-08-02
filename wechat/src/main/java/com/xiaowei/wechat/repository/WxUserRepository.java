@@ -12,14 +12,14 @@ import java.util.Optional;
 
 public interface WxUserRepository extends BaseRepository<WxUser> {
 
-    Optional<WxUser> findByOpenId(String openid);
+    Optional<WxUser> findByOpenIdAndAppId(String openid,String appId);
 
-    Optional<WxUser> findBySysUser_Mobile(String mobile);
+    Optional<WxUser> findBySysUser_MobileAndAppId(String mobile,String appId);
 
     @Transactional
     @Modifying
     @Query("update WxUser set subscribe = false,unsubscribeTime=:unsubscribeTime where openId =:openid")
     void unsubscribe(@Param("openid") String openid, @Param("unsubscribeTime") Date unsubscribeTime);
 
-    Optional<WxUser> findBySysUser_Id(String userId);
+    Optional<WxUser> findBySysUser_IdAndAppId(String userId,String appId);
 }

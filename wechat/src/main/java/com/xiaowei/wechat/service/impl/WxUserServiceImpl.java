@@ -4,6 +4,7 @@ import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
+import com.xiaowei.wechat.config.WechatProperties;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.repository.WxUserRepository;
 import com.xiaowei.wechat.service.IWxUserService;
@@ -29,6 +30,9 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     @Autowired
     private WxMpService wxMpService;
 
+    @Autowired
+    private WechatProperties wechatProperties;
+
     public WxUserServiceImpl(@Qualifier("wxUserRepository")BaseRepository repository) {
         super(repository);
     }
@@ -40,18 +44,18 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
 
     @Override
     public Optional<WxUser> findByOpenId(String openId) {
-        return wxUserRepository.findByOpenId(openId);
+        return wxUserRepository.findByOpenIdAndAppId(openId,wechatProperties.getAppId());
     }
 
     @Override
     public Optional<WxUser> findByMobile(String mobile) {
-        return wxUserRepository.findBySysUser_Mobile(mobile);
+        return wxUserRepository.findBySysUser_MobileAndAppId(mobile,wechatProperties.getAppId());
     }
 
 
     @Override
     public Optional<WxUser> findByUserId(String userId) {
-        return wxUserRepository.findBySysUser_Id(userId);
+        return wxUserRepository.findBySysUser_IdAndAppId(userId,wechatProperties.getAppId());
     }
 
     @Override
@@ -63,6 +67,8 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             user.setSysUser(tempUser.getSysUser());
             user.setUnsubscribeTime(tempUser.getUnsubscribeTime());
         }
+        user.setLastUpdate(new Date());
+        user.setAppId(wechatProperties.getAppId());
         return wxUserRepository.save(user);
     }
 
@@ -85,7 +91,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             wxMpService.getUserTagService().tagCreate(tag);
         }
         Map<Long, WxUserTag> idMapTag = allTags.stream().collect(Collectors.toMap(v -> v.getId(), v -> v));
-        Map<String, Long> tagMapId = wxMpService.getUserTagService().tagGet().stream().collect(Collectors.toMap(WxUserTag::getName,WxUserTag::getId));
+        Map<String, Long> tagMapId = allTags.stream().collect(Collectors.toMap(WxUserTag::getName,WxUserTag::getId));
         //获取这个用户含有的标签
         List<Long> tagIds = wxMpService.getUserTagService().userTagList(openId);
         Set<WxUserTag> haveTag = tagIds.stream().map(idMapTag::get).collect(Collectors.toSet());
