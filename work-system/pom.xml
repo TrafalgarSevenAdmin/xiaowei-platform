@@ -22,6 +22,10 @@
 
 	<dependencies>
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.xiaowei</groupId>
             <artifactId>common-upload</artifactId>
             <version>0.0.1-SNAPSHOT</version>

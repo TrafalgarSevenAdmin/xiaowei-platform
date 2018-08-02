@@ -69,6 +69,15 @@ public class DateUtils {
     }
 
 
+    /**
+     * 获取当前年月日时分秒
+     *
+     * @return yyyyMMddHHmmss
+     */
+    public static String getCurrentDate() {
+        return new SimpleDateFormat("yyyyMMdd").format(new Date());
+    }
+
 
 
 }

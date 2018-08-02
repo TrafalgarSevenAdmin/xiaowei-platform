@@ -45,6 +45,11 @@ public class WorkOrder extends BaseEntity {
     private String serviceType;
 
     /**
+     * 工单类型
+     */
+    private String workOrderType;
+
+    /**
      * 针对后台处理人员状态
      */
     private Integer systemStatus;
@@ -82,6 +87,14 @@ public class WorkOrder extends BaseEntity {
      * 当前处理步骤
      */
     private Integer currentOrderNumber;
+
+    public String getWorkOrderType() {
+        return workOrderType;
+    }
+
+    public void setWorkOrderType(String workOrderType) {
+        this.workOrderType = workOrderType;
+    }
 
     public Integer getCurrentOrderNumber() {
         return currentOrderNumber;

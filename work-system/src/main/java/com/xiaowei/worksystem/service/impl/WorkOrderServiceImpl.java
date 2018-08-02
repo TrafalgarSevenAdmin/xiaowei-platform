@@ -5,8 +5,8 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
-import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.TaskType;
@@ -32,8 +32,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,7 +57,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private EngineerWorkRepository engineerWorkRepository;
     @Autowired
     private WorkFlowItemRepository workFlowItemRepository;
-
+    @Autowired
+    private ShardedJedisPool shardedJedisPool;
+    @Autowired
+    private RedisTemplate redisTemplate;
     /**
      * 消息发送服务
      */
@@ -82,7 +88,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
-            workOrder.setCode(StringPYUtils.getSpellCode(workOrder.getServiceType()));
+            workOrder.setCode(getCurrentDayMaxCode());
             workOrder.setEvaluate(null);
             workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());
@@ -101,6 +107,32 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             workOrder.setRepairFileStore(one.getRepairFileStore());//报修图片id无法修改
 
         }
+    }
+
+    /**
+     * 获取当天最大的工单编号
+     *
+     * @return
+     */
+    private String getCurrentDayMaxCode() {
+        String code = "GD" + DateUtils.getCurrentDate();
+        String incr;
+        ShardedJedis resource = shardedJedisPool.getResource();
+        if (!resource.exists(code)) {
+            resource.setex(code, 86400, "1");//24小时有效期
+            incr = 1 + "";
+        } else {
+            if (999 == Long.valueOf(resource.get(code))) {
+                throw new BusinessException("编码数量超出范围");
+            } else {
+                incr = resource.incr(code) + "";
+            }
+        }
+        int len = 4 - incr.length();
+        for (int i = 0; i < len; i++) {
+            incr = "0" + incr;
+        }
+        return code + incr;
     }
 
     private void setSaveWorkOrderStatus(WorkOrder workOrder) {
@@ -218,7 +250,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-        if(receive){//同意接单
+        if (receive) {//同意接单
             //待接单
             if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
                 throw new BusinessException("状态错误!");
@@ -228,7 +260,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             engineerWorkRepository.save(engineerWork);
             workOrder.setEngineerWork(engineerWork);
             workOrder.setSystemStatus(WorkOrderSystemStatus.APPOINTING.getStatus());//系统状态变更为预约中
-        }else{//拒绝接单
+        } else {//拒绝接单
             workOrder.setEngineer(null);
             workOrder.setBackgrounder(null);
             workOrder.setSystemStatus(WorkOrderSystemStatus.DISTRIBUTE.getStatus());//系统状态变更为待派发

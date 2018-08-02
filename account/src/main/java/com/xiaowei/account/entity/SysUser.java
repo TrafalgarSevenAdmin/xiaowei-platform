@@ -44,6 +44,7 @@ public class SysUser extends BaseEntity {
     /**
      * 手机号码
      */
+    @Column(unique = true)
     private String mobile;
 
     /**
