@@ -15,4 +15,9 @@ public class MagicValueStore {
      * 为了更好的分组查看
      */
     public static final String wxStatesValuePro = "wechat:states:value";
+
+    /**
+     * 只关注微信但没有绑定的微信的标签
+     */
+    public static final String notBindRole = "未绑定用户";
 }

@@ -79,6 +79,16 @@ public class WxUser {
     private Date unsubscribeTime;
 
     /**
+     * 数据最后一次更新时间
+     */
+    private Date lastUpdate;
+
+    /**
+     * 所属公众号
+     */
+    private String appId;
+
+    /**
      * https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&announce_id=11513156443eZYea&version=&lang=zh_CN
      * <pre>
      * 只有在将公众号绑定到微信开放平台帐号后，才会出现该字段。
