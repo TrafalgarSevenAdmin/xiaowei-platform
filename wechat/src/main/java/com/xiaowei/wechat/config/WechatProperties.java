@@ -1,9 +1,11 @@
 package com.xiaowei.wechat.config;
 
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Data
 @ConfigurationProperties(prefix = "wechat.config")
 public class WechatProperties {
   /**
@@ -26,37 +28,20 @@ public class WechatProperties {
    */
   private String aesKey;
 
-  public String getAppId() {
-    return this.appId;
-  }
+  /**
+   * 微信支付商户号
+   */
+  private String mchId;
 
-  public void setAppId(String appId) {
-    this.appId = appId;
-  }
+  /**
+   * 微信支付商户密钥
+   */
+  private String mchKey;
 
-  public String getSecret() {
-    return this.secret;
-  }
-
-  public void setSecret(String secret) {
-    this.secret = secret;
-  }
-
-  public String getToken() {
-    return this.token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  public String getAesKey() {
-    return this.aesKey;
-  }
-
-  public void setAesKey(String aesKey) {
-    this.aesKey = aesKey;
-  }
+  /**
+   * apiclient_cert.p12文件的绝对路径，或者如果放在项目中，请以classpath:开头指定
+   */
+  private String keyPath;
 
   @Override
   public String toString() {

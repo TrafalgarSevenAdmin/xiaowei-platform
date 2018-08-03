@@ -38,7 +38,7 @@ spring:
     username: @rabbitmq.username@
     password: @rabbitmq.password@
     publisher-confirms: true
-    virtual-host: /
+    virtual-host: @rabbitmq.virtual.host@
 logging:
   level:
     com:

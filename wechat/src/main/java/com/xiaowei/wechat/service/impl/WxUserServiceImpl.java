@@ -99,10 +99,18 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         Collection<Serializable> addTags = CollectionUtils.subtract(collect.keySet(), haveTag);
         Collection<Serializable> deleteTags = CollectionUtils.subtract(haveTag,collect.keySet());
         for (Serializable addTag : addTags) {
-            wxMpService.getUserTagService().batchTagging(tagMapId.get(addTag), new String[]{openId});
+            try {
+                wxMpService.getUserTagService().batchTagging(tagMapId.get(addTag), new String[]{openId});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         for (Serializable deleteTag : deleteTags) {
-            wxMpService.getUserTagService().batchUntagging(tagMapId.get(deleteTag), new String[]{openId});
+            try {
+                wxMpService.getUserTagService().batchUntagging(tagMapId.get(deleteTag), new String[]{openId});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

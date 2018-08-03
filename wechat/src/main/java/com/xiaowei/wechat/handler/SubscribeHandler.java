@@ -1,11 +1,8 @@
 package com.xiaowei.wechat.handler;
 
-import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
-import com.xiaowei.core.helper.SpringContextHelper;
 import com.xiaowei.wechat.builder.TextBuilder;
-import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -14,9 +11,11 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 订阅/关注公众号事件
@@ -41,6 +40,12 @@ public class SubscribeHandler extends AbstractHandler {
             WxUser user = BeanCopyUtils.copy(userWxInfo, WxUser.class);
             //添加关注用户到本地
             wxUserService.saveOrUpdate(user);
+            Optional<WxUser> byOpenId = wxUserService.findByOpenId(user.getOpenId());
+            user = byOpenId.get();
+            //如果存在真实名称就设置这个用户的备注
+            if (user.getSysUser() != null && StringUtils.isNotEmpty(user.getSysUser().getNickName())) {
+                weixinService.getUserService().userUpdateRemark(userWxInfo.getOpenId(),user.getSysUser().getNickName());
+            }
         }
 
         WxMpXmlOutMessage responseResult = null;
@@ -57,7 +62,7 @@ public class SubscribeHandler extends AbstractHandler {
         try {
             return new TextBuilder().build("欢迎关注晓维快修！有维修，找晓维快修！\n" +
                     "电话预约：400000000\n" +
-                    "如需使用微信快速保修，请先绑定您的手机", wxMessage, weixinService);
+                    "请先绑定您的手机，以便我们为您提供服务，", wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }

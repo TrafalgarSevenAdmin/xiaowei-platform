@@ -78,6 +78,7 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <rabbitmq.virtual.host>local</rabbitmq.virtual.host>
                 <wechat.appId>wx319e805e2640bbf2</wechat.appId>
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
@@ -98,6 +99,7 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <rabbitmq.virtual.host>/</rabbitmq.virtual.host>
                 <!--使用晓维商城作为测试公众号-->
                 <wechat.appId>wx319e805e2640bbf2</wechat.appId>
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
@@ -119,6 +121,7 @@
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
+                <rabbitmq.virtual.host>/</rabbitmq.virtual.host>
                 <!--晓维快修-->
                 <wechat.appId>wxdc9a8fccf12be0e8</wechat.appId>
                 <wechat.secret>a1f045dc2459e949cb3e63a37f011a21</wechat.secret>

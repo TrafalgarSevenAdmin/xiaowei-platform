@@ -7,7 +7,15 @@
             "type": "view",
             "name": "绑定手机",
             "key": null,
-            "url": "http://gongdan.xwseries.com/xwkx-web/common/login",
+            "url": "http://localhost:8888/xwkx-web/common/bindEd",
+            "value": null,
+            "newsInfo": null
+          },
+          {
+            "type": "view",
+            "name": "关于我们",
+            "key": null,
+            "url": "http://www.xwseries.com/",
             "value": null,
             "newsInfo": null
           }

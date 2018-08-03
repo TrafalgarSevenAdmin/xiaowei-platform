@@ -35,7 +35,7 @@ spring:
     username: @rabbitmq.username@
     password: @rabbitmq.password@
     publisher-confirms: true
-    virtual-host: /
+    virtual-host: @rabbitmq.virtual.host@
   servlet:
     multipart:
       max-file-size: 1024MB

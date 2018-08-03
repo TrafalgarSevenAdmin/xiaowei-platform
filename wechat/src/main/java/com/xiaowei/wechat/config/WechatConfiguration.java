@@ -1,10 +1,12 @@
 package com.xiaowei.wechat.config;
 
+import com.github.binarywang.wxpay.config.WxPayConfig;
+import com.github.binarywang.wxpay.service.WxPayService;
+import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import com.xiaowei.wechat.handler.*;
 import me.chanjar.weixin.mp.api.*;
 import me.chanjar.weixin.mp.constant.WxMpEventConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +16,11 @@ import redis.clients.jedis.JedisPool;
 import static me.chanjar.weixin.common.api.WxConsts.*;
 
 /**
- * 微信请求分发
+ * 微信服务配置
  */
 @Configuration
-//@ConditionalOnClass(WxMpService.class)
 @EnableConfigurationProperties(WechatProperties.class)
-public class WechatMpConfiguration {
-
+public class WechatConfiguration {
 
   @Autowired
   private WechatProperties properties;
@@ -66,6 +66,36 @@ public class WechatMpConfiguration {
     return configStorage;
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  public WxPayConfig payConfig() {
+    WxPayConfig payConfig = new WxPayConfig();
+    payConfig.setAppId(this.properties.getAppId());
+    payConfig.setMchId(this.properties.getMchId());
+    payConfig.setMchKey(this.properties.getMchKey());
+    payConfig.setKeyPath(this.properties.getKeyPath());
+    payConfig.setUseSandboxEnv(true);
+    return payConfig;
+  }
+
+  /**
+   * 微信支付服务配置
+   * @param payConfig
+   * @return
+   */
+  @Bean
+  @ConditionalOnMissingBean
+  public WxPayService wxPayService(WxPayConfig payConfig) {
+    WxPayService wxPayService = new WxPayServiceImpl();
+    wxPayService.setConfig(payConfig);
+    return wxPayService;
+  }
+
+  /**
+   * 微信公众号服务配置
+   * @param configStorage
+   * @return
+   */
   @Bean
   @ConditionalOnMissingBean
   public WxMpService wxMpService(WxMpConfigStorage configStorage) {
