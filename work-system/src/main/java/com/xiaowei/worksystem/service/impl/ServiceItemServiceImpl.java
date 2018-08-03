@@ -7,6 +7,9 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import com.xiaowei.socketjscore.bean.SocketCoreBean;
+import com.xiaowei.socketjscore.bean.SocketType;
+import com.xiaowei.socketjscore.socket.WebSocketCore;
 import com.xiaowei.worksystem.entity.ServiceItem;
 import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.repository.ServiceItemRepository;
@@ -40,6 +43,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
 
     @Autowired
     private MessagePushSender messagePushSender;
+    @Autowired
+    private WebSocketCore webSocketCore;
 
     public ServiceItemServiceImpl(@Qualifier("serviceItemRepository") BaseRepository repository) {
         super(repository);
@@ -64,7 +69,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         for (int i = 0; i < serviceItems.size(); i++) {
             ServiceItem serviceItem = serviceItems.get(i);
             EmptyUtils.assertObject(serviceItem.getCharge(), "是否收费必填");
-            if(serviceItem.getCharge()){
+            if (serviceItem.getCharge()) {
                 workOrder.setUserStatus(WorkOrderUserStatus.AFFIRM.getStatus());//工单用户状态设置为待确认
             }
             EmptyUtils.assertObject(serviceItem.getAudit(), "是否审核必填");
@@ -150,6 +155,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         }
         if (audit) {//通过质检
             passAudit(serviceItem);
+            //质检通过的消息推送
+            webSocketCore.sendMessageToOne(new SocketCoreBean(null, null, serviceItem.getId(), SocketType.COMPLETEAUDIT.getType(), new Date()), serviceItem.getWorkOrder().getEngineer().getId());
         } else {//未通过质检
             notPassAudit(serviceItem);
         }

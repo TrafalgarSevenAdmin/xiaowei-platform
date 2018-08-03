@@ -37,7 +37,6 @@ public class WebSocketCore {
 //        String id = session.getId();
         this.session = session;
         this.userId = userId;
-        session.getBasicRemote().sendText("hahaha");
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入,id为" + this.userId + "！当前在线人数为" + getOnlineCount());
@@ -91,7 +90,7 @@ public class WebSocketCore {
      * @param message
      * @throws IOException
      */
-    public void sendMessageToAll(Object message) throws Exception {
+    public void sendMessageToAll(Object message){
         if (message == null) {
             return;
         }
@@ -111,16 +110,21 @@ public class WebSocketCore {
      * @param message
      * @throws IOException
      */
-    public void sendMessageToOne(Object message, String userId) throws Exception {
-        if (message == null) {
-            return;
-        }
-        Optional<WebSocketCore> optional = webSocketSet.stream().filter(webSocketCore -> userId.equals(webSocketCore.userId))
-                .findAny();
+    public void sendMessageToOne(Object message, String userId){
+        try {
+            if (message == null) {
+                return;
+            }
+            Optional<WebSocketCore> optional = webSocketSet.stream().filter(webSocketCore -> userId.equals(webSocketCore.userId))
+                    .findAny();
 
-        if (optional.isPresent()) {
-            optional.get().session.getBasicRemote().sendText(JSON.toJSONString(message));
+            if (optional.isPresent()) {
+                optional.get().session.getBasicRemote().sendText(JSON.toJSONString(message));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
         //this.session.getAsyncRemote().sendText(message);
     }
 
