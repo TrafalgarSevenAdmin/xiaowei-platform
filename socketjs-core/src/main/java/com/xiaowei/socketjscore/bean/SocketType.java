@@ -8,7 +8,11 @@ public enum SocketType {
     /**
      * 服务项目审核已经通过
      */
-    COMPLETEAUDIT(1);
+    COMPLETEAUDIT(1),
+    /**
+     * 服务项目审核未通过
+     */
+    FAILDAUDIT(2);
 
     Integer type;
 
