@@ -50,6 +50,7 @@
         <module>wechat</module>
         <module>attendance-system</module>
         <module>expense-reimbursement</module>
+        <module>socketjs-core</module>
     </modules>
 
     <dependencies>
