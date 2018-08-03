@@ -209,7 +209,7 @@ public class WorkOrderController {
             userMessageBean.setUserId(workOrder.getProposer().getId());
             userMessageBean.setMessageType(MessageType.PROCESSINGNOTIFICATION);
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("first", new UserMessageBean.Payload("您的工单有新的进度,请点击查看", null));
+            messageMap.put("first", new UserMessageBean.Payload("您的工单有新的进度,请尽快查看", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));

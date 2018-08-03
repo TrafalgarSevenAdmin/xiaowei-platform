@@ -32,7 +32,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.ShardedJedis;
@@ -59,8 +58,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private WorkFlowItemRepository workFlowItemRepository;
     @Autowired
     private ShardedJedisPool shardedJedisPool;
-    @Autowired
-    private RedisTemplate redisTemplate;
+
     /**
      * 消息发送服务
      */
@@ -115,7 +113,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * @return
      */
     private String getCurrentDayMaxCode() {
-        String code = "GD" + DateUtils.getCurrentDate();
+        String code = "FWGD" + DateUtils.getCurrentDate();
         String incr;
         ShardedJedis resource = shardedJedisPool.getResource();
         if (!resource.exists(code)) {

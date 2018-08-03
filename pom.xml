@@ -49,6 +49,7 @@
         <module>mq-core</module>
         <module>wechat</module>
         <module>attendance-system</module>
+        <module>expense-reimbursement</module>
     </modules>
 
     <dependencies>
