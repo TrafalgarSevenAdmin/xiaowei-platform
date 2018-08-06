@@ -26,7 +26,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder departeWorkOrder(String workOrderId, Geometry shape);
 
-    WorkOrder inhandWorkOrder(String workOrderId, Geometry shape);
+    WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore);
 
     WorkOrder finishInhand(String workOrderId);
 

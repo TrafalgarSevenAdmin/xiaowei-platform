@@ -49,8 +49,7 @@ upload:
   type: local
   accessUrlRoot: @upload.accessUrlRoot@
   tags:
-    - idCard
-    - prove
-    - purchaseContract
-    - contract
-    - logo
+    - idCard #身份证
+    - prove #证明
+    - contract #合同
+    - logo #头像

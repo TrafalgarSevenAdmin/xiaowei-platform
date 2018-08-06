@@ -324,11 +324,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      *
      * @param workOrderId
      * @param shape
+     * @param arriveFileStore
      * @return
      */
     @Override
     @Transactional
-    public WorkOrder inhandWorkOrder(String workOrderId, Geometry shape) {
+    public WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
@@ -340,6 +341,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setBeginInhandTime(new Date());//开始处理时间
         engineerWork.setArriveShape(shape);//目的地
+        engineerWork.setArriveFileStore(arriveFileStore);//到达图片
         val firstOrderNumber = setFirstServiceItem(workOrderId);
         engineerWorkRepository.save(engineerWork);
         workOrder.setCurrentOrderNumber(firstOrderNumber);//当前处理步骤

@@ -159,7 +159,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             webSocketCore.sendMessageToOne(new SocketCoreBean(null, null, serviceItem.getId(), SocketType.COMPLETEAUDIT.getType(), new Date()), serviceItem.getWorkOrder().getEngineer().getId());
         } else {//未通过质检
             notPassAudit(serviceItem);
-            //质检通过的消息推送
+            //未质检通过的消息推送
             webSocketCore.sendMessageToOne(new SocketCoreBean(null, null, serviceItem.getId(), SocketType.FAILDAUDIT.getType(), new Date()), serviceItem.getWorkOrder().getEngineer().getId());
         }
         return serviceItemRepository.save(serviceItem);

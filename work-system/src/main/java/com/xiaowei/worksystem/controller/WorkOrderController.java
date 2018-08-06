@@ -11,6 +11,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MessageType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import com.xiaowei.worksystem.dto.DepartWorkOrderDTO;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
 import com.xiaowei.worksystem.entity.Evaluate;
@@ -167,8 +168,11 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师开始处理")
     @AutoErrorHandler
     @PutMapping("/inhand/{workOrderId}")
-    public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
-        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
+    public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId,
+                                  @RequestBody @Validated(V.Insert.class) DepartWorkOrderDTO departWorkOrderDTO,
+                                  BindingResult bindingResult,
+                                  FieldsView fieldsView) throws Exception {
+        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(departWorkOrderDTO.getWkt()),departWorkOrderDTO.getArriveFileStore());
         //到达通知
         processingNotification(workOrder, "工程师已到达");
         return Result.getSuccess();

@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 
 import javax.persistence.Column;
@@ -48,10 +49,22 @@ public class EngineerWork extends BaseEntity{
     @Column(columnDefinition = "geometry(POINT,4326)")
     @JsonIgnore
     private Geometry arriveShape;
+    /**
+     * 到达图片
+     */
+    private String arriveFileStore;
     @Transient
     private String startWkt;
     @Transient
     private String arriveWkt;
+
+    public String getArriveFileStore() {
+        return UploadConfigUtils.transIdsToPath(this.arriveFileStore);
+    }
+
+    public void setArriveFileStore(String arriveFileStore) {
+        this.arriveFileStore = arriveFileStore;
+    }
 
     public Date getReceivedTime() {
         return receivedTime;
