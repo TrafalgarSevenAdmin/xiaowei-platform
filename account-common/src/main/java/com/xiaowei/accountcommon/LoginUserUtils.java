@@ -47,16 +47,16 @@ public class LoginUserUtils {
     }
 
     /**
-     * 判断是否有次公司
+     * 判断是否有此公司
      * @param companyId
      * @return
      * @throws UnauthenticatedException
      */
     public static boolean hasCompanyId(String companyId) throws UnauthenticatedException{
-        return getLoginUser().getCompanyBeans().stream()
-                .filter(companyBean -> companyBean.getId().equals(companyId))
-                .findAny()
-                .isPresent();
+        if("admin".equals(getLoginUser().getLoginName())){
+            return true;
+        }
+        return getLoginUser().getCompanyBean().getId().equals(companyId);
     }
 
     /**
@@ -66,10 +66,10 @@ public class LoginUserUtils {
      * @throws UnauthenticatedException
      */
     public static boolean hasDepartmentId(String departmentId) throws UnauthenticatedException{
-        return getLoginUser().getDepartmentBeans().stream()
-                .filter(departmentBean -> departmentBean.getId().equals(departmentId))
-                .findAny()
-                .isPresent();
+        if("admin".equals(getLoginUser().getLoginName())){
+            return true;
+        }
+        return getLoginUser().getDepartmentBean().getId().equals(departmentId);
     }
 
     /**

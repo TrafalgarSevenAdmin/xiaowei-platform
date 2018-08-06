@@ -20,7 +20,7 @@ public class RoleQuery extends Query {
 
     private String name;
     private Set<String> userIds = new HashSet<>();
-    private String departmentId;
+    private String companyId;
     private Integer roleType;
 
     @Override
@@ -33,8 +33,8 @@ public class RoleQuery extends Query {
             setDistinct(true);
             addFilter(new Filter("users.id", Filter.Operator.in, userIds.toArray()));
         }
-        if (StringUtils.isNotEmpty(departmentId)) {
-            addFilter(new Filter("department.id", Filter.Operator.eq, departmentId));
+        if (StringUtils.isNotEmpty(companyId)) {
+            addFilter(new Filter("company.id", Filter.Operator.eq, companyId));
         }
         if (roleType != null) {
             addFilter(new Filter("roleType", Filter.Operator.eq, roleType));

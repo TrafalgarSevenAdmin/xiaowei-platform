@@ -58,11 +58,11 @@ public class SysRole extends BaseEntity {
     private Integer roleType;
 
     /**
-     * 所属部门
+     * 所属公司
      */
-    @ManyToOne(targetEntity = Department.class)
-    @JoinColumn(name = "department_id")
+    @ManyToOne(targetEntity = Company.class)
+    @JoinColumn(name = "company_id")
     @Fetch(FetchMode.JOIN)
-    private Department department;
+    private Company company;
 
 }

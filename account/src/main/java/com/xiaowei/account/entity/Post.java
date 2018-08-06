@@ -1,6 +1,5 @@
 package com.xiaowei.account.entity;
 
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -9,33 +8,33 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 
 /**
- * 系统部门表
+ * 岗位
  */
 @Data
-@Table(name = "SYS_DEPARTMENT")
+@Table(name = "SYS_POST")
 @Entity
-public class Department extends BaseEntity {
+public class Post extends BaseEntity {
     /**
      * 编号
      */
     @Column(updatable = false)
     private String code;
     /**
-     * 部门名称
+     * 岗位名称
      */
-    private String departmentName;
+    private String postName;
     /**
-     * 状态:0表示正常,1表示停用,99代表删除
+     * 岗位状态
      */
     private Integer status;
-    /**
-     * 部门logo
-     */
-    private String logo;
     /**
      * 简介
      */
     private String intro;
+    /**
+     * 岗位级别
+     */
+    private Integer level;
     /**
      * 所属公司
      */
@@ -43,8 +42,4 @@ public class Department extends BaseEntity {
     @JoinColumn(name = "company_id")
     @Fetch(FetchMode.JOIN)
     private Company company;
-
-    public String getLogo() {
-        return UploadConfigUtils.transIdsToPath(this.logo);
-    }
 }

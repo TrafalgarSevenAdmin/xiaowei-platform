@@ -77,7 +77,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     public List<PunchRecord> findByCompanyIdAndMonth(String companyId, Date selectMonth) throws Exception {
         Optional<Company> optional = companyRepository.findById(companyId);
         EmptyUtils.assertOptional(optional, "没有查询到该公司");
-        val users = optional.get().getUsers();//该公司下所有的人员
+        List<SysUser> users = userRepository.findByCompanyId(companyId);
         if (CollectionUtils.isEmpty(users)) {
             throw new BusinessException("该公司下没有任何员工");
         }

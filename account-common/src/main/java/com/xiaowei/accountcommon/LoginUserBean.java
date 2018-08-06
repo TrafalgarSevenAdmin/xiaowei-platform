@@ -38,24 +38,26 @@ public class LoginUserBean implements Serializable {
 
     private List<PermissionBean> permissions;
 
-    private List<CompanyBean> companyBeans;
+    private CompanyBean companyBean;
 
-    private List<DepartmentBean> departmentBeans;
+    private DepartmentBean departmentBean;
+
+    private PostBean postBean;
 
     public LoginUserBean() {
     }
 
-    public LoginUserBean(String id,String loginName, String mobile, String email, Integer status, String nickName,List<RoleBean> roles, List<PermissionBean> permissions,List<CompanyBean> companyBeans,
-                         List<DepartmentBean> departmentBeans) {
+    public LoginUserBean(String id, String loginName, String mobile, String email, String nickName, Integer status, List<RoleBean> roles, List<PermissionBean> permissions, CompanyBean companyBean, DepartmentBean departmentBean, PostBean postBean) {
         this.id = id;
         this.loginName = loginName;
         this.mobile = mobile;
         this.email = email;
-        this.status = status;
         this.nickName = nickName;
+        this.status = status;
         this.roles = roles;
         this.permissions = permissions;
-        this.companyBeans = companyBeans;
-        this.departmentBeans = departmentBeans;
+        this.companyBean = companyBean;
+        this.departmentBean = departmentBean;
+        this.postBean = postBean;
     }
 }

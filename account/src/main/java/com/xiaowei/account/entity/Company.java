@@ -1,13 +1,12 @@
 package com.xiaowei.account.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * 系统公司表
@@ -38,14 +37,6 @@ public class Company extends BaseEntity {
     private Integer status;
 
     /**
-     * 公司下的员工
-     */
-    @Fetch(FetchMode.SUBSELECT)
-    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "companies")
-    @JsonIgnore
-    private List<SysUser> users;
-
-    /**
      * 公司logo
      */
     private String logo;
@@ -63,7 +54,7 @@ public class Company extends BaseEntity {
      */
     private String intro;
 
-    @Transient
-    private String logoPath;
-
+    public String getLogo() {
+        return UploadConfigUtils.transIdsToPath(this.logo);
+    }
 }

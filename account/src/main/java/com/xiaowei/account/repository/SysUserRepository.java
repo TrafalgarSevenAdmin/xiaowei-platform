@@ -41,9 +41,12 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
      */
     Optional<SysUser> findByMobile(String mobile);
 
-    @Query(value = "select USER_ID from sys_user_company",nativeQuery = true)
-    Set<String> findFromCompanies();
+    @Query(value = "select u from SysUser u where u.company.id is not null ")
+    List<SysUser> findFromCompanies();
 
     @Query("select u from SysUser u where u.id in ?1")
     List<SysUser> findByIds(Set<String> userIds);
+
+    @Query("select u from SysUser u where u.company.id = ?1")
+    List<SysUser> findByCompanyId(String companyId);
 }

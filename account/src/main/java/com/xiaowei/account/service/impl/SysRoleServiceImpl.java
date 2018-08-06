@@ -1,10 +1,10 @@
 package com.xiaowei.account.service.impl;
 
 import com.xiaowei.account.consts.RoleType;
-import com.xiaowei.account.entity.Department;
+import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
-import com.xiaowei.account.repository.DepartmentRepository;
+import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.SysRoleRepository;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.accountcommon.LoginUserUtils;
@@ -38,7 +38,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     private SysRoleRepository sysRoleRepository;
 
     @Autowired
-    private DepartmentRepository departmentRepository;
+    private CompanyRepository companyRepository;
 
     public SysRoleServiceImpl(@Qualifier("sysRoleRepository") BaseRepository repository) {
         super(repository);
@@ -110,7 +110,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
 
         }
         //验证所属部门
-        judgeDepartment(role);
+        judgeCompany(role);
 
 
     }
@@ -120,12 +120,12 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
      *
      * @param role
      */
-    private void judgeDepartment(SysRole role) {
-        Department department = role.getDepartment();
-        if (department == null || StringUtils.isEmpty(department.getId())) {//托管角色
+    private void judgeCompany(SysRole role) {
+        Company company = role.getCompany();
+        if (company == null || StringUtils.isEmpty(company.getId())) {//托管角色
             role.setRoleType(RoleType.TRUSTEESHIPROLE.getStatus());
         } else {//部门角色
-            EmptyUtils.assertOptional(departmentRepository.findById(role.getDepartment().getId()),"没有查询到所属部门");
+            EmptyUtils.assertOptional(companyRepository.findById(company.getId()),"没有查询到所属部门");
             role.setRoleType(RoleType.DEPARTMENTROLE.getStatus());
         }
 

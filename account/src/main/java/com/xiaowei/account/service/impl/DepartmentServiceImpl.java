@@ -88,7 +88,9 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     public Department updateStatus(Department department) {
         String departmentId = department.getId();
         EmptyUtils.assertString(departmentId,"没有传入对象id");
-        Department one = departmentRepository.getOne(departmentId);
+        Optional<Department> optional = departmentRepository.findById(departmentId);
+        EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+        Department one = optional.get();
         EmptyUtils.assertObject(one,"没有查询到需要删除的对象");
         //删除公司判断当前登录用户是否拥有被删除的公司的权限
         if(!LoginUserUtils.hasDepartmentId(departmentId)){

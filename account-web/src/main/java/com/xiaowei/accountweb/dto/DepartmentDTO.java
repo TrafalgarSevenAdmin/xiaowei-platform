@@ -1,19 +1,13 @@
 package com.xiaowei.accountweb.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.Company;
-import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Range;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 public class DepartmentDTO {
