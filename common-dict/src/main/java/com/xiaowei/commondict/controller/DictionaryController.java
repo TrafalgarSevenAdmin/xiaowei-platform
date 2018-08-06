@@ -47,7 +47,7 @@ public class DictionaryController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(dictionary, fieldsView));
     }
 
-    @ApiOperation("公司查询接口")
+    @ApiOperation("字典查询接口")
     @GetMapping("")
     public Result query(DictionaryQuery dictionaryQuery, FieldsView fieldsView) {
         if (dictionaryQuery.isNoPage()) {
