@@ -7,6 +7,7 @@ import com.xiaowei.mq.constant.MqQueueConstant;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import static com.xiaowei.mq.constant.MqQueueConstant.DELAY_EXCHAGE;
 import static com.xiaowei.mq.constant.MqQueueConstant.DELAY_TASK_ROUTING;
@@ -26,6 +27,17 @@ public class MessagePushSender {
     }
 
     /**
+     * 发送订单支付完成的消息
+     * @param orderId
+     */
+    public void sendOrderPayedMessage(String orderId) {
+        this.sendOrderPayedMessage(MqQueueConstant.ORDER_DEFAULT_PAYED_QUEUE, orderId);
+    }
+    public void sendOrderPayedMessage(String queue,String orderId) {
+        amqpTemplate.convertAndSend(queue, orderId);
+    }
+
+    /**
      * 发送延迟任务
      * @see com.xiaowei.mq.constant.MqQueueConstant
      * @param messageBean   消息
@@ -41,7 +53,7 @@ public class MessagePushSender {
      * @param messageBean   消息
      * @param delay         延时毫秒数
      */
-    public void sendDelay(String routingKey,MessageBean messageBean, int delay) {
+    public void sendDelay(String routingKey,Object messageBean, int delay) {
         amqpTemplate.convertAndSend(DELAY_EXCHAGE, routingKey, messageBean, message -> {
             message.getMessageProperties().setDelay(delay);
             return message;

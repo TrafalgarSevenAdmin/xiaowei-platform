@@ -43,6 +43,11 @@ public class WechatProperties {
    */
   private String keyPath;
 
+  /**
+   * 支付回调地址
+   */
+  private String notifyUrl;
+
   @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this,

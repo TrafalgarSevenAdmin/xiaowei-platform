@@ -1,8 +1,10 @@
 package com.xiaowei.wechat.config;
 
 import com.github.binarywang.wxpay.config.WxPayConfig;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
+import com.xiaowei.wechat.consts.ServerInfoProperties;
 import com.xiaowei.wechat.handler.*;
 import me.chanjar.weixin.mp.api.*;
 import me.chanjar.weixin.mp.constant.WxMpEventConstants;
@@ -55,6 +57,9 @@ public class WechatConfiguration {
   @Autowired
   private ScanHandler scanHandler;
 
+  @Autowired
+  private ServerInfoProperties serverInfoProperties;
+
   @Bean
   @ConditionalOnMissingBean
   public WxMpConfigStorage configStorage(JedisPool jedisPool) {
@@ -74,7 +79,9 @@ public class WechatConfiguration {
     payConfig.setMchId(this.properties.getMchId());
     payConfig.setMchKey(this.properties.getMchKey());
     payConfig.setKeyPath(this.properties.getKeyPath());
-    payConfig.setUseSandboxEnv(true);
+    //配置回调地址
+    payConfig.setNotifyUrl(serverInfoProperties.getHost()+this.properties.getNotifyUrl());
+//    payConfig.setUseSandboxEnv(true);
     return payConfig;
   }
 
@@ -85,9 +92,13 @@ public class WechatConfiguration {
    */
   @Bean
   @ConditionalOnMissingBean
-  public WxPayService wxPayService(WxPayConfig payConfig) {
+  public WxPayService wxPayService(WxPayConfig payConfig) throws WxPayException {
     WxPayService wxPayService = new WxPayServiceImpl();
     wxPayService.setConfig(payConfig);
+    if (payConfig.isUseSandboxEnv()) {
+      String sandboxSignKey = wxPayService.getSandboxSignKey();
+      wxPayService.getConfig().setMchKey(sandboxSignKey);
+    }
     return wxPayService;
   }
 
