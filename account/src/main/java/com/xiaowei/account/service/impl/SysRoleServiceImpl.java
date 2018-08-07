@@ -109,14 +109,14 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             }
 
         }
-        //验证所属部门
+        //验证所属公司
         judgeCompany(role);
 
 
     }
 
     /**
-     * 验证所属部门
+     * 验证所属公司
      *
      * @param role
      */
@@ -124,8 +124,8 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         Company company = role.getCompany();
         if (company == null || StringUtils.isEmpty(company.getId())) {//托管角色
             role.setRoleType(RoleType.TRUSTEESHIPROLE.getStatus());
-        } else {//部门角色
-            EmptyUtils.assertOptional(companyRepository.findById(company.getId()),"没有查询到所属部门");
+        } else {//公司角色
+            EmptyUtils.assertOptional(companyRepository.findById(company.getId()),"没有查询到所属公司");
             role.setRoleType(RoleType.DEPARTMENTROLE.getStatus());
         }
 

@@ -6,4 +6,9 @@ import com.xiaowei.core.basic.service.IBaseService;
 
 public interface IPostService extends IBaseService<Post> {
 
+    Post savePost(Post post);
+
+    Post updatePost(Post post);
+
+    Post updateStatus(Post post);
 }

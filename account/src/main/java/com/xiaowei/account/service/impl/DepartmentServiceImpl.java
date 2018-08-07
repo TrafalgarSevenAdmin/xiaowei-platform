@@ -6,12 +6,10 @@ import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.DepartmentRepository;
 import com.xiaowei.account.service.IDepartmentService;
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -57,13 +55,9 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         }else if(judgeType.equals(JudgeType.UPDATE)){//修改
             String departmentId = department.getId();
             EmptyUtils.assertString(departmentId,"没有传入对象id");
-            Department one = departmentRepository.getOne(departmentId);
-            EmptyUtils.assertObject(one,"没有查询到需要修改的对象");
-
-            //修改部门判断当前登录用户是否拥有被修改的部门的权限
-            if(!LoginUserUtils.hasDepartmentId(departmentId)){
-                throw new UnauthorizedException("保存失败:没有权限修改该部门");
-            }
+            Optional<Department> optional = departmentRepository.findById(departmentId);
+            EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+            Department one = optional.get();
             //设置不允许在此处修改的属性
             department.setStatus(one.getStatus());
         }
@@ -92,10 +86,6 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
         Department one = optional.get();
         EmptyUtils.assertObject(one,"没有查询到需要删除的对象");
-        //删除公司判断当前登录用户是否拥有被删除的公司的权限
-        if(!LoginUserUtils.hasDepartmentId(departmentId)){
-            throw new UnauthorizedException("保存失败:没有权限删除该部门");
-        }
         one.setStatus(department.getStatus());
         departmentRepository.save(one);
         return one;

@@ -4,7 +4,6 @@ import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.query.CompanyQuery;
 import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.account.utils.AccountUtils;
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.CompanyDTO;
 import com.xiaowei.commonlog4j.annotation.ContentParam;
 import com.xiaowei.commonlog4j.annotation.HandleLog;
@@ -17,7 +16,6 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -98,11 +96,6 @@ public class CompanyController {
     @ApiOperation("根据id获取公司")
     @GetMapping("/{companyId}")
     public Result findById(@PathVariable("companyId") String companyId, FieldsView fieldsView) {
-        //根据id获取角色只能获取当前登录用户所拥有的公司
-        if (!LoginUserUtils.hasCompanyId(companyId)) {
-            throw new UnauthorizedException("查询失败:没有权限查询该公司");
-        }
-
         Company company = companyService.findById(companyId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(company, fieldsView));
     }

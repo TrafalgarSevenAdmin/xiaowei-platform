@@ -1,15 +1,10 @@
 package com.xiaowei.accountweb.rest;
 
-import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.query.DepartmentQuery;
 import com.xiaowei.account.service.IDepartmentService;
 import com.xiaowei.account.utils.AccountUtils;
-import com.xiaowei.accountcommon.LoginUserBean;
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.DepartmentDTO;
-import com.xiaowei.commonupload.UploadConfigBean;
-import com.xiaowei.commonupload.service.IFileStoreService;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -19,7 +14,6 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -29,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 公司管理
+ * 部门管理
  */
 @Api(tags = "部门接口")
 @RestController
@@ -38,12 +32,6 @@ public class DepartmentController {
 
     @Autowired
     private IDepartmentService departmentService;
-
-    @Autowired
-    private UploadConfigBean uploadConfigBean;
-
-    @Autowired
-    private IFileStoreService fileStoreService;
 
 
     @RequiresPermissions("account:department:add")
@@ -105,10 +93,6 @@ public class DepartmentController {
     @ApiOperation("根据id获取部门")
     @GetMapping("/{departmentId}")
     public Result findById(@PathVariable("departmentId") String departmentId, FieldsView fieldsView) {
-        //根据id获取角色只能获取当前登录用户所拥有的部门
-        if (!LoginUserUtils.hasDepartmentId(departmentId)) {
-            throw new UnauthorizedException("查询失败:没有权限查询该部门");
-        }
         Department department = departmentService.findById(departmentId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(department, fieldsView));
     }
