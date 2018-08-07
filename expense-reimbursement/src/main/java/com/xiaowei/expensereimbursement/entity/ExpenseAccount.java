@@ -1,14 +1,10 @@
 package com.xiaowei.expensereimbursement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 二级费用科目实体
@@ -40,9 +36,9 @@ public class ExpenseAccount extends BaseEntity {
     /**
      * 所属一级科目
      */
-    @ManyToOne(targetEntity = ExpenseSubject.class)
+    @ManyToOne(targetEntity = ExpenseSubject.class,fetch = FetchType.LAZY)
     @JoinColumn(name = "expenseSubjectId")
-    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private ExpenseSubject expenseSubject;
 
 }

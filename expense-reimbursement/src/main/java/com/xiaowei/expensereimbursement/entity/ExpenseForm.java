@@ -1,11 +1,13 @@
 package com.xiaowei.expensereimbursement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -38,10 +40,22 @@ public class ExpenseForm extends BaseEntity {
     /**
      * 初审人
      */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="e_expenseform_firstTrial",
+            joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
+            inverseJoinColumns={@JoinColumn(name="FIRSTTRIAL_ID")})
+    @JsonIgnore
     private List<SysUser> firstTrials;
     /**
      * 复审人
      */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="e_expenseform_secondTrial",
+            joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
+            inverseJoinColumns={@JoinColumn(name="SECONDTRIAL_ID")})
+    @JsonIgnore
     private List<SysUser> secondTrials;
     /**
      * 状态

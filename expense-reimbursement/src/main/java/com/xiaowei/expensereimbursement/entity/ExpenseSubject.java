@@ -16,10 +16,20 @@ import java.util.List;
 @Entity
 @Data
 public class ExpenseSubject extends BaseEntity {
+    /**
+     * 科目名称
+     */
     private String subjectName;
+    /**
+     * 父级科目id
+     */
+    private String parentId;
 
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "expenseSubject")
     @JsonIgnore
     private List<ExpenseAccount> expenseAccounts;
+
+    @Transient
+    private List<ExpenseSubject> children;
 }

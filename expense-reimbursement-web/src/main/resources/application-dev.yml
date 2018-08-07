@@ -44,12 +44,12 @@ logging:
   level:
     com:
       yulintu: DEBUG
-#upload:
-#  path: @upload.path@ #将此路径用iis配置发布
-#  type: local
-#  accessUrlRoot: @upload.accessUrlRoot@
-#  tags:
-#    - idCard #身份证
-#    - prove #证明
-#    - contract #合同
-#    - logo #头像
+upload:
+  path: @upload.path@ #将此路径用iis配置发布
+  type: local
+  accessUrlRoot: @upload.accessUrlRoot@
+  tags:
+    - idCard #身份证
+    - prove #证明
+    - contract #合同
+    - logo #头像
