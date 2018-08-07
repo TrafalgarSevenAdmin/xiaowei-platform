@@ -9,7 +9,7 @@ variables:
  WECHAT_PORT: 9004
  ATTENDANCE_PACKAGE_NAME: 'attendance'
  ATTENDANCE_PORT: 9005
- EXPENSE_PACKAGE_NAME: 'expense'
+ EXPENSE_PACKAGE_NAME: 'expense-reimbursement-web'
  EXPENSE_PORT: 9006
 
 stages:
