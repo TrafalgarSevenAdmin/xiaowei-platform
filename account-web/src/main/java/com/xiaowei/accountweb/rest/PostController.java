@@ -1,9 +1,12 @@
 package com.xiaowei.accountweb.rest;
 
+import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.Post;
 import com.xiaowei.account.query.PostQuery;
 import com.xiaowei.account.service.IPostService;
 import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.accountcommon.LoginUserBean;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.PostDTO;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
@@ -87,7 +90,10 @@ public class PostController {
     }
 
     private void setDefaultCondition(PostQuery postQuery) {
-
+        LoginUserBean loginUser = LoginUserUtils.getLoginUser();
+        if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
+            postQuery.setCompanyId(loginUser.getCompanyBean().getId());
+        }
     }
 
     @RequiresPermissions("account:post:get")

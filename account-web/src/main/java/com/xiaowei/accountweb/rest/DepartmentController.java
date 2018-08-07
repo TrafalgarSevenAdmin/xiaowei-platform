@@ -1,9 +1,12 @@
 package com.xiaowei.accountweb.rest;
 
+import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.query.DepartmentQuery;
 import com.xiaowei.account.service.IDepartmentService;
 import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.accountcommon.LoginUserBean;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.DepartmentDTO;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
@@ -86,7 +89,10 @@ public class DepartmentController {
     }
 
     private void setDefaultCondition(DepartmentQuery departmentQuery) {
-
+        LoginUserBean loginUser = LoginUserUtils.getLoginUser();
+        if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
+            departmentQuery.setCompanyId(loginUser.getCompanyBean().getId());
+        }
     }
 
     @RequiresPermissions("account:department:get")
