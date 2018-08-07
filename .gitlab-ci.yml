@@ -9,17 +9,21 @@ variables:
  WECHAT_PORT: 9004
  ATTENDANCE_PACKAGE_NAME: 'attendance'
  ATTENDANCE_PORT: 9005
+ EXPENSE_PACKAGE_NAME: 'expense-reimbursement-web'
+ EXPENSE_PORT: 9006
 
 stages:
  - run_work
  - run_account
  - run_wechat
- - run_attendance
+# - run_attendance
+ - run_expense
 
  - release_work
  - release_account
  - release_wechat
- - release_attendance
+# - release_attendance
+ - release_expense
 
 run_work:
  stage: run_work
@@ -60,18 +64,32 @@ run_wechat:
  tags:
    - dev
 
-run_attendance:
- stage: run_attendance
+#run_attendance:
+# stage: run_attendance
+# only:
+#   - master
+# script:
+#   - mvn  -Dmaven.test.skip=true -P dev clean package
+#   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
+#   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
+#   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+# tags:
+#   - dev
+
+run_expense:
+ stage: run_expense
  only:
    - master
  script:
    - mvn  -Dmaven.test.skip=true -P dev clean package
-   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
-   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
-   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+   - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
+   - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - dev
+
 
 # 以下是自动部署到阿里云，仅仅在部署分支release生效
 
@@ -114,15 +132,28 @@ release_wechat:
  tags:
    - aliyun
 
-release_attendance:
- stage: release_attendance
+#release_attendance:
+# stage: release_attendance
+# only:
+#   - release
+# script:
+#   - mvn  -Dmaven.test.skip=true -P release clean package
+#   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
+#   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
+#   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+# tags:
+#   - aliyun
+
+release_expense:
+ stage: release_expense
  only:
    - release
  script:
-   - mvn  -Dmaven.test.skip=true -P release clean package
-   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
-   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
-   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
+   - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
+   - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - aliyun

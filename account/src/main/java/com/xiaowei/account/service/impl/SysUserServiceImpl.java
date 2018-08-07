@@ -41,7 +41,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     @Autowired
     private CompanyRepository companyRepository;
 
-    public SysUserServiceImpl(@Qualifier("sysUserRepository")BaseRepository repository) {
+    public SysUserServiceImpl(@Qualifier("sysUserRepository") BaseRepository repository) {
         super(repository);
     }
 
@@ -74,11 +74,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
 
     @Override
     public List<SysUser> findFromCompanys() {
-        Set<String> userIds = sysUserRepository.findFromCompanies();
-        if(CollectionUtils.isEmpty(userIds)){
-            return null;
-        }
-        return sysUserRepository.findByIds(userIds);
+        return sysUserRepository.findFromCompanies();
     }
 
     @Override
@@ -117,7 +113,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
             throw new BusinessException("删除失败:没有传入对象id");
         }
         Optional<SysUser> sysUser = sysUserRepository.findById(userId);
-        EmptyUtils.assertOptional(sysUser,"没有查询到需要删除的对象");
+        EmptyUtils.assertOptional(sysUser, "没有查询到需要删除的对象");
         SysUser one = sysUser.get();
         //admin不允许伪删除
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
@@ -135,10 +131,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         if (StringUtils.isEmpty(userId)) {
             throw new BusinessException("保存失败:没有传入对象id");
         }
-        SysUser one = sysUserRepository.getOne(userId);
-        if (one == null) {
-            throw new BusinessException("保存失败:没有查询到需要修改的对象");
-        }
+        Optional<SysUser> optional = sysUserRepository.findById(userId);
+        EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+        SysUser one = optional.get();
         //admin不允许修改状态
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
             throw new BusinessException("保存失败:不允许修改超级管理员的状态");
@@ -150,10 +145,10 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     private void judgeAttribute(SysUser user, JudgeType judgeType) {
-        //判断所属公司是否为空
-        if(CollectionUtils.isEmpty(user.getCompanies())){
-            throw new BusinessException("保存失败:所属公司为空");
-        }
+//        //判断所属公司是否为空
+//        if (user.getCompany() == null) {
+//            throw new BusinessException("保存失败:所属公司为空");
+//        }
         //判断loginName是否唯一
         String loginName = user.getLoginName();
         if (StringUtils.isEmpty(loginName)) {
@@ -163,7 +158,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
             //验证loginName唯一性
             judegeLoginName(loginName);
             //判断是否超出了当前登录用户的角色
-            if(!CollectionUtils.isEmpty(user.getRoles())){
+            if (!CollectionUtils.isEmpty(user.getRoles())) {
                 judgeHaveRoles(LoginUserUtils.getLoginUser().getRoles().stream().map(RoleBean::getId).collect(Collectors.toSet()), user.getRoles().stream().map(SysRole::getId).collect(Collectors.toSet()));
             }
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
@@ -194,10 +189,10 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
 
             //设置不允许直接修改的字段
             user.setStatus(one.getStatus());
-            if(StringUtils.isEmpty(user.getPassword())){
+            if (StringUtils.isEmpty(user.getPassword())) {
                 user.setPassword(one.getPassword());
                 user.setSalt(one.getSalt());
-            }else{
+            } else {
                 //对密码进行加密
                 setPasswordOfUser(user);
             }
@@ -217,10 +212,10 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
 
         //确保stream能够执行不报错
         List<SysRole> newRoles = user.getRoles();
-        if(oldRoles==null){
+        if (oldRoles == null) {
             oldRoles = new ArrayList<>();
         }
-        if(newRoles==null){
+        if (newRoles == null) {
             newRoles = new ArrayList<>();
         }
 

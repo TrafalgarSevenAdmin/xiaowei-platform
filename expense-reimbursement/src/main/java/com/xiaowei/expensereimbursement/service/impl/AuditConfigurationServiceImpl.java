@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 
-/**
- * 待修改的设备服务
- */
 @Service
 public class AuditConfigurationServiceImpl extends BaseServiceImpl<AuditConfiguration> implements IAuditConfigurationService {
 

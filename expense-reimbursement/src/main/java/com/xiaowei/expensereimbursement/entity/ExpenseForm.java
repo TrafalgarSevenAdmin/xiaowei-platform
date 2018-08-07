@@ -1,0 +1,72 @@
+package com.xiaowei.expensereimbursement.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
+import java.util.List;
+
+/**
+ * 报销单
+ */
+@Table(name = "E_EXPENSEFORM")
+@Entity
+@Data
+public class ExpenseForm extends BaseEntity {
+    /**
+     * 所属工单编号
+     */
+    private String workOrderCode;
+    /**
+     * 报销单照片
+     */
+    private String formFileStore;
+    /**
+     * 填报总计金额
+     */
+    private Double fillAmount;
+    /**
+     * 初审总计金额
+     */
+    private Double firstTrialAmount;
+    /**
+     * 复审总计金额
+     */
+    private Double secondTrialAmount;
+    /**
+     * 初审人
+     */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="e_expenseform_firstTrial",
+            joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
+            inverseJoinColumns={@JoinColumn(name="FIRSTTRIAL_ID")})
+    @JsonIgnore
+    private List<SysUser> firstTrials;
+    /**
+     * 复审人
+     */
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="e_expenseform_secondTrial",
+            joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
+            inverseJoinColumns={@JoinColumn(name="SECONDTRIAL_ID")})
+    @JsonIgnore
+    private List<SysUser> secondTrials;
+    /**
+     * 状态
+     */
+    private Integer status;
+    /**
+     * 初审审批意见
+     */
+    private String firstOption;
+    /**
+     * 复审审批意见
+     */
+    private String secondOption;
+}

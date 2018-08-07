@@ -34,8 +34,6 @@ public class AccountUtils {
     public static LoginUserBean toLoginBean(SysUser sysUser){
         List<RoleBean> roles = new ArrayList<>();
         List<PermissionBean> permissions = new ArrayList<>();
-        List<CompanyBean> companyBeans = new ArrayList<>();
-        List<DepartmentBean> departmentBeans = new ArrayList<>();
         //构建登录用户信息
         if(SuperUser.ADMINISTRATOR_NAME.equals(sysUser.getLoginName())){
             //如果是超级管理员则拥有所有的权限和角色
@@ -43,17 +41,11 @@ public class AccountUtils {
             roles.addAll(BeanCopyUtils.copyList(sysRoles, RoleBean.class));
             List<SysPermission> sysPermissions = ContextUtils.getApplicationContext().getBean(ISysPermissionService.class).findAll();
             permissions.addAll(BeanCopyUtils.copyList(sysPermissions, PermissionBean.class));
-            List<Company> companies = ContextUtils.getApplicationContext().getBean(ICompanyService.class).findAll();
-            companyBeans.addAll(BeanCopyUtils.copyList(companies, CompanyBean.class));
-            List<Department> departments = ContextUtils.getApplicationContext().getBean(IDepartmentService.class).findAll();
-            departmentBeans.addAll(BeanCopyUtils.copyList(departments, DepartmentBean.class));
         }else{
             sysUser.getRoles().forEach(sysRole -> {
                 roles.add(BeanCopyUtils.copy(sysRole, RoleBean.class));
                 permissions.addAll(BeanCopyUtils.copyList(sysRole.getPermissions(), PermissionBean.class));
             });
-            companyBeans.addAll(BeanCopyUtils.copyList(sysUser.getCompanies(),CompanyBean.class));
-            departmentBeans.addAll(BeanCopyUtils.copyList(sysUser.getDepartments(),DepartmentBean.class));
         }
 
         LoginUserBean loginUserBean = new LoginUserBean(
@@ -61,12 +53,13 @@ public class AccountUtils {
                 sysUser.getLoginName(),
                 sysUser.getMobile(),
                 sysUser.getEmail(),
-                sysUser.getStatus(),
                 sysUser.getNickName(),
+                sysUser.getStatus(),
                 roles,
                 permissions,
-                companyBeans,
-                departmentBeans
+                BeanCopyUtils.copy(sysUser.getCompany(), CompanyBean.class),
+                BeanCopyUtils.copy( sysUser.getDepartment(), DepartmentBean.class),
+                BeanCopyUtils.copy(sysUser.getPost(), PostBean.class)
         );
         return loginUserBean;
     }

@@ -1,0 +1,55 @@
+profiles:  dev_environment
+server:
+  port: 9006
+  servlet:
+    context-path: /expense
+spring:
+  datasource:
+    url: @datasource.url@
+    username: @datasource.username@
+    password: @datasource.password@
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: data-server
+  jpa:
+    generate-ddl: true
+    properties:
+      format_sql: true
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+  thymeleaf:
+    cache: false
+    cache-period: 0
+  redis:
+    host: @redis.url@
+    port: 6379
+#  rabbitmq:
+#    host: @rabbitmq.host@
+#    port: @rabbitmq.port@
+#    username: @rabbitmq.username@
+#    password: @rabbitmq.password@
+#    publisher-confirms: true
+#    virtual-host: @rabbitmq.virtual.host@
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+logging:
+  level:
+    com:
+      yulintu: DEBUG
+upload:
+  path: @upload.path@ #将此路径用iis配置发布
+  type: local
+  accessUrlRoot: @upload.accessUrlRoot@
+  tags:
+    - idCard #身份证
+    - prove #证明
+    - contract #合同
+    - logo #头像

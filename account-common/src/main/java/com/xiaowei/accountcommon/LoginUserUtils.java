@@ -46,31 +46,31 @@ public class LoginUserUtils {
                 .isPresent();
     }
 
-    /**
-     * 判断是否有次公司
-     * @param companyId
-     * @return
-     * @throws UnauthenticatedException
-     */
-    public static boolean hasCompanyId(String companyId) throws UnauthenticatedException{
-        return getLoginUser().getCompanyBeans().stream()
-                .filter(companyBean -> companyBean.getId().equals(companyId))
-                .findAny()
-                .isPresent();
-    }
+//    /**
+//     * 判断是否有此公司
+//     * @param companyId
+//     * @return
+//     * @throws UnauthenticatedException
+//     */
+//    public static boolean hasCompanyId(String companyId) throws UnauthenticatedException{
+//        if("admin".equals(getLoginUser().getLoginName())){
+//            return true;
+//        }
+//        return getLoginUser().getCompanyBean().getId().equals(companyId);
+//    }
 
-    /**
-     * 判断是否有该部门
-     * @param departmentId
-     * @return
-     * @throws UnauthenticatedException
-     */
-    public static boolean hasDepartmentId(String departmentId) throws UnauthenticatedException{
-        return getLoginUser().getDepartmentBeans().stream()
-                .filter(departmentBean -> departmentBean.getId().equals(departmentId))
-                .findAny()
-                .isPresent();
-    }
+//    /**
+//     * 判断是否有该部门
+//     * @param departmentId
+//     * @return
+//     * @throws UnauthenticatedException
+//     */
+//    public static boolean hasDepartmentId(String departmentId) throws UnauthenticatedException{
+//        if("admin".equals(getLoginUser().getLoginName())){
+//            return true;
+//        }
+//        return getLoginUser().getDepartmentBean().getId().equals(departmentId);
+//    }
 
     /**
      * 当前用户是否有此权限Id

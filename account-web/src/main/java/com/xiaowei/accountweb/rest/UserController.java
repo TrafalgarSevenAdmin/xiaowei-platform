@@ -5,7 +5,6 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.query.UserQuery;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
-import com.xiaowei.accountcommon.CompanyBean;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.SysUserDTO;
@@ -25,7 +24,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author mocker
@@ -113,7 +111,7 @@ public class UserController {
         //默认只能查询当前登录用户所在公司下的用户
         LoginUserBean loginUser = LoginUserUtils.getLoginUser();
         if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
-            userQuery.getCompanyIds().addAll(loginUser.getCompanyBeans().stream().map(CompanyBean::getId).collect(Collectors.toSet()));
+            userQuery.setCompanyId(loginUser.getCompanyBean().getId());
         }
     }
 

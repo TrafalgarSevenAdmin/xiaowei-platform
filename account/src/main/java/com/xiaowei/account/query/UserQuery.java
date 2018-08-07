@@ -4,23 +4,21 @@ import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
+import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author mocker
- * @Date 2018-03-21 15:11:05
- * @Description 系统权限
- * @Version 1.0
- */
+@Data
 public class UserQuery extends Query {
 
     private String loginName;
     private Set<String> roleIds = new HashSet<>();
-    private Set<String> companyIds = new HashSet<>();
+    private String companyId;
+    private String departmentId;
+    private String postId;
     private String roleCode;
 
     @Override
@@ -38,41 +36,18 @@ public class UserQuery extends Query {
             setDistinct(true);
             addFilter(new Filter("roles.id", Filter.Operator.in, roleIds.toArray()));
         }
-        if (!CollectionUtils.isEmpty(companyIds)) {
+        if (StringUtils.isNotEmpty(companyId)) {
             setDistinct(true);
-            addFilter(new Filter("companies.id", Filter.Operator.in, companyIds.toArray()));
+            addFilter(new Filter("company.id", Filter.Operator.eq, companyId));
+        }
+        if (StringUtils.isNotEmpty(departmentId)) {
+            setDistinct(true);
+            addFilter(new Filter("department.id", Filter.Operator.eq, departmentId));
+        }
+        if (StringUtils.isNotEmpty(postId)) {
+            setDistinct(true);
+            addFilter(new Filter("post.id", Filter.Operator.eq, postId));
         }
     }
 
-    public String getRoleCode() {
-        return roleCode;
-    }
-
-    public void setRoleCode(String roleCode) {
-        this.roleCode = roleCode;
-    }
-
-    public Set<String> getCompanyIds() {
-        return companyIds;
-    }
-
-    public void setCompanyIds(Set<String> companyIds) {
-        this.companyIds = companyIds;
-    }
-
-    public Set<String> getRoleIds() {
-        return roleIds;
-    }
-
-    public void setRoleIds(Set<String> roleIds) {
-        this.roleIds = roleIds;
-    }
-
-    public String getLoginName() {
-        return loginName;
-    }
-
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
 }

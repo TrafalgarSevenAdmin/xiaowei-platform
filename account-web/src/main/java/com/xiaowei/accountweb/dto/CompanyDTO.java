@@ -4,12 +4,13 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonlog4j.annotation.ParamField;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-
+@Data
 public class CompanyDTO {
     public interface UpdateStatus{}
 
@@ -40,51 +41,4 @@ public class CompanyDTO {
     @Range(min = 0,max = 1,groups = {CompanyDTO.UpdateStatus.class},message = "传入状态为非法状态!")
     private Integer status;
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo(String logo) {
-        this.logo = logo;
-    }
-
-    public SysUser getPrincipal() {
-        return principal;
-    }
-
-    public void setPrincipal(SysUser principal) {
-        this.principal = principal;
-    }
-
-    public String getIntro() {
-        return intro;
-    }
-
-    public void setIntro(String intro) {
-        this.intro = intro;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }

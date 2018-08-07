@@ -11,10 +11,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * @author 系统用户表
- * @Date 2018-03-20 14:49:59
- * @Description 认证成功之后处理
- * @Version 1.0
+ * 用户实体
  */
 @Data
 @Table(name = "sys_user")
@@ -69,25 +66,28 @@ public class SysUser extends BaseEntity {
     private List<SysRole> roles;
 
     /**
-     * 用户与公司的多对多
+     * 用户的公司
      */
-    @Fetch(FetchMode.SUBSELECT)
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="sys_user_company",
-            joinColumns={@JoinColumn(name="USER_ID")},
-            inverseJoinColumns={@JoinColumn(name="COMPANY_ID")})
-    @JsonIgnore
-    private List<Company> companies;
+    @ManyToOne(targetEntity = Company.class)
+    @JoinColumn(name = "company_id")
+    @Fetch(FetchMode.JOIN)
+    private Company company;
 
     /**
-     * 用户与部门的多对多
+     * 用户的部门
      */
-    @Fetch(FetchMode.SUBSELECT)
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="SYS_USER_DEPARTMENT",
-            joinColumns={@JoinColumn(name="USER_ID")},
-            inverseJoinColumns={@JoinColumn(name="DEPARTMENT_ID")})
-    @JsonIgnore
-    private List<Department> departments;
+    @ManyToOne(targetEntity = Department.class)
+    @JoinColumn(name = "department_id")
+    @Fetch(FetchMode.JOIN)
+    private Department department;
+
+    /**
+     * 用户的岗位
+     */
+    @ManyToOne(targetEntity = Post.class)
+    @JoinColumn(name = "post_id")
+    @Fetch(FetchMode.JOIN)
+    private Post post;
+
 
 }

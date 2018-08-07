@@ -2,6 +2,7 @@ package com.xiaowei.attendancesystem.controller;
 
 import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.attendancesystem.bean.PunchFormCountBean;
 import com.xiaowei.attendancesystem.dto.PunchFormDTO;
@@ -41,6 +42,8 @@ public class PunchRecordController {
     private IPunchRecordService punchRecordService;
     @Autowired
     private ICompanyService companyService;
+    @Autowired
+    private SysUserRepository userRepository;
 
     @ApiOperation(value = "添加打卡记录")
     @AutoErrorHandler
@@ -110,7 +113,7 @@ public class PunchRecordController {
         //查询一个公司下所有人某个月份的打卡记录
         List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(), punchFormDTO.getSelectMonth());
         final Company company = companyService.findById(punchFormDTO.getCompanyId());
-        final List<SysUser> users = company.getUsers();
+        final List<SysUser> users = userRepository.findByCompanyId(company.getId());
         List<Object[]> totalDatas = new ArrayList<>();
         //获取当前天的时间格式化对象
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");

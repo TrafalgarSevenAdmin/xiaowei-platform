@@ -52,6 +52,7 @@
         <module>attendance-system</module>
         <module>expense-reimbursement</module>
         <module>socketjs-core</module>
+        <module>expense-reimbursement-web</module>
     </modules>
 
     <dependencies>

@@ -38,12 +38,11 @@ logging:
     com:
       yulintu: DEBUG
 upload:
-  path: C:/upload #将此路径用iis配置发布
+  path: @upload.path@ #将此路径用iis配置发布
   type: local
-  accessUrlRoot: http://192.168.0.127:9000/
+  accessUrlRoot: @upload.accessUrlRoot@
   tags:
-    - idCard
-    - prove
-    - purchaseContract
-    - contract
-    - logo
+    - idCard #身份证
+    - prove #证明
+    - contract #合同
+    - logo #头像
