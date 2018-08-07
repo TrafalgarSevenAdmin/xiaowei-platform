@@ -145,10 +145,10 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     private void judgeAttribute(SysUser user, JudgeType judgeType) {
-        //判断所属公司是否为空
-        if (user.getCompany() == null) {
-            throw new BusinessException("保存失败:所属公司为空");
-        }
+//        //判断所属公司是否为空
+//        if (user.getCompany() == null) {
+//            throw new BusinessException("保存失败:所属公司为空");
+//        }
         //判断loginName是否唯一
         String loginName = user.getLoginName();
         if (StringUtils.isEmpty(loginName)) {
