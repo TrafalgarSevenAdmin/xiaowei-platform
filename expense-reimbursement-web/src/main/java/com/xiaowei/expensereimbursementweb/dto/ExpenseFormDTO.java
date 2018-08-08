@@ -12,6 +12,8 @@ import java.util.List;
 
 @Data
 public class ExpenseFormDTO {
+    public interface FirstAudit{}
+    public interface SecondAudit{}
     /**
      * 所属工单编号
      */
@@ -31,10 +33,12 @@ public class ExpenseFormDTO {
     /**
      * 初审总计金额
      */
+    @NotNull(groups = {FirstAudit.class},message = "初审总计金额必填!")
     private Double firstTrialAmount;
     /**
      * 复审总计金额
      */
+    @NotNull(groups = {SecondAudit.class},message = "初审总计金额必填!")
     private Double secondTrialAmount;
 
     /**
@@ -54,7 +58,7 @@ public class ExpenseFormDTO {
     /**
      * 状态
      */
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "状态必填!")
+    @NotNull(groups = {V.Insert.class,V.Update.class,FirstAudit.class,SecondAudit.class},message = "状态必填!")
     @ApiModelProperty(value = "状态")
     private Integer status;
 
@@ -70,6 +74,7 @@ public class ExpenseFormDTO {
     private String secondOption;
 
     @ApiModelProperty(value = "报销单明细")
+    @NotNull(groups = {V.Insert.class,V.Update.class,FirstAudit.class,SecondAudit.class},message = "报销单明细必填!")
     private List<ExpenseFormItem> expenseFormItems;
 
     /**
@@ -78,4 +83,19 @@ public class ExpenseFormDTO {
     @ApiModelProperty(value = "报销人")
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "报销人必填!")
     private SysUser expenseUser;
+
+    /**
+     * 最终初审人
+     */
+    @ApiModelProperty(value = "最终初审人")
+    @NotNull(groups = {FirstAudit.class},message = "最终初审人必填!")
+    private SysUser firstAudit;
+
+    /**
+     * 最终复审人
+     */
+    @ApiModelProperty(value = "最终复审人")
+    @NotNull(groups = {SecondAudit.class},message = "最终复审人必填!")
+    private SysUser secondAudit;
+
 }

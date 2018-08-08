@@ -10,6 +10,7 @@ import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
+import com.xiaowei.expensereimbursement.repository.WorkOrderRepository;
 import com.xiaowei.expensereimbursement.service.IExpenseFormService;
 import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
@@ -34,6 +35,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private ShardedJedisPool shardedJedisPool;
     @Autowired
     private ExpenseFormItemRepository expenseFormItemRepository;
+    @Autowired
+    private WorkOrderRepository workOrderRepository;
 
 
     public ExpenseFormServiceImpl(@Qualifier("expenseFormRepository") BaseRepository repository) {
@@ -72,6 +75,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
+        //验证所属工单
+        final String workOrderCode = expenseForm.getWorkOrderCode();
+        EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
+        EmptyUtils.assertObject(workOrderRepository.findByCode(workOrderCode), "没有查询到所属工单");
 
     }
 
@@ -140,5 +147,95 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //先删除明细,再保存明细
         judgeItemIsUniqueAndAmount(expenseForm);
         return expenseForm;
+    }
+
+    /**
+     * 费用初审
+     *
+     * @param expenseForm
+     * @return
+     */
+    @Override
+    @Transactional
+    public ExpenseForm firstAudit(ExpenseForm expenseForm) {
+        final String expenseFormId = expenseForm.getId();
+        EmptyUtils.assertString(expenseFormId, "没有传入对象id");
+        Optional<ExpenseForm> optional = expenseFormRepository.findById(expenseFormId);
+        EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+        ExpenseForm one = optional.get();
+        //判断初审总计金额是否合规
+        judgeFirstTrialAmount(expenseForm, one);
+        //判断初审报销单明细
+        double totalAmount = judgeItem(expenseForm, one);
+        if (totalAmount != expenseForm.getFirstTrialAmount()) {
+            //如果明细累加的初审总计金额与前端传送过来的总计金额不一致,则抛出异常
+            throw new BusinessException("初审总计金额有误!");
+        }
+
+        //判断最终初审人是否在初审人里面
+        judgeFirstAudit(expenseForm, one);
+        one.setFirstAuditTime(new Date());//初审时间
+        one.setStatus(expenseForm.getStatus());//设置状态
+        one.setFirstOption(expenseForm.getFirstOption());//初审意见
+        return expenseFormRepository.save(one);
+    }
+
+    private void judgeFirstAudit(ExpenseForm expenseForm, ExpenseForm one) {
+        EmptyUtils.assertObject(expenseForm.getFirstAudit(), "没有传入最终初审人");
+        Long count = expenseFormRepository.findCountFirstTrial(expenseForm.getId(), expenseForm.getFirstAudit().getId());
+        if (count == 0) {
+            throw new BusinessException("该报销单没有该初审人");
+        }
+        one.setFirstAudit(expenseForm.getFirstAudit());//设置初审人
+    }
+
+    /**
+     * 判断初审报销单明细
+     *
+     * @param expenseForm
+     * @param one
+     */
+    private double judgeItem(ExpenseForm expenseForm, ExpenseForm one) {
+        double totalAmount = 0;
+        List<ExpenseFormItem> expenseFormItems = expenseForm.getExpenseFormItems();
+        List<ExpenseFormItem> oneExpenseFormItems = one.getExpenseFormItems();
+        for (ExpenseFormItem oneItem : oneExpenseFormItems) {
+            Optional<ExpenseFormItem> optional = expenseFormItems.stream().filter(expenseFormItem -> expenseFormItem.getId().equals(oneItem.getId())).findAny();
+            if (!optional.isPresent()) {
+                throw new BusinessException("费用明细有误");
+            }
+            final Double firstFigure = optional.get().getFirstFigure();
+            EmptyUtils.assertObject(firstFigure, "没有明细初审金额");
+            if (firstFigure > oneItem.getFillFigure()) {
+                throw new BusinessException("费用明细初审金额大于填报金额");
+            }
+            oneItem.setFirstFigure(firstFigure);
+            Integer status = optional.get().getStatus();
+            EmptyUtils.assertObject(status, "没有传入明细状态");
+            oneItem.setStatus(status);
+            if (!ExpenseFormItemStatus.REFUSE.getStatus().equals(status)) {//非不予报销
+                totalAmount = totalAmount + firstFigure;
+            }
+            expenseFormItemRepository.save(oneItem);
+        }
+        return totalAmount;
+    }
+
+
+    /**
+     * 验证初审总计金额是否合规
+     *
+     * @param expenseForm
+     * @param one
+     */
+    private void judgeFirstTrialAmount(ExpenseForm expenseForm, ExpenseForm one) {
+        final Double firstTrialAmount = expenseForm.getFirstTrialAmount();
+        EmptyUtils.assertObject(firstTrialAmount, "没有传入初审总计金额");
+        if (firstTrialAmount > one.getFillAmount()) {
+            //不允许初审总计金额大于填报总计金额
+            throw new BusinessException("不允许初审总计金额大于填报总计金额");
+        } else {
+            one.setFirstTrialAmount(firstTrialAmount);//设置初审总金额
+        }
     }
 }

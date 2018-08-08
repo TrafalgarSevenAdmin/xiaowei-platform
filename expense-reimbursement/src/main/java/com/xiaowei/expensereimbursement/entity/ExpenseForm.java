@@ -9,6 +9,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,18 +55,34 @@ public class ExpenseForm extends BaseEntity {
      */
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="e_expenseform_firstTrial",
+    @JoinTable(name="e_expenseform_first_trial",
             joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
             inverseJoinColumns={@JoinColumn(name="FIRSTTRIAL_ID")})
     @JsonIgnore
     private List<SysUser> firstTrials;
 
     /**
+     * 最终初审人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "firstAuditId")
+    @Fetch(FetchMode.JOIN)
+    private SysUser firstAudit;
+
+    /**
+     * 最终复审人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "secondAuditId")
+    @Fetch(FetchMode.JOIN)
+    private SysUser secondAudit;
+
+    /**
      * 复审人
      */
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="e_expenseform_secondTrial",
+    @JoinTable(name="e_expenseform_second_trial",
             joinColumns={@JoinColumn(name="EXPENSEFORM_ID")},
             inverseJoinColumns={@JoinColumn(name="SECONDTRIAL_ID")})
     @JsonIgnore
@@ -95,6 +112,16 @@ public class ExpenseForm extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "expenseForm")
     @JsonIgnore
     private List<ExpenseFormItem> expenseFormItems;
+
+    /**
+     * 初审时间
+     */
+    private Date firstAuditTime;
+
+    /**
+     * 复审时间
+     */
+    private Date secondAuditTime;
 
     public String getFormFileStore() {
         return UploadConfigUtils.transIdsToPath(this.formFileStore);

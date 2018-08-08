@@ -50,6 +50,16 @@ public class ExpenseFormController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 
+    @ApiOperation(value = "报销单初审")
+    @AutoErrorHandler
+    @PutMapping("/first/{expenseFormId}")
+    public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId, @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
+        expenseForm.setId(expenseFormId);
+        expenseForm = expenseFormService.firstAudit(expenseForm);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
+    }
+
     @ApiOperation("报销单查询接口")
     @GetMapping("")
     public Result query(ExpenseFormQuery expenseFormQuery, FieldsView fieldsView) {

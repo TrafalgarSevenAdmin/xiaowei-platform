@@ -10,4 +10,6 @@ public interface IExpenseFormService extends IBaseService<ExpenseForm> {
     ExpenseForm saveExpenseForm(ExpenseForm expenseForm);
 
     ExpenseForm updateExpenseForm(ExpenseForm expenseForm);
+
+    ExpenseForm firstAudit(ExpenseForm expenseForm);
 }
