@@ -71,4 +71,11 @@ public class ExpenseFormDTO {
 
     @ApiModelProperty(value = "报销单明细")
     private List<ExpenseFormItem> expenseFormItems;
+
+    /**
+     * 报销人
+     */
+    @ApiModelProperty(value = "报销人")
+    @NotNull(groups = {V.Insert.class,V.Update.class},message = "报销人必填!")
+    private SysUser expenseUser;
 }

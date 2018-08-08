@@ -83,6 +83,14 @@ public class ExpenseForm extends BaseEntity {
      */
     private String secondOption;
 
+    /**
+     * 报销人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "expenseUserId")
+    @Fetch(FetchMode.JOIN)
+    private SysUser expenseUser;
+
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "expenseForm")
     @JsonIgnore
