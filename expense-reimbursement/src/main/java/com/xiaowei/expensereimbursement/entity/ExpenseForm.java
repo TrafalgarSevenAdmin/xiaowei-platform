@@ -2,6 +2,7 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -22,6 +23,11 @@ public class ExpenseForm extends BaseEntity {
      */
     private String workOrderCode;
     /**
+     * 报销单标号
+     */
+    @Column(unique = true,updatable = false)
+    private String code;
+    /**
      * 报销单照片
      */
     private String formFileStore;
@@ -37,6 +43,12 @@ public class ExpenseForm extends BaseEntity {
      * 复审总计金额
      */
     private Double secondTrialAmount;
+
+    /**
+     * 驳回次数
+     */
+    private Integer turnDownCount;
+
     /**
      * 初审人
      */
@@ -47,6 +59,7 @@ public class ExpenseForm extends BaseEntity {
             inverseJoinColumns={@JoinColumn(name="FIRSTTRIAL_ID")})
     @JsonIgnore
     private List<SysUser> firstTrials;
+
     /**
      * 复审人
      */
@@ -69,4 +82,13 @@ public class ExpenseForm extends BaseEntity {
      * 复审审批意见
      */
     private String secondOption;
+
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "expenseForm")
+    @JsonIgnore
+    private List<ExpenseFormItem> expenseFormItems;
+
+    public String getFormFileStore() {
+        return UploadConfigUtils.transIdsToPath(this.formFileStore);
+    }
 }
