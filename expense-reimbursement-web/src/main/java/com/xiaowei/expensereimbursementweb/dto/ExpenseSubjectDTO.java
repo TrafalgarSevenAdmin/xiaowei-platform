@@ -27,10 +27,12 @@ public class ExpenseSubjectDTO {
     /**
      * 科目说明
      */
+    @ApiModelProperty(value = "科目说明")
     private String state;
 
     /**
      * 税率
      */
+    @ApiModelProperty(value = "税率")
     private Float taxRate;
 }

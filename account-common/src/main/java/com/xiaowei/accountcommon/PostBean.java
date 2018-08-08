@@ -2,8 +2,10 @@ package com.xiaowei.accountcommon;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class PostBean {
+public class PostBean implements Serializable {
     /**
      * 编号
      */

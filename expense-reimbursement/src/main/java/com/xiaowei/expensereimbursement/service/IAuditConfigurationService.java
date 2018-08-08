@@ -6,4 +6,7 @@ import com.xiaowei.expensereimbursement.entity.AuditConfiguration;
 
 public interface IAuditConfigurationService extends IBaseService<AuditConfiguration> {
 
+    AuditConfiguration saveAuditConfiguration(AuditConfiguration auditConfiguration);
+
+    void deleteAuditConfiguration(String auditConfigurationId);
 }
