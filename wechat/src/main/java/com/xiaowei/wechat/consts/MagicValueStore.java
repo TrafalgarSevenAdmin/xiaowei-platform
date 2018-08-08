@@ -17,6 +17,12 @@ public class MagicValueStore {
     public static final String wxStatesValuePro = "wechat:states:value";
 
     /**
+     * 微信服务器地址白名单
+     * 防止有人恶意攻击
+     */
+    public static final String wxHostsList = "wechat:server:hosts";
+
+    /**
      * 只关注微信但没有绑定的微信的标签
      */
     public static final String notBindRole = "未绑定用户";

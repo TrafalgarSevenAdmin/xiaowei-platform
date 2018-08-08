@@ -15,6 +15,18 @@ public class RabbitMQConfig {
         return new Queue(WX_MESSAGE_PUSH_QUEUE);
     }
 
+    //支付成功的默认回调
+    @Bean
+    public Queue orderDefaultPayedQueue() {
+        return new Queue(ORDER_DEFAULT_PAYED_QUEUE);
+    }
+
+    //支付超时或二次校验
+    @Bean
+    public Queue orderExpiredQueue() {
+        return new Queue(ORDER_EXPIRED_DELAY_QUEUE);
+    }
+
     // 创建延迟推送的消息队列
     @Bean
     public Queue delayTaskMessageQueue() {
@@ -40,6 +52,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingDelayTask(Queue delayTaskMessageQueue, TopicExchange delayExchange) {
         return BindingBuilder.bind(delayTaskMessageQueue).to(delayExchange).with(DELAY_TASK_ROUTING);
+    }
+
+    @Bean
+    public Binding bindingOrderExpiredQueueDelayTask(Queue orderExpiredQueue, TopicExchange delayExchange) {
+        return BindingBuilder.bind(orderExpiredQueue).to(delayExchange).with(DELAY_PAY_TASK_ROUTING);
     }
 
 }

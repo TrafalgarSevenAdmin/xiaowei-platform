@@ -5,6 +5,7 @@ import com.xiaowei.mq.constant.MqQueueConstant;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -21,7 +22,7 @@ import java.util.Optional;
 /**
  * 将mq中的消息转发到微信去
  */
-@Log
+@Log4j2
 @Component
 @RabbitListener(queues = MqQueueConstant.WX_MESSAGE_PUSH_QUEUE)
 public class MqMessageTransmitToWxReceiver {
@@ -43,7 +44,8 @@ public class MqMessageTransmitToWxReceiver {
         if (!byUserId.isPresent()) {
             //如果用户没有绑定微信，这个就推送不了
             // TODO: 2018/7/13 0013 错误怎么展示
-            log.warning("推送消息给微信用户失败！此用户{" + userId + "}没有绑定微信！消息内容：" + messageBean);
+            log.warn("推送消息给微信用户失败！此用户{" + userId + "}没有绑定微信！消息内容：" + messageBean);
+            return;
         }
         //通过模板推送消息
         WxMpTemplateMessage template = new WxMpTemplateMessage();
@@ -60,7 +62,7 @@ public class MqMessageTransmitToWxReceiver {
             wxMpService.getTemplateMsgService().sendTemplateMsg(template);
         } catch (WxErrorException e) {
             // TODO: 2018/7/13 0013 错误怎么展示
-            log.warning("推送消息给微信用户{" + userId + "}失败！消息内容：" + messageBean);
+            log.warn("推送消息给微信用户{" + userId + "}失败！消息内容：" + messageBean);
             e.printStackTrace();
         }
     }
