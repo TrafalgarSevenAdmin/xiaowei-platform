@@ -1,5 +1,7 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -30,6 +32,8 @@ public class AuditConfigurationController {
 
     @Autowired
     private IAuditConfigurationService auditConfigurationService;
+    @Autowired
+    private ISysUserService userService;
 
     @ApiOperation(value = "添加审核配置")
     @AutoErrorHandler
@@ -72,6 +76,16 @@ public class AuditConfigurationController {
     public Result findById(@PathVariable("auditConfigurationId") String auditConfigurationId, FieldsView fieldsView) {
         AuditConfiguration auditConfiguration = auditConfigurationService.findById(auditConfigurationId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(auditConfiguration, fieldsView));
+    }
+
+    @ApiOperation("根据用户id数组获取用户列表")
+    @GetMapping("/user")
+    public Result findUsersByUserIds(String[] userIds, FieldsView fieldsView) {
+        if(userIds==null||userIds.length==0){
+            return Result.getSuccess();
+        }
+        List<SysUser> users = userService.findByIds(userIds);
+        return Result.getSuccess(ObjectToMapUtils.listToMap(users, fieldsView));
     }
 
 }
