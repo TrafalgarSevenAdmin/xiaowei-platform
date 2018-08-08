@@ -8,10 +8,13 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
+import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
 import com.xiaowei.expensereimbursement.service.IExpenseFormService;
 import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
+import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private ExpenseFormRepository expenseFormRepository;
     @Autowired
     private ShardedJedisPool shardedJedisPool;
+    @Autowired
+    private ExpenseFormItemRepository expenseFormItemRepository;
 
 
     public ExpenseFormServiceImpl(@Qualifier("expenseFormRepository") BaseRepository repository) {
@@ -59,6 +64,13 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             EmptyUtils.assertString(expenseFormId, "没有传入对象id");
             Optional<ExpenseForm> optional = expenseFormRepository.findById(expenseFormId);
             EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+            final ExpenseForm one = optional.get();
+            if (!ArrayUtils.contains(ExpenseFormUtils.CANUPDATE, one.getStatus())) {
+                throw new BusinessException("报销单当前不允许修改");
+            }
+
+            //设置无法修改的属性
+            expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
 
     }
@@ -74,19 +86,20 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         final List<ExpenseFormItem> expenseFormItems = expenseForm.getExpenseFormItems();
         for (ExpenseFormItem expenseFormItem : expenseFormItems) {
             total = total + expenseFormItem.getFillFigure();
-            if(subjectCodes.contains(expenseFormItem.getSubjectCode())){
+            if (subjectCodes.contains(expenseFormItem.getSubjectCode())) {
                 throw new BusinessException("报销费用科目重复!");
-            }else{
+            } else {
                 subjectCodes.add(expenseFormItem.getSubjectCode());
             }
             expenseFormItem.setCreatedTime(new Date());
-            if(ExpenseFormStatus.DRAFT.getStatus().equals(expenseForm.getStatus())){
+            if (ExpenseFormStatus.DRAFT.getStatus().equals(expenseForm.getStatus())) {
                 //如果是草稿,则明细也存草稿
                 expenseFormItem.setStatus(ExpenseFormItemStatus.DRAFT.getStatus());
-            }else{
+            } else {
                 expenseFormItem.setStatus(ExpenseFormItemStatus.NORMAL.getStatus());
             }
             expenseFormItem.setExpenseForm(expenseForm);
+            expenseFormItemRepository.save(expenseFormItem);
         }
         //判断金额
         if (total != expenseForm.getFillAmount()) {
@@ -122,6 +135,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判定参数是否合规
         judgeAttribute(expenseForm, JudgeType.UPDATE);
         expenseFormRepository.save(expenseForm);
+        //判断所有明细的费用科目是否唯一以及合计金额是否正确
+        expenseFormItemRepository.deleteByExpenseFormId(expenseForm.getId());
+        //先删除明细,再保存明细
+        judgeItemIsUniqueAndAmount(expenseForm);
         return expenseForm;
     }
 }
