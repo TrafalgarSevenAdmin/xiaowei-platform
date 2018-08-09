@@ -12,6 +12,8 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.dto.EquipmentDTO;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.service.IEquipmentService;
+import com.xiaowei.worksystem.service.customer.ICustomerService;
+import com.xiaowei.worksystem.service.impl.customer.CustomerServiceImpl;
 import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +37,24 @@ public class EquipmentController {
      */
     @Autowired
     private IEquipmentService equipmentService;
+
+    @Autowired
+    private ICustomerService customerService;
+
+    @ApiOperation("获取所有区县")
+    @GetMapping("/countys")
+    public Result getCountys() {
+        List<String> countys = customerService.getCountys();
+        return Result.getSuccess(countys);
+    }
+
+//    @ApiOperation("获取某个区县下的服务对象")
+//    @GetMapping("/")
+//    public Result getCountys() {
+//        List<String> countys = customerService.getCountys();
+//        return Result.getSuccess(countys);
+//    }
+
 
     @ApiOperation(value = "添加设备")
     @AutoErrorHandler
@@ -66,7 +86,7 @@ public class EquipmentController {
     @ApiOperation("删除设备")
     @DeleteMapping("/{equipmentId}")
     public Result delete(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
-        equipmentService.fakeDelete(equipmentId);
+        equipmentService.delete(equipmentId);
         return Result.getSuccess("删除成功");
     }
 

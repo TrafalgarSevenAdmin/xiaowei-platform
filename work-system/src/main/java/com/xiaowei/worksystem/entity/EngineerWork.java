@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +18,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "W_ENGINEERWORK")
+@SQLDelete(sql = "update w_engineerwork set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 public class EngineerWork extends BaseEntity{
     /**
      * 接单时间
