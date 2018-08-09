@@ -2,9 +2,9 @@ package com.xiaowei.account.consts;
 
 public enum RoleType {
     /**
-     * 部门角色
+     * 公司角色
      */
-    DEPARTMENTROLE(0),
+    COMPANYROLE(0),
 
     /**
      * 托管角色
