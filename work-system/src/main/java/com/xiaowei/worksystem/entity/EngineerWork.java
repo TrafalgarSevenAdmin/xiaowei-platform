@@ -6,6 +6,7 @@ import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +21,8 @@ import java.util.Date;
 @Table(name = "W_ENGINEERWORK")
 @SQLDelete(sql = "update w_engineerwork set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class EngineerWork extends BaseEntity{
+@Data
+public class EngineerWork extends BaseEntity {
     /**
      * 接单时间
      */
@@ -54,9 +56,14 @@ public class EngineerWork extends BaseEntity{
     @JsonIgnore
     private Geometry arriveShape;
     /**
+     * 到达状态
+     */
+    private Integer arriveStatus;
+    /**
      * 到达图片
      */
     private String arriveFileStore;
+
     @Transient
     private String startWkt;
     @Transient
@@ -66,79 +73,27 @@ public class EngineerWork extends BaseEntity{
         return UploadConfigUtils.transIdsToPath(this.arriveFileStore);
     }
 
-    public void setArriveFileStore(String arriveFileStore) {
-        this.arriveFileStore = arriveFileStore;
-    }
-
-    public Date getReceivedTime() {
-        return receivedTime;
-    }
-
-    public void setReceivedTime(Date receivedTime) {
-        this.receivedTime = receivedTime;
-    }
-
-    public Date getAppointTime() {
-        return appointTime;
-    }
-
-    public void setAppointTime(Date appointTime) {
-        this.appointTime = appointTime;
-    }
-
-    public Date getDeparteTime() {
-        return departeTime;
-    }
-
-    public void setDeparteTime(Date departeTime) {
-        this.departeTime = departeTime;
-    }
-
-    public Date getBeginInhandTime() {
-        return beginInhandTime;
-    }
-
-    public void setBeginInhandTime(Date beginInhandTime) {
-        this.beginInhandTime = beginInhandTime;
-    }
-
-    public Date getEndInhandTime() {
-        return endInhandTime;
-    }
-
-    public void setEndInhandTime(Date endInhandTime) {
-        this.endInhandTime = endInhandTime;
-    }
-
+    @JsonIgnore
     public Geometry getStartShape() {
         return startShape;
     }
 
-    public void setStartShape(Geometry startShape) {
-        this.startShape = startShape;
-    }
-
+    @JsonIgnore
     public Geometry getArriveShape() {
         return arriveShape;
     }
 
-    public void setArriveShape(Geometry arriveShape) {
-        this.arriveShape = arriveShape;
-    }
-
     public String getStartWkt() {
+        if (this.startShape != null) {
+            return this.startShape.toText();
+        }
         return startWkt;
     }
 
-    public void setStartWkt(String startWkt) {
-        this.startWkt = startWkt;
-    }
-
     public String getArriveWkt() {
+        if (this.arriveShape != null) {
+            return this.arriveShape.toText();
+        }
         return arriveWkt;
-    }
-
-    public void setArriveWkt(String arriveWkt) {
-        this.arriveWkt = arriveWkt;
     }
 }

@@ -329,7 +329,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      */
     @Override
     @Transactional
-    public WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore) {
+    public WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore, Integer arriveStatus) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
@@ -341,6 +341,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setBeginInhandTime(new Date());//开始处理时间
         engineerWork.setArriveShape(shape);//目的地
+        engineerWork.setArriveStatus(arriveStatus);//到达状态
         engineerWork.setArriveFileStore(arriveFileStore);//到达图片
         val firstOrderNumber = setFirstServiceItem(workOrderId);
         engineerWorkRepository.save(engineerWork);
@@ -441,30 +442,26 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 派单
      *
      * @param workOrder
-     * @param workFlowId
      * @return
      */
     @Override
     @Transactional
-    public WorkOrder distributeWorkOrder(WorkOrder workOrder, String workFlowId) {
+    public WorkOrder distributeWorkOrder(WorkOrder workOrder) {
         //验证派单工单的属性
         judgeDistributeWorkOrder(workOrder);
 
         Optional<WorkOrder> optional = workOrderRepository.findById(workOrder.getId());
         EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         WorkOrder one = optional.get();
-        //待派发
-        if (!one.getSystemStatus().equals(WorkOrderSystemStatus.DISTRIBUTE.getStatus())) {
+        //待派发待接单都可以派发
+        if (!one.getSystemStatus().equals(WorkOrderSystemStatus.DISTRIBUTE.getStatus()) &&
+                !one.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         one.setSystemStatus(WorkOrderSystemStatus.RECEIVE.getStatus());//变更状态为待接单
         one.setEngineer(workOrder.getEngineer());
         one.setBackgrounder(workOrder.getBackgrounder());
         workOrderRepository.save(one);
-        if (StringUtils.isNotEmpty(workFlowId)) {
-            //设置服务项目
-            setServiceItems(workOrder, workFlowId);
-        }
         return one;
     }
 

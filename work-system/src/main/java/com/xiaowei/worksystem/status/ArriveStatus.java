@@ -1,19 +1,19 @@
-package com.xiaowei.account.consts;
+package com.xiaowei.worksystem.status;
 
-public enum RoleType {
-    /**
-     * 公司角色
-     */
-    COMPANYROLE(0),
+public enum ArriveStatus {
 
     /**
-     * 托管角色
+     * 范围内
      */
-    TRUSTEESHIPROLE(1);
+    INSIDE(0),
+    /**
+     * 范围外
+     */
+    OUTSIDE(1);
 
     private Integer status;
 
-    RoleType(Integer status){
+    ArriveStatus(Integer status){
         this.status = status;
     }
 

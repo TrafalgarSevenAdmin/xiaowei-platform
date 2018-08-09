@@ -27,17 +27,17 @@ public class ExpenseFormItem extends BaseEntity {
      */
     private Double fillFigure;
     /**
-     * 明细状态
-     */
-    private Integer status;
-    /**
      * 初审金额
      */
-    private String firstFigure;
+    private Double firstFigure;
     /**
      * 复审金额
      */
-    private String secondFigure;
+    private Double secondFigure;
+    /**
+     * 明细状态
+     */
+    private Integer status;
     /**
      * 费用说明
      */

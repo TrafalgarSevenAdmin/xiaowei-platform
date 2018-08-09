@@ -4,7 +4,6 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
-import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
@@ -65,6 +64,7 @@ public class WorkOrderController {
                          String workFlowId,
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
+        workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
         workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
@@ -88,6 +88,7 @@ public class WorkOrderController {
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
+        workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
         workOrder = workOrderService.updateWorkOrder(workOrder, workFlowId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
@@ -105,11 +106,10 @@ public class WorkOrderController {
     @PutMapping("/distribute/{workOrderId}")
     public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,
                                       @RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO,
-                                      BindingResult bindingResult,
-                                      String workFlowId, FieldsView fieldsView) throws Exception {
+                                      BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
-        workOrder = workOrderService.distributeWorkOrder(workOrder, workFlowId);
+        workOrder = workOrderService.distributeWorkOrder(workOrder);
         //派单提醒通知
         maintenanceOfDispatching(workOrder);
         return Result.getSuccess();
@@ -199,7 +199,7 @@ public class WorkOrderController {
                                   @RequestBody @Validated(V.Insert.class) DepartWorkOrderDTO departWorkOrderDTO,
                                   BindingResult bindingResult,
                                   FieldsView fieldsView) throws Exception {
-        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(departWorkOrderDTO.getWkt()),departWorkOrderDTO.getArriveFileStore());
+        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(departWorkOrderDTO.getWkt()),departWorkOrderDTO.getArriveFileStore(),departWorkOrderDTO.getArriveStatus());
         //到达通知
         processingNotification(workOrder, "工程师已到达");
         return Result.getSuccess();

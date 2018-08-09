@@ -5,6 +5,8 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -14,6 +16,8 @@ import javax.persistence.*;
 @Data
 @Table(name = "SYS_DEPARTMENT")
 @Entity
+@SQLDelete(sql = "update SYS_DEPARTMENT set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 public class Department extends BaseEntity {
     /**
      * 编号

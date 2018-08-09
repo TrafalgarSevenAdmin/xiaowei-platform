@@ -2,6 +2,8 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +15,8 @@ import javax.persistence.Table;
 @Table(name = "E_EXPENSESUBJECT")
 @Entity
 @Data
+@SQLDelete(sql = "update E_EXPENSESUBJECT set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 public class ExpenseSubject extends BaseEntity {
     /**
      * 科目名称

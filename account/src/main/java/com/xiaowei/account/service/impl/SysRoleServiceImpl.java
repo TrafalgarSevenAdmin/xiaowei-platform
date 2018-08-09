@@ -12,6 +12,7 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -88,7 +88,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             role.setId(null);
 
             //设置code
-            role.setCode(UUID.randomUUID().toString());
+            role.setCode(StringPYUtils.getSpellCode(role.getName()));
             //设置创建时间
             role.setCreatedTime(new Date());
 
@@ -126,7 +126,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             role.setRoleType(RoleType.TRUSTEESHIPROLE.getStatus());
         } else {//公司角色
             EmptyUtils.assertOptional(companyRepository.findById(company.getId()),"没有查询到所属公司");
-            role.setRoleType(RoleType.DEPARTMENTROLE.getStatus());
+            role.setRoleType(RoleType.COMPANYROLE.getStatus());
         }
 
     }

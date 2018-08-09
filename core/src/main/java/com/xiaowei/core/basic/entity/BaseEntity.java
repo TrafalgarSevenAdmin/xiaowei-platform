@@ -31,7 +31,26 @@ public class BaseEntity implements Serializable {
     @Column(updatable = false)
     private Date createdTime;
 
+    private Boolean delete_flag = false;
+    private Date delete_time;
+
     public BaseEntity() {
+    }
+
+    public Date getDelete_time() {
+        return delete_time;
+    }
+
+    public void setDelete_time(Date delete_time) {
+        this.delete_time = delete_time;
+    }
+
+    public Boolean getDelete_flag() {
+        return delete_flag;
+    }
+
+    public void setDelete_flag(Boolean delete_flag) {
+        this.delete_flag = delete_flag;
     }
 
     public Date getCreatedTime() {
