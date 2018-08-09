@@ -31,6 +31,7 @@ public class BaseEntity implements Serializable {
     @Column(updatable = false)
     private Date createdTime;
 
+    @Column(nullable=false,columnDefinition="Boolean default false")
     private Boolean delete_flag = false;
     private Date delete_time;
 
