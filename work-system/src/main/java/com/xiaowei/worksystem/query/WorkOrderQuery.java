@@ -17,6 +17,7 @@ public class WorkOrderQuery extends Query {
     @Override
     public void generateCondition() {
         addSort(Sort.Dir.desc, "createdTime");
+        addFilter(new Filter("systemStatus", Filter.Operator.neq, WorkOrderSystemStatus.DELETE.getStatus()));
         //申请处理人过滤
         if(StringUtils.isNotEmpty(proposerId)){
             addFilter(new Filter("proposer.id", Filter.Operator.eq,proposerId));

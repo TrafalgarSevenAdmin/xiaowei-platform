@@ -5,6 +5,6 @@ import com.xiaowei.worksystem.entity.EquipmentModified;
 
 public interface EquipmentModifiedRepository extends BaseRepository<EquipmentModified>{
 
-    EquipmentModified findByCode(String code);
+    EquipmentModified findByEquipmentNo(String code);
 
 }

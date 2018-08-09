@@ -17,9 +17,6 @@ public interface IEquipmentService extends IBaseService<Equipment> {
      */
     Equipment update(String equipmentId, Equipment equipment);
 
-    @Transactional
-    void fakeDelete(String equipmentId);
-
     /**
      * 保存设备
      * @param equipment

@@ -1,6 +1,5 @@
 package com.xiaowei.worksystem.service.impl;
 
-import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
@@ -29,7 +28,7 @@ public class WorkFlowServiceImpl extends BaseServiceImpl<WorkFlow> implements IW
     @Autowired
     private WorkFlowItemRepository workFlowItemRepository;
 
-    public WorkFlowServiceImpl(@Qualifier("workFlowRepository") BaseRepository repository) {
+    public WorkFlowServiceImpl(@Qualifier("workFlowRepository") WorkFlowRepository repository) {
         super(repository);
     }
 
