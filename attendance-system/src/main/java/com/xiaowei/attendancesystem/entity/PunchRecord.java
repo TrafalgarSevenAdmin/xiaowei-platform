@@ -5,6 +5,8 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Time;
@@ -16,6 +18,8 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "A_PUNCHRECORD")
+@SQLDelete(sql = "update sys_user set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 public class PunchRecord extends BaseEntity{
     /**
      * 上班打卡时间
