@@ -4,5 +4,5 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.worksystem.entity.Equipment;
 
 public interface EquipmentRepository extends BaseRepository<Equipment>{
-    Equipment findByCode(String code);
+    Equipment findByEquipmentNo(String code);
 }

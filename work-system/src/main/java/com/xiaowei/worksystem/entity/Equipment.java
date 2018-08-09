@@ -106,12 +106,12 @@ public class Equipment extends BaseEntity{
     /**
      * 经度
      */
-    double longitude;
+    Double longitude;
 
     /**
      * 纬度
      */
-    double latitude;
+    Double latitude;
 
     /**
      * 维保到期日期

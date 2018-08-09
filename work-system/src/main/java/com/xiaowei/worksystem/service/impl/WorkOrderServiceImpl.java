@@ -150,7 +150,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             return;
         }
         String code = equipment.getEquipmentNo();
-        Equipment byCode = equipmentRepository.findByCode(code);
+        Equipment byCode = equipmentRepository.findByEquipmentNo(code);
         if (byCode == null) {
             //如果没有设备,则新增一个设备
             workOrder.setEquipment(equipmentRepository.save(equipment));
