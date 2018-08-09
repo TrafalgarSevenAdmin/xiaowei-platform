@@ -32,6 +32,7 @@ public class RequestWorkOrderServiceImpl extends BaseServiceImpl<RequestWorkOrde
         requestWorkOrder.setId(null);
         requestWorkOrder.setCreatedTime(new Date());
         requestWorkOrder.setStatus(RequestWorkOrderStatus.UNTREATED.getStatus());//未处理
+        requestWorkOrderRepository.save(requestWorkOrder);
         return requestWorkOrder;
     }
 

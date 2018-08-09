@@ -86,7 +86,7 @@ run_expense:
    - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
    - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - dev
 
@@ -154,6 +154,6 @@ release_expense:
    - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
    - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - aliyun
