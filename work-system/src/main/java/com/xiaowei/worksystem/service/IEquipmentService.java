@@ -6,6 +6,8 @@ import com.xiaowei.worksystem.entity.Equipment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 public interface IEquipmentService extends IBaseService<Equipment> {
 
@@ -24,4 +26,10 @@ public interface IEquipmentService extends IBaseService<Equipment> {
      */
     Equipment saveEquipment(Equipment equipment);
 
+    /**
+     * 获取此服务对象下的所有设备
+     * @param customerId
+     * @return
+     */
+    List<Equipment> findBycustomerId(String customerId);
 }

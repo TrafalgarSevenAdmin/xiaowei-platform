@@ -30,6 +30,20 @@ public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
+    @ApiOperation("获取所有区县")
+    @GetMapping("/countys")
+    public Result getCountys() {
+        List<String> countys = customerService.getCountys();
+        return Result.getSuccess(countys);
+    }
+
+    @ApiOperation("获取区县下的服务对象")
+    @GetMapping("/customerOfCountys")
+    public Result getCustomerOfCountys(String county) {
+        List<Customer> customers = customerService.getCustomerByCountys(county);
+        return Result.getSuccess(customers);
+    }
+
     @ApiOperation(value = "添加")
     @AutoErrorHandler
     @PostMapping("")

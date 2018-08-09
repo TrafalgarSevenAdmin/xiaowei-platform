@@ -174,20 +174,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         return workOrder;
     }
 
-    /**
-     * 伪删除
-     *
-     * @param workOrderId
-     */
-    @Override
-    @Transactional
-    public void fakeDelete(String workOrderId) {
-        EmptyUtils.assertString(workOrderId, "没有传入对象id");
-        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-        EmptyUtils.assertOptional(one, "没有查询到需要删除的对象");
-        WorkOrder workOrder = one.get();
-        workOrderRepository.delete(workOrder);
-    }
 
     /**
      * 用户确认项目

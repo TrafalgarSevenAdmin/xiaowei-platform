@@ -38,22 +38,13 @@ public class EquipmentController {
     @Autowired
     private IEquipmentService equipmentService;
 
-    @Autowired
-    private ICustomerService customerService;
 
-    @ApiOperation("获取所有区县")
-    @GetMapping("/countys")
-    public Result getCountys() {
-        List<String> countys = customerService.getCountys();
-        return Result.getSuccess(countys);
+    @ApiOperation("根据服务对象id获取其下所有的设备")
+    @GetMapping("/{customerId}/equipments")
+    public Result findBycustomerId(@PathVariable("customerId") String customerId, FieldsView fieldsView) {
+        List<Equipment> equipments = equipmentService.findBycustomerId(customerId);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(equipments, fieldsView));
     }
-
-//    @ApiOperation("获取某个区县下的服务对象")
-//    @GetMapping("/")
-//    public Result getCountys() {
-//        List<String> countys = customerService.getCountys();
-//        return Result.getSuccess(countys);
-//    }
 
 
     @ApiOperation(value = "添加设备")
