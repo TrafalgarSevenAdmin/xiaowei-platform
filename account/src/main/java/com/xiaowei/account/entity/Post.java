@@ -34,7 +34,7 @@ public class Post extends BaseEntity {
     /**
      * 岗位级别
      */
-    private Integer level;
+    private String level;
     /**
      * 所属公司
      */

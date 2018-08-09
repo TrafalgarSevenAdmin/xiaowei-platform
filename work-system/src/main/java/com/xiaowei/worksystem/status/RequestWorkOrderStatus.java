@@ -1,24 +1,22 @@
 package com.xiaowei.worksystem.status;
 
-public enum WorkOrderCreatedType {
+public enum RequestWorkOrderStatus {
     /**
-     * 用户创建
+     * 未处理
      */
-    PROPOSER(0),
-
+    UNTREATED(0),
     /**
-     * 后台工作人员创建
+     * 已处理
      */
-    BACKGROUNDER(1),
-
+    PROCESSED(1),
     /**
-     * 自动创建
+     * 已取消
      */
-    ENGINEER(2);
+    CANCEL(2);
 
     private Integer status;
 
-    WorkOrderCreatedType(Integer status){
+    RequestWorkOrderStatus(Integer status){
         this.status = status;
     }
 

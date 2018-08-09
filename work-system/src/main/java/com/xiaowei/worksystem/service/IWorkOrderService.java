@@ -26,14 +26,15 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder departeWorkOrder(String workOrderId, Geometry shape);
 
-    WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore);
+    WorkOrder inhandWorkOrder(String workOrderId, Geometry shape, String arriveFileStore, Integer arriveStatus);
 
     WorkOrder finishInhand(String workOrderId);
 
-    WorkOrder distributeWorkOrder(WorkOrder workOrder, String workFlowId);
+    WorkOrder distributeWorkOrder(WorkOrder workOrder);
 
     /**
      * 将工单变成待归档状态
+     *
      * @param workOrderId
      */
     void workOrderToPrepigeonhole(String workOrderId);

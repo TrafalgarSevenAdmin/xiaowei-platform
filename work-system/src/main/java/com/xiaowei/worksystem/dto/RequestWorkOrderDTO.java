@@ -11,8 +11,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class WorkOrderDTO {
-    public interface DistributeWorkOrder{}
+public class RequestWorkOrderDTO {
+    public interface UpdateStatus{}
 
     /**
      * 所属设备
@@ -43,46 +43,22 @@ public class WorkOrderDTO {
     @ApiModelProperty(value = "服务类型")
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "服务类型必填!")
     private String serviceType;
-
-    /**
-     * 针对后台处理人员状态
-     */
-    @ApiModelProperty(value = "针对后台处理人员状态")
-    private Integer systemStatus;
-    /**
-     * 针对用户状态
-     */
-    @ApiModelProperty(value = "针对用户状态")
-    private Integer userStatus;
     /**
      * 申请处理人
      */
     @ApiModelProperty(value = "申请处理人")
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "申请处理人必填!")
     private SysUser proposer;
-    /**
-     * 后台处理人
-     */
-    @ApiModelProperty(value = "后台处理人")
-    @NotNull(groups = {V.Insert.class,V.Update.class,WorkOrderDTO.DistributeWorkOrder.class},message = "后台处理人必填!")
-    private SysUser backgrounder;
-    /**
-     * 处理工程师
-     */
-    @ApiModelProperty(value = "处理工程师")
-    @NotNull(groups = {V.Insert.class,V.Update.class,WorkOrderDTO.DistributeWorkOrder.class},message = "处理工程师必填!")
-    private SysUser engineer;
 
     /**
      * 报修文件id(多文件以分号隔开)
      */
-    @ApiModelProperty(value = "报修文件id(多文件以分号隔开)")
     private String repairFileStore;
 
     /**
-     * 地图定位
+     * 状态
      */
-    @ApiModelProperty(value = "地图定位")
-    private String wkt;
-
+    @ApiModelProperty(value = "状态")
+    @NotNull(groups = {UpdateStatus.class},message = "状态必填!")
+    private Integer status;
 }

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class DepartWorkOrderDTO {
@@ -15,6 +16,10 @@ public class DepartWorkOrderDTO {
     @ApiModelProperty(value = "到达地点wkt")
     @NotBlank(groups = {V.Insert.class},message = "到达地点wkt必填!")
     private String wkt;
+
+    @ApiModelProperty(value = "到达状态")
+    @NotNull(groups = {V.Insert.class},message = "到达状态必填!")
+    private Integer arriveStatus;
 
 
 }
