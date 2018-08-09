@@ -119,9 +119,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
             throw new BusinessException("删除失败:不允许删除超级管理员");
         }
-        one.setRoles(null);
-        one.setStatus(UserStatus.DELETE.getStatus());
-        sysUserRepository.save(one);
+        sysUserRepository.delete(one);
     }
 
     @Override
@@ -270,9 +268,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
      * @param loginName
      */
     private void judegeLoginName(String loginName) {
-        List<SysUser> users = sysUserRepository.findByLoginNameAndExceptStatus(loginName, UserStatus.DELETE.getStatus());
-        if (!CollectionUtils.isEmpty(users)) {
-            throw new BusinessException("保存失败:用户名重复");
-        }
+        SysUser user = sysUserRepository.findByLoginName(loginName);
+        EmptyUtils.assertObjectNotNull(user,"用户名重复");
     }
 }

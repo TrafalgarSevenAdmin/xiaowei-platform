@@ -55,7 +55,7 @@ public class EquipmentModifiedServiceImpl extends BaseServiceImpl<EquipmentModif
         equipment.setWorkOrder(workOrder);
         //设置工程师
         equipment.setEngineer(workOrder.getEngineer());
-        EquipmentModified byCode = equipmentModifiedRepository.findByEquipmentNo(equipment.getEquipmentNo());
+        EquipmentModified byCode = equipmentModifiedRepository.findByCode(equipment.getCode());
         if (byCode == null || byCode.getEngineer().getId().equals(workOrderId)) {
             equipmentModifiedRepository.save(equipment);
         } else {

@@ -29,7 +29,7 @@ public class WorkFlowServiceImpl extends BaseServiceImpl<WorkFlow> implements IW
     @Autowired
     private WorkFlowItemRepository workFlowItemRepository;
 
-    public WorkFlowServiceImpl(@Qualifier("workFlowRepository") WorkFlowRepository repository) {
+    public WorkFlowServiceImpl(@Qualifier("workFlowRepository") BaseRepository repository) {
         super(repository);
     }
 

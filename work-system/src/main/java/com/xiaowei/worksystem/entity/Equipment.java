@@ -1,169 +1,80 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
-import com.xiaowei.worksystem.entity.customer.Customer;
-import lombok.Data;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import com.xiaowei.worksystem.status.CommonStatus;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * 设备实体
  */
-@Data
 @Entity
 @Table(name = "W_EQUIPMENT")
-@SQLDelete(sql = "update w_equipment set delete_flag = true, delete_time = now() where id=?")
-@Where(clause = "delete_flag <> true")
 public class Equipment extends BaseEntity{
     /**
      * 设备名称
      */
-    String equipmentName;
+    private String equipmentName;
 
     /**
      * 设备编号
      */
-    String equipmentNo;
+    private String code;
+
+    /**
+     * 设备类型
+     */
+    private String type;
 
     /**
      * 设备地址
      */
-    String address;
+    private String address;
 
     /**
-     * 类型
+     * 数据状态
      */
-    String equipmentType;
+    private Integer status = CommonStatus.LIVE.getStatus();
 
-    /**
-     * 品牌
-     */
-    String equipmentBrand;
+    public Integer getStatus() {
+        return status;
+    }
 
-    /**
-     * 型号
-     */
-    String equipmentModel;
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-    /**
-     * 生产日期
-     */
-    Date madeDate;
+    public String getType() {
+        return type;
+    }
 
-    /**
-     * 生产批次
-     */
-    String batchNo;
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    /**
-     * 安装日期
-     */
-    Date installDate;
+    public String getAddress() {
+        return address;
+    }
 
-    /**
-     * 维保状态
-     */
-    String warrantyStatus;
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-    /**
-     * 服务合同号
-     */
-    String contractNo;
+    public String getEquipmentName() {
+        return equipmentName;
+    }
 
-    /**
-     * 网点名称
-     */
-    String branchName;
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
+    }
 
-    /**
-     * 客户设备编号
-     */
-    String customerEquipmentNo;
+    public String getCode() {
+        return code;
+    }
 
-    /**
-     * 状态
-     */
-    String status;
-
-    /**
-     * 安装方式 大堂、穿墙
-     */
-    String installType;
-
-    /**
-     * IP地址
-     */
-    String ip;
-
-    /**
-     * 经度
-     */
-    Double longitude;
-
-    /**
-     * 纬度
-     */
-    Double latitude;
-
-    /**
-     * 维保到期日期
-     */
-    String warrantyTime;
-
-    /**
-     * 安装位置(离行、在行)
-     */
-    String locationType;
-
-//    /**
-//     * 操作系统名称
-//     */
-//    String osName;
-//
-//    /**
-//     * 操作系统版本
-//     */
-//    String osVersion;
-//
-//    /**
-//     * ATMC名称
-//     */
-//    String atmcName;
-//
-//    /**
-//     * ATMC版本
-//     */
-//    String atmcVersion;
-//
-//    /**
-//     * SP名称
-//     */
-//    String spName;
-//
-//    /**
-//     * SP版本
-//     */
-//    String spVersion;
-
-    /**
-     * 创建人
-     */
-    String createUser;
-
-
-    /**
-     * 所属服务对象
-     */
-    @ManyToOne(targetEntity = Customer.class)
-    @JoinColumn(name = "customer_id")
-    @Fetch(FetchMode.JOIN)
-    Customer customer;
+    public void setCode(String code) {
+        this.code = code;
+    }
 }

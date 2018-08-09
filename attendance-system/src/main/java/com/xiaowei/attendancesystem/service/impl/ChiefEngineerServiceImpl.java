@@ -77,12 +77,7 @@ public class ChiefEngineerServiceImpl extends BaseServiceImpl<ChiefEngineer> imp
         EmptyUtils.assertString(chiefEngineerId, "删除失败:没有传入对象id");
         Optional<ChiefEngineer> optional = chiefEngineerRepository.findById(chiefEngineerId);
         EmptyUtils.assertOptional(optional, "没有查询到需要删除的对象");
-        ChiefEngineer one = optional.get();
-        //删除中间表信息
-        one.setDepartments(null);
-        one.setStatus(ChiefEngineerStatus.DELETE.getStatus());
-        one.setDepartments(null);
-        chiefEngineerRepository.save(one);
+        chiefEngineerRepository.delete(optional.get());
     }
 
     @Override

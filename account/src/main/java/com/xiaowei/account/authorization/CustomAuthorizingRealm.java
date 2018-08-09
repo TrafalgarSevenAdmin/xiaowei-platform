@@ -84,7 +84,7 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
 
         //判断用户是否存在
         SysUser sysUser = ContextUtils.getApplicationContext().getBean(ISysUserService.class).findByLoginName(loginName);
-        if(sysUser == null || UserStatus.DELETE.getStatus().equals(sysUser.getStatus())){
+        if(sysUser == null || sysUser.getDelete_flag()){
             throw new UnknownAccountException("用户不存在!");
         }
 

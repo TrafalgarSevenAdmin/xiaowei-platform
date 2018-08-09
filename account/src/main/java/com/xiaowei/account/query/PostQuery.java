@@ -13,7 +13,6 @@ public class PostQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addFilter(new Filter("status", Filter.Operator.neq, PostStatus.DELETE.getStatus()));
         if (StringUtils.isNotEmpty(companyId)) {
             addFilter(new Filter("company.id", Filter.Operator.eq, companyId));
         }

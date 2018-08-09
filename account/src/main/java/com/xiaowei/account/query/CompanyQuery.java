@@ -14,7 +14,6 @@ public class CompanyQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addFilter(new Filter("status", Filter.Operator.neq, CompanyStatus.DELETE.getStatus()));
 
     }
 

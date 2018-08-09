@@ -19,15 +19,6 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
 
 
     /**
-     * 根据用户名查询没有被删除的用户
-     *
-     * @param loginName
-     * @return
-     */
-    @Query("select u from SysUser u where u.loginName = :loginName and u.status <> :status")
-    List<SysUser> findByLoginNameAndExceptStatus(@Param("loginName") String loginName, @Param("status") Integer status);
-
-    /**
      * 根据用户名查询用户
      * @param loginName
      * @return

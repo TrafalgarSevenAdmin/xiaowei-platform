@@ -12,7 +12,6 @@ public class DepartmentQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addFilter(new Filter("status", Filter.Operator.neq, DepartmentStatus.DELETE.getStatus()));
         //根据公司id查询部门
         if (StringUtils.isNotEmpty(companyId)) {
             addFilter(new Filter("company.id", Filter.Operator.eq, companyId));

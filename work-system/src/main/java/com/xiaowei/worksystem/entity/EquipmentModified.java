@@ -4,8 +4,6 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -17,8 +15,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "W_EQUIPMENT_MODIFIED")
-@SQLDelete(sql = "update w_equipment_modified set delete_flag = true, delete_time = now() where id=?")
-@Where(clause = "delete_flag <> true")
 public class EquipmentModified extends BaseEntity{
     /**
      * 设备名称
@@ -28,7 +24,7 @@ public class EquipmentModified extends BaseEntity{
     /**
      * 设备编号
      */
-    private String equipmentNo;
+    private String code;
 
     /**
      * 设备类型
@@ -56,6 +52,8 @@ public class EquipmentModified extends BaseEntity{
     @Fetch(FetchMode.JOIN)
     private WorkOrder workOrder;
 
+
+
     public String getType() {
         return type;
     }
@@ -80,12 +78,12 @@ public class EquipmentModified extends BaseEntity{
         this.equipmentName = equipmentName;
     }
 
-    public String getEquipmentNo() {
-        return equipmentNo;
+    public String getCode() {
+        return code;
     }
 
-    public void setEquipmentNo(String equipmentNo) {
-        this.equipmentNo = equipmentNo;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public SysUser getEngineer() {

@@ -13,7 +13,7 @@ public class EquipmentDTO {
 
     @ApiModelProperty(value = "设备编号")
     @NotBlank(groups = {V.Update.class},message = "设备编号必填!")
-    private String equipmentNo;
+    private String code;
 
     @ApiModelProperty(value = "设备类型")
     @NotBlank(groups = {V.Update.class},message = "设备类型必填!")
@@ -31,12 +31,12 @@ public class EquipmentDTO {
         this.equipmentName = equipmentName;
     }
 
-    public String getEquipmentNo() {
-        return equipmentNo;
+    public String getCode() {
+        return code;
     }
 
-    public void setEquipmentNo(String equipmentNo) {
-        this.equipmentNo = equipmentNo;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getType() {

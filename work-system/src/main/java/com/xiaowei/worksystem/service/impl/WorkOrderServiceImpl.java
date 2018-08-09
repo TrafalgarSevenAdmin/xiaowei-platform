@@ -149,8 +149,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (equipment == null) {
             return;
         }
-        String code = equipment.getEquipmentNo();
-        Equipment byCode = equipmentRepository.findByEquipmentNo(code);
+        String code = equipment.getCode();
+        Equipment byCode = equipmentRepository.findByCode(code);
         if (byCode == null) {
             //如果没有设备,则新增一个设备
             workOrder.setEquipment(equipmentRepository.save(equipment));
@@ -186,9 +186,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要删除的对象");
         WorkOrder workOrder = one.get();
-        workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());
-        workOrder.setSystemStatus(WorkOrderSystemStatus.DELETE.getStatus());
-        workOrderRepository.save(workOrder);
+        workOrderRepository.delete(workOrder);
     }
 
     /**

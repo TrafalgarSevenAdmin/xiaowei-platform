@@ -24,7 +24,6 @@ public class UserQuery extends Query {
     @Override
     public void generateCondition() {
         addFilter(new Filter("loginName", Filter.Operator.neq, SuperUser.ADMINISTRATOR_NAME));
-        addFilter(new Filter("status", Filter.Operator.neq, UserStatus.DELETE.getStatus()));
         if (StringUtils.isNotEmpty(loginName)) {
             addFilter(new Filter("loginName", Filter.Operator.like, "%" + loginName + "%"));
         }

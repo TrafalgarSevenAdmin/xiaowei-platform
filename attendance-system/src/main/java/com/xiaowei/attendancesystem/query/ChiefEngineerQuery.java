@@ -14,7 +14,6 @@ public class ChiefEngineerQuery extends Query{
 
     @Override
     public void generateCondition() {
-        addFilter(new Filter("status", Filter.Operator.neq, ChiefEngineerStatus.DELETE.getStatus()));
         addSort(Sort.Dir.desc, "createdTime");
         if (StringUtils.isNotEmpty(chiefNameLike)) {
             addFilter(new Filter("chiefName", Filter.Operator.like, "%" + chiefNameLike + "%"));
