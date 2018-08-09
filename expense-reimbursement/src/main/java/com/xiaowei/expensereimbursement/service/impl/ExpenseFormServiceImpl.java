@@ -10,6 +10,7 @@ import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
+import com.xiaowei.expensereimbursement.repository.WorkOrderSelectRepository;
 import com.xiaowei.expensereimbursement.service.IExpenseFormService;
 import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
@@ -34,6 +35,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private ShardedJedisPool shardedJedisPool;
     @Autowired
     private ExpenseFormItemRepository expenseFormItemRepository;
+    @Autowired
+    private WorkOrderSelectRepository workOrderSelectRepository;
 
     public ExpenseFormServiceImpl(@Qualifier("expenseFormRepository") BaseRepository repository) {
         super(repository);
@@ -71,10 +74,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
-//        //验证所属工单
-//        final String workOrderCode = expenseForm.getWorkOrderCode();
-//        EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
-//        EmptyUtils.assertObject(workOrderRepository.findByCode(workOrderCode), "没有查询到所属工单");
+        //验证所属工单
+        final String workOrderCode = expenseForm.getWorkOrderCode();
+        EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
+        EmptyUtils.assertObject(workOrderSelectRepository.findByCode(workOrderCode), "没有查询到所属工单");
 
     }
 
