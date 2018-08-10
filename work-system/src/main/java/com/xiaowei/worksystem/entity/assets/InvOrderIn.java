@@ -79,7 +79,7 @@ public class InvOrderIn extends BaseEntity {
      * 入库单明细
      */
     @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "code",referencedColumnName = "code")
 //    @JoinTable(name="w_inv_order_in_item",
 //            joinColumns={@JoinColumn(name="code")},

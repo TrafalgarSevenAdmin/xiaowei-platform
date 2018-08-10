@@ -21,7 +21,6 @@ public class ProClass extends BaseEntity {
 
     /**
      * 分类名称
-     * 该仓库对应的名称
      */
     public String name;
 

@@ -9,7 +9,7 @@ public enum WarehouseType {
     /**
      * 个人库
      */
-    PERSONAL(1);
+    PERSONAL(2);
 
     private Integer status;
 

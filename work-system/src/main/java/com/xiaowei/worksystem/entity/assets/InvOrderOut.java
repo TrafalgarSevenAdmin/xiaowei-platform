@@ -78,7 +78,7 @@ public class InvOrderOut extends BaseEntity {
      * 出库单明细
      */
     @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "code",referencedColumnName = "code")
 //    @JoinTable(name="w_inv_order_out_item",
 //            joinColumns={@JoinColumn(name="code")},
