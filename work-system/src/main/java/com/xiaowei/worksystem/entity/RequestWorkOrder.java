@@ -59,10 +59,7 @@ public class RequestWorkOrder extends BaseEntity {
      */
     private Integer status;
 
-    @Transient
-    private String repairFileStorePath;
-
-    public List<FileStore> getRepairFileStorePath() {
+    public List<FileStore> getRepairFileStore() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);
     }
 
