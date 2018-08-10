@@ -8,4 +8,6 @@ import java.util.List;
 public interface ICustomerService extends IBaseService<Customer> {
 
     List<String> getCountys();
+
+    List<Customer> getCustomerByCountys(String county);
 }

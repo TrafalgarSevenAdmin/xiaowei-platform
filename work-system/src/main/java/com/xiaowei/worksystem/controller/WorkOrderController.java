@@ -306,8 +306,7 @@ public class WorkOrderController {
     @ApiOperation("删除工单")
     @DeleteMapping("/{workOrderId}")
     public Result delete(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
-        //伪删除
-        workOrderService.fakeDelete(workOrderId);
+        workOrderService.delete(workOrderId);
         return Result.getSuccess("删除成功");
     }
 

@@ -24,7 +24,11 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements IC
 
     @Override
     public List<String> getCountys() {
-//        return customerRepository.getCountys();
-        return null;
+        return customerRepository.getCountys();
+    }
+
+    @Override
+    public List<Customer> getCustomerByCountys(String county) {
+        return customerRepository.findByCounty(county);
     }
 }

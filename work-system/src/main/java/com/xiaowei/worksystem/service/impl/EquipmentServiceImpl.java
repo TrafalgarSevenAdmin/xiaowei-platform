@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -51,5 +52,10 @@ public class EquipmentServiceImpl extends BaseServiceImpl<Equipment> implements 
             EmptyUtils.assertObjectNotNull(byCode,"设备编号重复!");
         }
         return equipmentRepository.save(equipment);
+    }
+
+    @Override
+    public List<Equipment> findBycustomerId(String customerId) {
+        return equipmentRepository.findByCustomer_Id(customerId);
     }
 }

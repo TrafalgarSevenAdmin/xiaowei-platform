@@ -14,7 +14,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder updateWorkOrder(WorkOrder workOrder, String workFlowId);
 
-    void fakeDelete(String workOrderId);
 
     WorkOrder confirmed(String workOrderId, List<String> serviceItemIds);
 

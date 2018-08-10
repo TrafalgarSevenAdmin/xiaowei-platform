@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface CustomerRepository extends BaseRepository<Customer> {
 
-//    @Query("select c.county from customer c group by c.county")
-//    List getCountys();
+    @Query("select c.county from Customer c group by c.county")
+    List getCountys();
+
+    List<Customer> findByCounty(String county);
 }
+
+
