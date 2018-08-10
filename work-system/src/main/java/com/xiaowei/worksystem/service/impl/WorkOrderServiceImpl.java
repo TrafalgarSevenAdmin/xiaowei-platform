@@ -109,7 +109,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
             final WorkOrder one = optional.get();
             //设置无法修改的字段
-            workOrder.setRepairFileStore(one.getRepairFileStore());//报修图片id无法修改
+//            workOrder.setRepairFileStore(one.getRepairFileStore());//报修图片id无法修改
 
         }
     }
