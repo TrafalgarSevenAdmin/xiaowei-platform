@@ -53,5 +53,12 @@ wechat:
     mchId:  1492859472
     mchKey: Xwkx2018A2019a2020a2021a2022Xwkj
     keyPath: classpath:/apiclient_cert.p12
-
-
+upload:
+  path: @upload.path@ #将此路径用iis配置发布
+  type: local
+  accessUrlRoot: @upload.accessUrlRoot@
+  tags:
+    - idCard #身份证
+    - prove #证明
+    - contract #合同
+    - logo #头像

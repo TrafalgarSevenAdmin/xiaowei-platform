@@ -60,7 +60,7 @@ run_wechat:
    - cd $WECHAT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
  tags:
    - dev
 
@@ -73,7 +73,7 @@ run_wechat:
 #   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
 #   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
 #   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
 # tags:
 #   - dev
 
@@ -115,7 +115,7 @@ release_account:
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
  tags:
    - aliyun
 
@@ -128,7 +128,7 @@ release_wechat:
    - cd $WECHAT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
  tags:
    - aliyun
 
@@ -141,7 +141,7 @@ release_wechat:
 #   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
 #   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
 #   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
 # tags:
 #   - aliyun
 
