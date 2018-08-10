@@ -10,6 +10,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工单请求
@@ -59,7 +60,7 @@ public class RequestWorkOrder extends BaseEntity {
      */
     private Integer status;
 
-    public List<FileStore> getRepairFileStore() {
+    public List<Map<String, String>> getRepairFileStore() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);
     }
 

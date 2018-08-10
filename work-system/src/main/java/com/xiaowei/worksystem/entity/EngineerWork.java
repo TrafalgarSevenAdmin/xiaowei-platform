@@ -2,7 +2,6 @@ package com.xiaowei.worksystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
-import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -15,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工程师处理工单附表实体
@@ -71,7 +71,7 @@ public class EngineerWork extends BaseEntity {
     @Transient
     private String arriveWkt;
 
-    public List<FileStore> getArriveFileStore() {
+    public List<Map<String, String>> getArriveFileStore() {
         return UploadConfigUtils.transIdsToPath(this.arriveFileStore);
     }
 

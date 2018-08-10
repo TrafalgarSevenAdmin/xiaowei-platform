@@ -1,6 +1,5 @@
 package com.xiaowei.worksystem.entity;
 
-import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -16,6 +15,7 @@ import javax.persistence.Table;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 维修项目实体
@@ -105,7 +105,7 @@ public class ServiceItem extends BaseEntity{
      */
     private String qualityFileStore;
 
-    public List<FileStore> getQualityFileStore() {
+    public List<Map<String, String>> getQualityFileStore() {
         return UploadConfigUtils.transIdsToPath(this.qualityFileStore);
     }
 }

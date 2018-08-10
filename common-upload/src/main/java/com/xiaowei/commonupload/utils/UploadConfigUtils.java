@@ -10,8 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -48,19 +47,24 @@ public class UploadConfigUtils implements CommandLineRunner {
         return fileStoreService.findByIdIn(Arrays.stream(ids).collect(Collectors.toSet()));
     }
 
-    public static List<FileStore> transIdsToPath(String idString) {
+    public static List<Map<String, String>> transIdsToPath(String idString) {
+        List<Map<String, String>> dataMap = null;
         if (StringUtils.isEmpty(idString)) {
-            return null;
+            return dataMap;
         }
         String[] ids = idString.split(";");
         final List<FileStore> fileStores = UploadConfigUtils.findByFileStoreId(ids);
         if (CollectionUtils.isEmpty(fileStores)) {
-            return null;
+            return dataMap;
         }
-        fileStores.stream().forEach(fileStore -> {
-            fileStore.setPath(UploadConfigUtils.getAccessUrlRoot() + fileStore.getPath());
-        });
-        return fileStores;
+        dataMap = new ArrayList<>();
+        for (FileStore fileStore : fileStores) {
+            Map<String, String> fileMap = new HashMap<>();
+            fileMap.put("id", fileStore.getId());
+            fileMap.put("path", uploadConfigBean.getAccessUrlRoot() + fileStore.getPath());
+            dataMap.add(fileMap);
+        }
+        return dataMap;
     }
 
     @Override

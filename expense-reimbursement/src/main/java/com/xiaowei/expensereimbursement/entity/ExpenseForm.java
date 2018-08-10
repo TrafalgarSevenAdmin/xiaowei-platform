@@ -2,7 +2,6 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -14,6 +13,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 报销单
@@ -128,10 +128,7 @@ public class ExpenseForm extends BaseEntity {
      */
     private Date secondAuditTime;
 
-    @Transient
-    private String formFileStorePath;
-
-    public List<FileStore> getFormFileStore() {
+    public List<Map<String, String>> getFormFileStore() {
         return UploadConfigUtils.transIdsToPath(this.formFileStore);
     }
 }
