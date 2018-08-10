@@ -127,7 +127,14 @@ public class ExpenseForm extends BaseEntity {
      */
     private Date secondAuditTime;
 
-    public String getFormFileStore() {
+    @Transient
+    private String formFileStorePath;
+
+    public String getFormFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.formFileStore);
+    }
+
+    public String getFormFileStore() {
+        return this.formFileStore;
     }
 }

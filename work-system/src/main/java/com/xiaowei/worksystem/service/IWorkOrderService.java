@@ -42,4 +42,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder prePigeonhole(String workOrderId);
 
     WorkOrder pigeonholed(String workOrderId);
+
+    String createPay(String workOrderId);
 }

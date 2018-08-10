@@ -1,7 +1,5 @@
 package com.xiaowei.worksystem.controller;
 
-import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
@@ -13,8 +11,6 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MessageType;
 import com.xiaowei.mq.sender.MessagePushSender;
-import com.xiaowei.pay.entity.XwOrder;
-import com.xiaowei.pay.service.IOrderService;
 import com.xiaowei.worksystem.dto.DepartWorkOrderDTO;
 import com.xiaowei.worksystem.dto.EvaluateDTO;
 import com.xiaowei.worksystem.dto.WorkOrderDTO;
@@ -25,14 +21,12 @@ import com.xiaowei.worksystem.service.IEvaluateService;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +45,6 @@ public class WorkOrderController {
     private IEvaluateService evaluateService;
     @Autowired
     private MessagePushSender messagePushSender;
-
-    @Autowired
-    private IOrderService orderService;
 
 
     @ApiOperation(value = "添加工单")
@@ -157,14 +148,12 @@ public class WorkOrderController {
      * @throws Exception
      */
     @ApiOperation(value = "创建订单")
-    @PostMapping("/pay/test")
-    public Result payItem() {
-        SysUser sysUser = new SysUser();
-        sysUser.setId(LoginUserUtils.getLoginUser().getId());
-        XwOrder xwOrder = new XwOrder("1",sysUser, "晓维快修-保外服务", 1, DateUtils.addMinutes(new Date(), 5));
-        orderService.save(xwOrder);
-        return Result.getSuccess(xwOrder.getId());
+    @PostMapping("/pay/{workOrderId}/create")
+    public Result payItem(@PathVariable("workOrderId") String workOrderId) {
+
+        return Result.getSuccess(workOrderService.createPay(workOrderId));
     }
+
 
     private void affirmedServiceItem(WorkOrder workOrder, String status) {
         try {
