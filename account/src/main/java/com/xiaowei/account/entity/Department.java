@@ -50,7 +50,7 @@ public class Department extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Company company;
 
-    public List<Map<String, String>> getLogo() {
+    public List<Map<String, String>> getLogoPath() {
         return UploadConfigUtils.transIdsToPath(this.logo);
     }
 }

@@ -60,7 +60,7 @@ public class Company extends BaseEntity {
      */
     private String intro;
 
-    public List<Map<String, String>> getLogo() {
+    public List<Map<String, String>> getLogoPath() {
         return UploadConfigUtils.transIdsToPath(this.logo);
     }
 }

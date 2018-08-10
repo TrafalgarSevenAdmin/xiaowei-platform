@@ -71,7 +71,7 @@ public class EngineerWork extends BaseEntity {
     @Transient
     private String arriveWkt;
 
-    public List<Map<String, String>> getArriveFileStore() {
+    public List<Map<String, String>> getArriveFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.arriveFileStore);
     }
 

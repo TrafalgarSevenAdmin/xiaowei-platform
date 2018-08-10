@@ -126,7 +126,7 @@ public class WorkOrder extends BaseEntity {
     @Transient
     private String wkt;
 
-    public List<Map<String, String>> getRepairFileStore() {
+    public List<Map<String, String>> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);
     }
 

@@ -128,7 +128,7 @@ public class ExpenseForm extends BaseEntity {
      */
     private Date secondAuditTime;
 
-    public List<Map<String, String>> getFormFileStore() {
+    public List<Map<String, String>> getFormFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.formFileStore);
     }
 }
