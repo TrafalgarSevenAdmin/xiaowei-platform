@@ -2,6 +2,7 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -130,11 +131,7 @@ public class ExpenseForm extends BaseEntity {
     @Transient
     private String formFileStorePath;
 
-    public String getFormFileStorePath() {
+    public List<FileStore> getFormFileStore() {
         return UploadConfigUtils.transIdsToPath(this.formFileStore);
-    }
-
-    public String getFormFileStore() {
-        return this.formFileStore;
     }
 }

@@ -1,11 +1,13 @@
 package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 报销单明细
@@ -58,25 +60,11 @@ public class ExpenseFormItem extends BaseEntity {
     @JsonIgnore
     private ExpenseForm expenseForm;
 
-    @Transient
-    private String invoiceFileStorePath;
-
-    @Transient
-    private String voucherFileStorePath;
-
-    public String getInvoiceFileStore() {
-        return this.invoiceFileStore;
-    }
-
-    public String getInvoiceFileStorePath() {
+    public List<FileStore> getInvoiceFileStore() {
         return UploadConfigUtils.transIdsToPath(this.invoiceFileStore);
     }
 
-    public String getVoucherFileStore() {
-        return this.voucherFileStore;
-    }
-
-    public String getVoucherFileStorePath() {
+    public List<FileStore> getVoucherFileStore() {
         return UploadConfigUtils.transIdsToPath(this.voucherFileStore);
     }
 

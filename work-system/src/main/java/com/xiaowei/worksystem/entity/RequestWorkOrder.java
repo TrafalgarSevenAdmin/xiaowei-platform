@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 工单请求
@@ -60,7 +62,7 @@ public class RequestWorkOrder extends BaseEntity {
     @Transient
     private String repairFileStorePath;
 
-    public String getRepairFileStorePath() {
+    public List<FileStore> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);
     }
 

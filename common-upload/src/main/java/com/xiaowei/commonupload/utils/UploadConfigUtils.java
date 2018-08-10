@@ -48,7 +48,7 @@ public class UploadConfigUtils implements CommandLineRunner {
         return fileStoreService.findByIdIn(Arrays.stream(ids).collect(Collectors.toSet()));
     }
 
-    public static String transIdsToPath(String idString) {
+    public static List<FileStore> transIdsToPath(String idString) {
         if (StringUtils.isEmpty(idString)) {
             return null;
         }
@@ -57,15 +57,10 @@ public class UploadConfigUtils implements CommandLineRunner {
         if (CollectionUtils.isEmpty(fileStores)) {
             return null;
         }
-        String path = "";
-        for (int i = 0; i < fileStores.size(); i++) {
-            if (i == fileStores.size() - 1) {
-                path = path + UploadConfigUtils.getAccessUrlRoot() + fileStores.get(i).getPath();
-            } else {
-                path = path + UploadConfigUtils.getAccessUrlRoot() + fileStores.get(i).getPath() + ";";
-            }
-        }
-        return path;
+        fileStores.stream().forEach(fileStore -> {
+            fileStore.setPath(UploadConfigUtils.getAccessUrlRoot() + fileStore.getPath());
+        });
+        return fileStores;
     }
 
     @Override

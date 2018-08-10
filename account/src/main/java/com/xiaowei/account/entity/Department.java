@@ -1,5 +1,6 @@
 package com.xiaowei.account.entity;
 
+import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 系统部门表
@@ -48,7 +50,7 @@ public class Department extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Company company;
 
-    public String getLogo() {
+    public List<FileStore> getLogo() {
         return UploadConfigUtils.transIdsToPath(this.logo);
     }
 }

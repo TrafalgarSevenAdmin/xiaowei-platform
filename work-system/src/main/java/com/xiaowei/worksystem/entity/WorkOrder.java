@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 工单实体
@@ -124,7 +126,7 @@ public class WorkOrder extends BaseEntity {
     @Transient
     private String wkt;
 
-    public String getRepairFileStore() {
+    public List<FileStore> getRepairFileStore() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);
     }
 
