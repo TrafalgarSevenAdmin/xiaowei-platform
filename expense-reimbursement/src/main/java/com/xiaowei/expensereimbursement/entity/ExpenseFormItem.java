@@ -58,11 +58,25 @@ public class ExpenseFormItem extends BaseEntity {
     @JsonIgnore
     private ExpenseForm expenseForm;
 
+    @Transient
+    private String invoiceFileStorePath;
+
+    @Transient
+    private String voucherFileStorePath;
+
     public String getInvoiceFileStore() {
+        return this.invoiceFileStore;
+    }
+
+    public String getInvoiceFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.invoiceFileStore);
     }
 
     public String getVoucherFileStore() {
+        return this.voucherFileStore;
+    }
+
+    public String getVoucherFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.voucherFileStore);
     }
 

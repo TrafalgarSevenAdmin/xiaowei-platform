@@ -1,6 +1,8 @@
 package com.xiaowei.worksystem.service.impl;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.bean.BeanCopyUtils;
@@ -11,6 +13,9 @@ import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import com.xiaowei.pay.entity.XwOrder;
+import com.xiaowei.pay.repository.XwOrderRepository;
+import com.xiaowei.pay.status.XwType;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.entity.ServiceItem;
@@ -58,6 +63,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private WorkFlowItemRepository workFlowItemRepository;
     @Autowired
     private ShardedJedisPool shardedJedisPool;
+    @Autowired
+    private XwOrderRepository orderRepository;
 
     /**
      * 消息发送服务
@@ -505,6 +512,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.PIGEONHOLED.getStatus());//工单状态变更为待归档
         return workOrderRepository.save(workOrder);
+    }
+
+    @Override
+    @Transactional
+    public String createPay(String workOrderId) {
+        Optional<WorkOrder> optional = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(optional, "没有查询到该工单");
+        WorkOrder workOrder = optional.get();
+
+        //先从订单表查询,如果有工单的支付订单,则返回该支付订单,否则新建返回
+        List<XwOrder> xwOrders = orderRepository.findByBusinessIdAndType(workOrderId, XwType.WORKORDER.getStatus());
+        XwOrder xwOrder;
+        if (CollectionUtils.isEmpty(xwOrders)) {
+            SysUser user = new SysUser();
+            user.setId(LoginUserUtils.getLoginUser().getId());
+            //省略根据工单计算订单金额,开发阶段默认1分钱
+            xwOrder = new XwOrder("1", user, "晓维快修-工单支付", 1, XwType.WORKORDER.getStatus());
+            xwOrder = orderRepository.save(xwOrder);
+        } else {
+            xwOrder = xwOrders.get(0);
+        }
+
+        return xwOrder.getId();
     }
 
     /**

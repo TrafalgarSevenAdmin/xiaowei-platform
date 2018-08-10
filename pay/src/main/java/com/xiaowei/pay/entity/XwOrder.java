@@ -2,9 +2,7 @@ package com.xiaowei.pay.entity;
 
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
-import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.mq.constant.MqQueueConstant;
-import com.xiaowei.pay.consts.OrderType;
 import com.xiaowei.pay.consts.PayStatus;
 import lombok.Data;
 import org.apache.commons.lang3.time.DateUtils;
@@ -33,11 +31,10 @@ public class XwOrder extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private SysUser user;
 
-
     /**
      * 订单类型，默认值
      */
-    private String type = OrderType.workOrder;
+    private Integer xwType;
 
 
     /**
@@ -112,17 +109,11 @@ public class XwOrder extends BaseEntity {
     public XwOrder() {
     }
 
-    public XwOrder(String businessId, SysUser user, String name, Integer totalFee, Date timeExpire) {
+    public XwOrder(String businessId,SysUser user, String name, Integer totalFee, Integer xwType) {
         this.businessId = businessId;
         this.user = user;
         this.name = name;
         this.totalFee = totalFee;
-        this.timeExpire = timeExpire;
-    }
-    public XwOrder(String businessId,SysUser user, String name, Integer totalFee) {
-        this.businessId = businessId;
-        this.user = user;
-        this.name = name;
-        this.totalFee = totalFee;
+        this.xwType = xwType;
     }
 }
