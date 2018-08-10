@@ -43,7 +43,7 @@ public class EquipmentController {
     @GetMapping("/{customerId}/equipments")
     public Result findBycustomerId(@PathVariable("customerId") String customerId, FieldsView fieldsView) {
         List<Equipment> equipments = equipmentService.findBycustomerId(customerId);
-        return Result.getSuccess(ObjectToMapUtils.objectToMap(equipments, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));
     }
 
 
