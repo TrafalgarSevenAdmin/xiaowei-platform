@@ -53,12 +53,31 @@ public class ExpenseFormController {
     @ApiOperation(value = "报销单初审")
     @AutoErrorHandler
     @PutMapping("/first/{expenseFormId}")
-    public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId, @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+    public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId,
+                             @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO,
+                             BindingResult bindingResult,
+                             @RequestBody Boolean audit,
+                             FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
-        expenseForm = expenseFormService.firstAudit(expenseForm);
+        expenseForm = expenseFormService.firstAudit(expenseForm, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
+
+    @ApiOperation(value = "报销单复审")
+    @AutoErrorHandler
+    @PutMapping("/second/{expenseFormId}")
+    public Result secondAudit(@PathVariable("expenseFormId") String expenseFormId,
+                              @RequestBody @Validated(ExpenseFormDTO.SecondAudit.class) ExpenseFormDTO expenseFormDTO,
+                              BindingResult bindingResult,
+                              @RequestBody Boolean audit,
+                              FieldsView fieldsView) throws Exception {
+        ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
+        expenseForm.setId(expenseFormId);
+        expenseForm = expenseFormService.secondAudit(expenseForm, audit);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
+    }
+
 
     @ApiOperation("报销单查询接口")
     @GetMapping("")

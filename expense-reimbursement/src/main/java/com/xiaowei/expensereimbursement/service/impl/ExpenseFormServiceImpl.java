@@ -149,23 +149,28 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     }
 
     /**
-     * 费用初审
+     * 报销单初审
      *
      * @param expenseForm
      * @return
      */
     @Override
     @Transactional
-    public ExpenseForm firstAudit(ExpenseForm expenseForm) {
+    public ExpenseForm firstAudit(ExpenseForm expenseForm, Boolean audit) {
         final String expenseFormId = expenseForm.getId();
         EmptyUtils.assertString(expenseFormId, "没有传入对象id");
         Optional<ExpenseForm> optional = expenseFormRepository.findById(expenseFormId);
         EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         ExpenseForm one = optional.get();
+        //判断状态
+        if (!ExpenseFormStatus.PREAUDIT.getStatus().equals(one.getStatus()) &&
+                !ExpenseFormStatus.TURNDOWN.getStatus().equals(one.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
         //判断初审总计金额是否合规
         judgeFirstTrialAmount(expenseForm, one);
         //判断初审报销单明细
-        double totalAmount = judgeItem(expenseForm, one);
+        double totalAmount = judgeFirstItem(expenseForm, one);
         if (totalAmount != expenseForm.getFirstTrialAmount()) {
             //如果明细累加的初审总计金额与前端传送过来的总计金额不一致,则抛出异常
             throw new BusinessException("初审总计金额有误!");
@@ -174,9 +179,72 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断最终初审人是否在初审人里面
         judgeFirstAudit(expenseForm, one);
         one.setFirstAuditTime(new Date());//初审时间
-        one.setStatus(expenseForm.getStatus());//设置状态
+        if (audit) {//是否驳回
+            one.setStatus(ExpenseFormStatus.FIRSTAUDIT.getStatus());
+        } else {
+            one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
+        }
         one.setFirstOption(expenseForm.getFirstOption());//初审意见
         return expenseFormRepository.save(one);
+    }
+
+    /**
+     * 报销单复审
+     *
+     * @param expenseForm
+     * @return
+     */
+    @Override
+    @Transactional
+    public ExpenseForm secondAudit(ExpenseForm expenseForm, Boolean audit) {
+        final String expenseFormId = expenseForm.getId();
+        EmptyUtils.assertString(expenseFormId, "没有传入对象id");
+        Optional<ExpenseForm> optional = expenseFormRepository.findById(expenseFormId);
+        EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
+        ExpenseForm one = optional.get();
+        //判断状态
+        if (!ExpenseFormStatus.FIRSTAUDIT.getStatus().equals(one.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        //判断复审总计金额是否合规
+        judgeSecondTrialAmount(expenseForm, one);
+        //判断复审报销单明细
+        double totalAmount = judgeSecondItem(expenseForm, one);
+        if (totalAmount != expenseForm.getFirstTrialAmount()) {
+            //如果明细累加的复审总计金额与前端传送过来的总计金额不一致,则抛出异常
+            throw new BusinessException("复审总计金额有误!");
+        }
+
+        //判断最终复审人是否在复审人里面
+        judgeSecondAudit(expenseForm, one);
+        one.setSecondAuditTime(new Date());//复审时间
+        if (audit) {//是否驳回
+            one.setStatus(ExpenseFormStatus.SECONDAUDIT.getStatus());
+        } else {
+            one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
+        }
+        one.setSecondOption(expenseForm.getSecondOption());//复审意见
+        return expenseFormRepository.save(one);
+    }
+
+    private void judgeSecondTrialAmount(ExpenseForm expenseForm, ExpenseForm one) {
+        final Double secondTrialAmount = expenseForm.getSecondTrialAmount();
+        EmptyUtils.assertObject(secondTrialAmount, "没有传入复审总计金额");
+        if (secondTrialAmount > one.getFirstTrialAmount()) {
+            //不允许复审总计金额大于初审总计金额
+            throw new BusinessException("不允许复审总计金额大于初审总计金额");
+        } else {
+            one.setSecondTrialAmount(secondTrialAmount);//设置初审总金额
+        }
+    }
+
+    private void judgeSecondAudit(ExpenseForm expenseForm, ExpenseForm one) {
+        EmptyUtils.assertObject(expenseForm.getSecondAudit(), "没有传入最终复审人");
+        Long count = expenseFormRepository.findCountSecondTrial(expenseForm.getId(), expenseForm.getSecondAudit().getId());
+        if (count == 0) {
+            throw new BusinessException("该报销单没有该复审人");
+        }
+        one.setSecondAudit(expenseForm.getSecondAudit());//设置最终复审人
     }
 
     private void judgeFirstAudit(ExpenseForm expenseForm, ExpenseForm one) {
@@ -185,7 +253,39 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (count == 0) {
             throw new BusinessException("该报销单没有该初审人");
         }
-        one.setFirstAudit(expenseForm.getFirstAudit());//设置初审人
+        one.setFirstAudit(expenseForm.getFirstAudit());//设置最终初审人
+    }
+
+    /**
+     * 判断复审报销单明细
+     *
+     * @param expenseForm
+     * @param one
+     */
+    private double judgeSecondItem(ExpenseForm expenseForm, ExpenseForm one) {
+        double totalAmount = 0;
+        List<ExpenseFormItem> expenseFormItems = expenseForm.getExpenseFormItems();
+        List<ExpenseFormItem> oneExpenseFormItems = one.getExpenseFormItems();
+        for (ExpenseFormItem oneItem : oneExpenseFormItems) {
+            Optional<ExpenseFormItem> optional = expenseFormItems.stream().filter(expenseFormItem -> expenseFormItem.getId().equals(oneItem.getId())).findAny();
+            if (!optional.isPresent()) {
+                throw new BusinessException("费用明细有误");
+            }
+            final Double secondFigure = optional.get().getSecondFigure();
+            EmptyUtils.assertObject(secondFigure, "没有明细初审金额");
+            if (secondFigure > oneItem.getFirstFigure()) {
+                throw new BusinessException("费用明细复审金额大于初审金额");
+            }
+            oneItem.setSecondFigure(secondFigure);
+            Integer status = optional.get().getStatus();
+            EmptyUtils.assertObject(status, "没有传入明细状态");
+            oneItem.setStatus(status);
+            if (!ExpenseFormItemStatus.REFUSE.getStatus().equals(status)) {//非不予报销
+                totalAmount = totalAmount + secondFigure;
+            }
+            expenseFormItemRepository.save(oneItem);
+        }
+        return totalAmount;
     }
 
     /**
@@ -194,7 +294,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
      * @param expenseForm
      * @param one
      */
-    private double judgeItem(ExpenseForm expenseForm, ExpenseForm one) {
+    private double judgeFirstItem(ExpenseForm expenseForm, ExpenseForm one) {
         double totalAmount = 0;
         List<ExpenseFormItem> expenseFormItems = expenseForm.getExpenseFormItems();
         List<ExpenseFormItem> oneExpenseFormItems = one.getExpenseFormItems();

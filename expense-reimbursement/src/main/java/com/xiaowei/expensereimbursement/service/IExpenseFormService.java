@@ -11,5 +11,7 @@ public interface IExpenseFormService extends IBaseService<ExpenseForm> {
 
     ExpenseForm updateExpenseForm(ExpenseForm expenseForm);
 
-    ExpenseForm firstAudit(ExpenseForm expenseForm);
+    ExpenseForm firstAudit(ExpenseForm expenseForm, Boolean audit);
+
+    ExpenseForm secondAudit(ExpenseForm expenseForm, Boolean audit);
 }

@@ -58,7 +58,7 @@ public class ExpenseFormDTO {
     /**
      * 状态
      */
-    @NotNull(groups = {V.Insert.class,V.Update.class,FirstAudit.class,SecondAudit.class},message = "状态必填!")
+    @NotNull(groups = {V.Insert.class,V.Update.class},message = "状态必填!")
     @ApiModelProperty(value = "状态")
     private Integer status;
 
