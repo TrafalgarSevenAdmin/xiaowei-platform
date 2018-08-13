@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,12 +17,14 @@ import java.util.Map;
 @Data
 public class ExpenseFormItem extends BaseEntity {
     /**
-     * 所属科目
+     * 所属科目编号
      */
-    @ManyToOne(targetEntity = ExpenseSubject.class)
-    @JoinColumn(name = "expenseSubjectId")
-    @Fetch(FetchMode.JOIN)
-    private ExpenseSubject expenseSubject;
+    private String subjectCode;
+
+    /**
+     * 科目名称
+     */
+    private String subjectName;
     /**
      * 所属科目内容(json)
      */
