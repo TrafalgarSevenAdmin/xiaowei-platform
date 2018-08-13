@@ -3,7 +3,7 @@ server:
   host: @server.host@
   pre:
     # 前端用户页面主页地址，在自动登陆后跳转
-    index: /xwkx-web/catalog
+    index: /xwkx-web/
     # 前端绑定地址
     bind: /xwkx-web/common/bindPhone
   port: 9004

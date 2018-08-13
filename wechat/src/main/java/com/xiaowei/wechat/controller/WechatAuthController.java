@@ -20,6 +20,7 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
@@ -33,6 +34,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +89,9 @@ public class WechatAuthController {
         EmptyUtils.assertOptional(wxUser,"来源错误！未获取到用户信息！");
         Optional<SysUser> sysUseByMobile = sysUserService.findByMobile(bindMobileDTO.getMobile());
         WxUser user = wxUser.get();
+        SysUser sysUser;
         if (sysUseByMobile.isPresent()) {
+            sysUser = sysUseByMobile.get();
             //如果有用户，就绑定到一起
             user.setSysUser(sysUseByMobile.get());
             //绑定到一起
@@ -95,17 +100,25 @@ public class WechatAuthController {
             wxUserService.syncUserTag(sysUseByMobile.get(), user.getOpenId());
         } else {
 //            sysUserService.saveUser()
-            //如果没有就新建一个系统用户，标识为普通用户
-//            SysUser sysUser = new SysUser();
-//            sysUser.setLoginName(bindMobileDTO.getMobile());
-//            sysUser.setCreatedTime(new Date());
-//            sysUser.setStatus(0);
-//            sysUser.setNickName(name);
-//            user.setSysUser(sysUser);
-//            sysUserService.saveUser(sysUser);
-//            wxUserService.save(user);
-            throw new BusinessException("此手机号不属于此公司，请联系管理员");
+//            如果没有就新建一个系统用户，标识为普通用户
+            sysUser = new SysUser();
+            sysUser.setLoginName(bindMobileDTO.getMobile());
+            sysUser.setPassword("123456");//默认密码
+            sysUser.setCreatedTime(new Date());
+            sysUser.setStatus(0);
+            sysUser.setNickName(bindMobileDTO.getName());
+            user.setSysUser(sysUser);
+            sysUserService.saveUser(sysUser);
+            wxUserService.save(user);
+            //给个普通用户的标签。
+            List<WxUserTag> wxUserTags = wxMpService.getUserTagService().tagGet();
+            wxUserService.setUserTag(user.getOpenId(),"普通用户",wxUserTags);
+//            throw new BusinessException("此手机号数据不存在，请联系管理员");
         }
+        //登陆
+        Subject subject = SecurityUtils.getSubject();
+        subject.login(new WxUserLoginToken(sysUser.getLoginName()));
+        AccountUtils.loadUser();
         //绑定成功后，交给前端做路由
         return Result.getSuccess(request.getSession().getAttribute("redirect"));
     }
