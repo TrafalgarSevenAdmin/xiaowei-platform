@@ -9,11 +9,15 @@ import org.apache.commons.lang3.StringUtils;
 public class ExpenseSubjectQuery extends Query {
 
     private String subjectNameLike;
+    private String subjectCode;
 
     @Override
     public void generateCondition() {
         if (StringUtils.isNotEmpty(subjectNameLike)) {
             addFilter(new Filter("subjectName", Filter.Operator.like, "%" + subjectNameLike + "%"));
+        }
+        if (StringUtils.isNotEmpty(subjectCode)) {
+            addFilter(new Filter("code", Filter.Operator.eq, subjectCode));
         }
     }
 }
