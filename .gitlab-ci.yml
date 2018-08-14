@@ -174,89 +174,48 @@ release_expense:
 notify_rebuild_dev:
  stage: notify_rebuild_dev
  only:
-   - master
+  - master
  script:
-    - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-        --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-        --form-string "title=开发服务部署通知" \
-        --form-string "content=测试服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-        --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" \
-        https://api.alertover.com/v1/alert -f utf-8
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=开发服务部署通知" --form-string "content=测试服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
  tags:
-   - dev
+  - dev
 
 notify_runed_dev:
  stage: notify_runed_dev
  only:
-   - master
+  - master
  script:
-    - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-        --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-        --form-string "title=开发服务部署通知" \
-        --form-string "content=所有服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-        --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" \
-        https://api.alertover.com/v1/alert -f utf-8
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=开发服务部署通知" --form-string "content=所有服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
  tags:
-   - dev
+  - dev
 
 notify_rebuild:
  stage: notify_rebuild
  only:
-   - release
+  - release
  script:
-    - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-        --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-        --form-string "title=生产服务部署通知" \
-        --form-string "content=生产服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-        --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" \
-        https://api.alertover.com/v1/alert -f utf-8
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署通知" --form-string "content=生产服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
  tags:
-   - aliyun
+  - aliyun
 
 
 
 notify_runed:
  stage: notify_runed
  only:
-   - release
+  - release
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-    --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-    --form-string "title=生产服务部署通知" \
-    --form-string "content=所有生产服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-    --form-string "url=http://gongdan.xwseries.com/xwkx-web/" \
-    https://api.alertover.com/v1/alert -f utf-8
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署通知" --form-string "content=所有生产服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://gongdan.xwseries.com/xwkx-web/" https://api.alertover.com/v1/alert -f utf-8 &
  tags:
-   - aliyun
+  - aliyun
 
 notify_failure:
  stage: notify_failure
  only:
-   - release
+  - release
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-   --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-   --form-string "title=生产服务部署错误" \
-   --form-string "content=生产服务器部署过程中出现错误！</br>详情：</br>错误节点：$CI_JOB_NAME </br>用户：$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-   --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" \
-   https://api.alertover.com/v1/alert -f utf-8
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署错误" --form-string "content=生产服务器部署过程中出现错误！</br>详情：</br>错误节点：$CI_JOB_NAME </br>用户：$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
  tags:
-   - aliyun
+  - aliyun
  when: on_failure
 
-
-
-#notify_failure:
-# stage: notify_failure
-# only:
-#   - release
-# script:
-#  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" \
-#   --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" \
-#   --form-string "title=生产服务部署错误" \
-#   --form-string "content=生产服务器部署过程中出现错误！</br>详情：</br>错误节点：$CI_JOB_NAME </br>用户：$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " \
-#   --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" \
-#   https://api.alertover.com/v1/alert -f utf-8
-# tags:
-#   - aliyun
-#  when: on_failure
