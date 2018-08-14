@@ -7,16 +7,14 @@ import com.xiaowei.commonupload.model.FileModel;
 import com.xiaowei.commonupload.service.IUploadService;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.wechat.dto.ResourceUploadDto;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,15 +38,15 @@ public class ResourceController {
 
     @ApiOperation(value = "资源文件上传")
     @PostMapping("/{tag}")
-    public Result upload(@PathVariable("tag") String tag, String mediaId) throws IOException, WxErrorException {
-        File file = wxMpService.getMaterialService().mediaDownload(mediaId);
+    public Result upload(@PathVariable("tag") String tag, @RequestBody  ResourceUploadDto resourceUpload) throws IOException, WxErrorException {
+        File file = wxMpService.getMaterialService().mediaDownload(resourceUpload.getMediaId());
         FileModel fileModel = new FileModel();
 
         String[] tags = uploadConfigBean.getTags();
 
         try {
             fileModel.setIn(new FileInputStream(file));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new BusinessException("读取上传文件失败!");
         }
         //后缀名
