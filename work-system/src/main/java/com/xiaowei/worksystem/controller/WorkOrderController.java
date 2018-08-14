@@ -132,16 +132,6 @@ public class WorkOrderController {
     }
 
 
-    @ApiOperation(value = "用户付费项目")
-    @AutoErrorHandler
-    @PutMapping("/pay/{workOrderId}")
-    public Result payServiceItem(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        WorkOrder workOrder = workOrderService.payServiceItem(workOrderId);
-        affirmedServiceItem(workOrder,"已确认");
-        return Result.getSuccess();
-    }
-
-
     /**
      * 创建一个假的订单。订单金额1分钱
      * @return
