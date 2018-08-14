@@ -174,7 +174,7 @@ release_expense:
 notify_rebuild:
  stage: notify_rebuild
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>开始自动部署</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/qinyongliang/test/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>开始自动部署</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
   - sleep 1
  tags:
   - aliyun
@@ -182,7 +182,7 @@ notify_rebuild:
 notify_runed:
  stage: notify_runed
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>自动部署完成</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/qinyongliang/test/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>自动部署完成</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
   - sleep 1
  tags:
   - aliyun
@@ -190,7 +190,7 @@ notify_runed:
 notify_failure:
  stage: notify_failure
  script:
-  - nohup curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署错误通知" --form-string "content=<h1 style='color:red'>$CI_BUILD_REF_NAME分支服务部署过程中出现错误！</h1></br><b>详情</b></br></br>用户：$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/qinyongliang/test/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - nohup curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署错误通知" --form-string "content=<h1 style='color:red'>$CI_BUILD_REF_NAME分支服务部署过程中出现错误！</h1></br><b>详情</b></br></br>用户：$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
   - sleep 1
  tags:
   - aliyun
