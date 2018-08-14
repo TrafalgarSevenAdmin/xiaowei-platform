@@ -9,6 +9,7 @@ import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.wechat.dto.ResourceUploadDto;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Log4j2
 @RestController
 @RequestMapping("/resource")
 public class ResourceController {
@@ -40,6 +42,7 @@ public class ResourceController {
     @PostMapping("/{tag}")
     public Result upload(@PathVariable("tag") String tag, @RequestBody  ResourceUploadDto resourceUpload) throws IOException, WxErrorException {
         File file = wxMpService.getMaterialService().mediaDownload(resourceUpload.getMediaId());
+        log.info(file.getAbsolutePath());
         FileModel fileModel = new FileModel();
 
         String[] tags = uploadConfigBean.getTags();
@@ -47,6 +50,7 @@ public class ResourceController {
         try {
             fileModel.setIn(new FileInputStream(file));
         } catch (Exception e) {
+            log.error(e);
             throw new BusinessException("读取上传文件失败!");
         }
         //后缀名
