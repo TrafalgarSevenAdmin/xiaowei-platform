@@ -17,21 +17,21 @@ variables:
 # 执行工作流定义
 
 stages:
- - notify_rebuild_dev
+ - notify_rebuild
+
  - run_work
  - run_account
  - run_wechat
 # - run_attendance
  - run_expense
- - notify_runed_dev
- - notify_failure
 
- - notify_rebuild
  - release_work
  - release_account
  - release_wechat
 # - release_attendance
  - release_expense
+
+ - notify_failure
  - notify_runed
 
 # 以下是自动部署到本地服务器中
@@ -171,51 +171,29 @@ release_expense:
 
 #  以下为状态通知
 
-notify_rebuild_dev:
- stage: notify_rebuild_dev
- only:
-  - master
- script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=开发服务部署通知" --form-string "content=测试服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
- tags:
-  - dev
-
-notify_runed_dev:
- stage: notify_runed_dev
- only:
-  - master
- script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=开发服务部署通知" --form-string "content=所有服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
- tags:
-  - dev
-
 notify_rebuild:
  stage: notify_rebuild
- only:
-  - release
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署通知" --form-string "content=生产服务开始自动部署</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>开始自动部署</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - sleep 1
  tags:
   - aliyun
 
-
-
 notify_runed:
  stage: notify_runed
- only:
-  - release
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署通知" --form-string "content=所有生产服务已经部署完毕</br>详情：</br>用户$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://gongdan.xwseries.com/xwkx-web/" https://api.alertover.com/v1/alert -f utf-8 &
+  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署通知" --form-string "content=<h1>自动部署完成</h1></br><b>详情</b></br>用户:$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - sleep 1
  tags:
   - aliyun
 
 notify_failure:
  stage: notify_failure
- only:
-  - release
  script:
-  - curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=生产服务部署错误" --form-string "content=生产服务器部署过程中出现错误！</br>详情：</br>错误节点：$CI_JOB_NAME </br>用户：$CI_DEPLOY_USER </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_IID" https://api.alertover.com/v1/alert -f utf-8 &
+  - nohup curl -s --form-string "source=s-010d3fb8-1b2c-402b-850c-e24307d8" --form-string "receiver=g-8381911c-1e11-43ff-9928-63bdfc53" --form-string "title=$CI_PROJECT_NAME - $CI_BUILD_REF_NAME分支服务部署错误通知" --form-string "content=<h1 style='color:red'>$CI_BUILD_REF_NAME分支服务部署过程中出现错误！</h1></br><b>详情</b></br></br>用户：$GITLAB_USER_NAME </br>提交信息：$CI_COMMIT_MESSAGE " --form-string "url=http://git.xwseries.com/yuanwei/xiaowei-platform/pipelines/$CI_PIPELINE_ID" https://api.alertover.com/v1/alert -f utf-8 &
+  - sleep 1
  tags:
   - aliyun
  when: on_failure
+
 
