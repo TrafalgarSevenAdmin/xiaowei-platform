@@ -8,6 +8,7 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
+import com.xiaowei.expensereimbursement.entity.WorkOrderSelect;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
 import com.xiaowei.expensereimbursement.repository.WorkOrderSelectRepository;
@@ -75,10 +76,19 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
         //验证所属工单
+        judgeWorkOrder(expenseForm);
+
+    }
+
+    private void judgeWorkOrder(ExpenseForm expenseForm) {
         final String workOrderCode = expenseForm.getWorkOrderCode();
         EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
-        EmptyUtils.assertObject(workOrderSelectRepository.findByCode(workOrderCode), "没有查询到所属工单");
-
+        final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
+        EmptyUtils.assertObject(workOrderSelect, "没有查询到所属工单");
+        //如果工单已归档,则抛出异常
+        if (workOrderSelect.getSystemStatus() == 10) {
+            throw new BusinessException("该工单已经关闭!");
+        }
     }
 
     /**

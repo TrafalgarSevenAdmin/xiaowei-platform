@@ -48,7 +48,7 @@ public enum WorkOrderSystemStatus {
     /**
      * 删除
      */
-    DELETE(11);
+    DELETE(99);
 
     private Integer status;
 

@@ -199,7 +199,7 @@ public class WorkOrderController {
     @PutMapping("/finishInhand/{workOrderId}")
     public Result finishInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.finishInhand(workOrderId);
-        //到达通知
+        //处理完成通知
         processingNotification(workOrder, "工程师已处理完成");
         return Result.getSuccess();
     }
@@ -241,13 +241,13 @@ public class WorkOrderController {
         }
     }
 
-    @ApiOperation(value = "工单待归档")
-    @AutoErrorHandler
-    @PutMapping("/prePigeonhole/{workOrderId}")
-    public Result prePigeonhole(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.prePigeonhole(workOrderId);
-        return Result.getSuccess();
-    }
+//    @ApiOperation(value = "工单待归档")
+//    @AutoErrorHandler
+//    @PutMapping("/prePigeonhole/{workOrderId}")
+//    public Result prePigeonhole(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+//        workOrderService.prePigeonhole(workOrderId);
+//        return Result.getSuccess();
+//    }
 
     @ApiOperation(value = "工单终审")
     @AutoErrorHandler

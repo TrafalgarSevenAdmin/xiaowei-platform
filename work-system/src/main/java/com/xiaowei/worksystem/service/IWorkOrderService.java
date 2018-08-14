@@ -31,14 +31,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder distributeWorkOrder(WorkOrder workOrder);
 
-    /**
-     * 将工单变成待归档状态
-     *
-     * @param workOrderId
-     */
-    void workOrderToPrepigeonhole(String workOrderId);
-
-    WorkOrder prePigeonhole(String workOrderId);
+//    WorkOrder prePigeonhole(String workOrderId);
 
     WorkOrder pigeonholed(String workOrderId);
 

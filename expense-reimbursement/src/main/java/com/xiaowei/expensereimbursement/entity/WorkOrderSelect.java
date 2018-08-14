@@ -13,4 +13,5 @@ import javax.persistence.Entity;
 @Synchronize({"w_workorder"})
 public class WorkOrderSelect extends BaseEntity {
     private String code;
+    private Integer systemStatus;
 }
