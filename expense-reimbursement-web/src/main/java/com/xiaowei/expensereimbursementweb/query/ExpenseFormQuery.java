@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class ExpenseFormQuery extends Query {
     private String expenseUserId;
+    private String firstTrialId;
+    private String secondTrialId;
     private Integer status;
     private String workOrderCode;
 
@@ -23,6 +25,12 @@ public class ExpenseFormQuery extends Query {
         }
         if (StringUtils.isNotEmpty(workOrderCode)) {
             addFilter(new Filter("workOrderCode", Filter.Operator.eq, workOrderCode));
+        }
+        if (StringUtils.isNotEmpty(firstTrialId)) {
+            addFilter(new Filter("firstTrials.id", Filter.Operator.eq, firstTrialId));
+        }
+        if (StringUtils.isNotEmpty(secondTrialId)) {
+            addFilter(new Filter("secondTrials.id", Filter.Operator.eq, secondTrialId));
         }
 
     }
