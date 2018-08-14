@@ -52,11 +52,11 @@ public class ExpenseFormController {
 
     @ApiOperation(value = "报销单初审")
     @AutoErrorHandler
-    @PutMapping("/first/{expenseFormId}")
+    @PutMapping("/{expenseFormId}/first")
     public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId,
                              @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO,
                              BindingResult bindingResult,
-                             @RequestBody Boolean audit,
+                             @RequestParam Boolean audit,
                              FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
@@ -66,11 +66,11 @@ public class ExpenseFormController {
 
     @ApiOperation(value = "报销单复审")
     @AutoErrorHandler
-    @PutMapping("/second/{expenseFormId}")
+    @PutMapping("/{expenseFormId}/second")
     public Result secondAudit(@PathVariable("expenseFormId") String expenseFormId,
                               @RequestBody @Validated(ExpenseFormDTO.SecondAudit.class) ExpenseFormDTO expenseFormDTO,
                               BindingResult bindingResult,
-                              @RequestBody Boolean audit,
+                              @RequestParam Boolean audit,
                               FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
