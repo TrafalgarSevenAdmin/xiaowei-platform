@@ -13,6 +13,8 @@ public class ExpenseFormQuery extends Query {
     private String secondTrialId;
     private Integer status;
     private String workOrderCode;
+    private String firstAuditId;
+    private String secondAuditId;
 
     @Override
     public void generateCondition() {
@@ -31,6 +33,12 @@ public class ExpenseFormQuery extends Query {
         }
         if (StringUtils.isNotEmpty(secondTrialId)) {
             addFilter(new Filter("secondTrials.id", Filter.Operator.eq, secondTrialId));
+        }
+        if (StringUtils.isNotEmpty(firstAuditId)) {
+            addFilter(new Filter("firstAudit.id", Filter.Operator.eq, firstAuditId));
+        }
+        if (StringUtils.isNotEmpty(secondAuditId)) {
+            addFilter(new Filter("secondAudit.id", Filter.Operator.eq, secondAuditId));
         }
 
     }
