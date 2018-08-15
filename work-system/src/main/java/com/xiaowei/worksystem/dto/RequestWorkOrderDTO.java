@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.dto;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.Equipment;
+import com.xiaowei.worksystem.entity.customer.Customer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -61,4 +62,16 @@ public class RequestWorkOrderDTO {
     @ApiModelProperty(value = "状态")
     @NotNull(groups = {UpdateStatus.class},message = "状态必填!")
     private Integer status;
+
+    /**
+     * 服务对象
+     */
+    @ApiModelProperty(value = "服务对象")
+    private Customer customer;
+
+    /**
+     * 区县
+     */
+    @ApiModelProperty(value = "区县")
+    private String county;
 }

@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.worksystem.entity.customer.Customer;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -98,7 +99,7 @@ public class WorkOrder extends BaseEntity {
     /**
      * 用户评价
      */
-    @OneToOne(targetEntity = Evaluate.class, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = Evaluate.class)
     @JoinColumn(name = "evaluate_id")
     @Fetch(FetchMode.JOIN)
     private Evaluate evaluate;
@@ -106,7 +107,7 @@ public class WorkOrder extends BaseEntity {
     /**
      * 工程师处理工单附表
      */
-    @OneToOne(targetEntity = EngineerWork.class, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = EngineerWork.class)
     @JoinColumn(name = "engineerWork_id")
     @Fetch(FetchMode.JOIN)
     private EngineerWork engineerWork;
@@ -125,6 +126,19 @@ public class WorkOrder extends BaseEntity {
 
     @Transient
     private String wkt;
+
+    /**
+     * 服务对象
+     */
+    @OneToOne(targetEntity = Customer.class)
+    @JoinColumn(name = "customer_id")
+    @Fetch(FetchMode.JOIN)
+    private Customer customer;
+
+    /**
+     * 区县
+     */
+    private String county;
 
     public List<Map<String, String>> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);

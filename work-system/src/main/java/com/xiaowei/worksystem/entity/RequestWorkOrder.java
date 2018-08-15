@@ -3,14 +3,12 @@ package com.xiaowei.worksystem.entity;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.worksystem.entity.customer.Customer;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +59,19 @@ public class RequestWorkOrder extends BaseEntity {
      * 状态
      */
     private Integer status;
+
+    /**
+     * 服务对象
+     */
+    @OneToOne(targetEntity = Customer.class)
+    @JoinColumn(name = "customer_id")
+    @Fetch(FetchMode.JOIN)
+    private Customer customer;
+
+    /**
+     * 区县
+     */
+    private String county;
 
     public List<Map<String, String>> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);

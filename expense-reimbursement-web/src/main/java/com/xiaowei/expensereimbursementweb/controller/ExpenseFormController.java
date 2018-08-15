@@ -1,5 +1,6 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -76,6 +77,13 @@ public class ExpenseFormController {
         expenseForm.setId(expenseFormId);
         expenseForm = expenseFormService.secondAudit(expenseForm, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
+    }
+
+    @ApiOperation("当前登录用户查询报销单各种状态数量")
+    @GetMapping("/audit/count")
+    public Result auditCount() {
+        final String userId = LoginUserUtils.getLoginUser().getId();
+        return Result.getSuccess(expenseFormService.auditCountByUserId(userId));
     }
 
 

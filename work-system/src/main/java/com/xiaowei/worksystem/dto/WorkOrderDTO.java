@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.dto;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.Equipment;
+import com.xiaowei.worksystem.entity.customer.Customer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -84,5 +85,17 @@ public class WorkOrderDTO {
      */
     @ApiModelProperty(value = "地图定位")
     private String wkt;
+
+    /**
+     * 服务对象
+     */
+    @ApiModelProperty(value = "服务对象")
+    private Customer customer;
+
+    /**
+     * 区县
+     */
+    @ApiModelProperty(value = "区县")
+    private String county;
 
 }
