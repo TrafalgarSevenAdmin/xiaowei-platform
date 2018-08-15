@@ -15,6 +15,6 @@ public class NotInSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return from.get(field).in(values).not();
+        return getFieldPath(from,field).in(values).not();
     }
 }

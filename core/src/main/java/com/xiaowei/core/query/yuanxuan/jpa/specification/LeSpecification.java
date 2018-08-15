@@ -15,6 +15,6 @@ public class LeSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return cb.lessThanOrEqualTo(from.get(field), compare);
+        return cb.lessThanOrEqualTo(getFieldPath(from,field), compare);
     }
 }

@@ -15,6 +15,6 @@ public class InSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return from.get(field).in(values);
+        return getFieldPath(from,field).in(values);
     }
 }

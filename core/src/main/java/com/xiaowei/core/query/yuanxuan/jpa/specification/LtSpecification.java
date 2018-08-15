@@ -15,6 +15,6 @@ public class LtSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return cb.lessThan(from.get(field), compare);
+        return cb.lessThan(getFieldPath(from,field), compare);
     }
 }

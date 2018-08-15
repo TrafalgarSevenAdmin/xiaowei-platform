@@ -16,7 +16,7 @@ public class NotEqualSpecification<T> extends AbstractSpecification<T> {
         From from = getRoot(property, root);
         String field = getProperty(property);
         if (values == null) {
-            return cb.isNotNull(from.get(field));
+            return cb.isNotNull(getFieldPath(from,field));
         }
         if (values.length == 1) {
             return getPredicate(from, cb, values[0], field);
@@ -29,7 +29,7 @@ public class NotEqualSpecification<T> extends AbstractSpecification<T> {
     }
 
     private Predicate getPredicate(From root, CriteriaBuilder cb, Object value, String field) {
-        return value == null ? cb.isNotNull(root.get(field)) : cb.notEqual(root.get(field), value);
+        return value == null ? cb.isNotNull(getFieldPath(root,field)) : cb.notEqual(getFieldPath(root,field), value);
     }
 }
 

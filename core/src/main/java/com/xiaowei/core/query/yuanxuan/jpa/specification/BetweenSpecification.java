@@ -18,6 +18,6 @@ public class BetweenSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return cb.between(from.get(field), (Comparable)range.getLowerBound().getValue().get(), (Comparable)range.getUpperBound().getValue().get());
+        return cb.between(getFieldPath(from,field), (Comparable)range.getLowerBound().getValue().get(), (Comparable)range.getUpperBound().getValue().get());
     }
 }

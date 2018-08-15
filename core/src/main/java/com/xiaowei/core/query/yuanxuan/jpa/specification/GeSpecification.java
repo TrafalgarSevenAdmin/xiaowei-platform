@@ -15,6 +15,6 @@ public class GeSpecification<T> extends AbstractSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         From from = getRoot(property, root);
         String field = getProperty(property);
-        return cb.greaterThanOrEqualTo(from.get(field), compare);
+        return cb.greaterThanOrEqualTo(getFieldPath(from,field), compare);
     }
 }

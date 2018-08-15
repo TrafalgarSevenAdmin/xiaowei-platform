@@ -16,11 +16,11 @@ public class NotLikeSpecification<T> extends AbstractSpecification<T> {
         From from = getRoot(property, root);
         String field = getProperty(property);
         if (patterns.length == 1) {
-            return cb.like(from.get(field), patterns[0]).not();
+            return cb.like(getFieldPath(from,field), patterns[0]).not();
         }
         Predicate[] predicates = new Predicate[patterns.length];
         for (int i = 0; i < patterns.length; i++) {
-            predicates[i] = cb.like(from.get(field), patterns[i]).not();
+            predicates[i] = cb.like(getFieldPath(from,field), patterns[i]).not();
         }
         return cb.or(predicates);
     }

@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 
@@ -23,4 +24,14 @@ abstract class AbstractSpecification<T> implements Specification<T>, Serializabl
         }
         return root;
     }
+
+    public Path getFieldPath(From root, String field) {
+        String[] split = field.split("\\.");
+        Path path = root.get(split[0]);
+        for (int i = 1; i < split.length; i++) {
+            path = path.get(split[i]);
+        }
+        return path;
+    }
+
 }

@@ -16,7 +16,7 @@ public class EqualSpecification<T> extends AbstractSpecification<T> {
         From from = getRoot(property, root);
         String field = getProperty(property);
         if (values == null) {
-            return cb.isNull(from.get(field));
+            return cb.isNull(getFieldPath(from,field));
         }
         if (values.length == 1) {
             return getPredicate(from, cb, values[0], field);
@@ -30,7 +30,7 @@ public class EqualSpecification<T> extends AbstractSpecification<T> {
     }
 
     private Predicate getPredicate(From root, CriteriaBuilder cb, Object value, String field) {
-        return value == null ? cb.isNull(root.get(field)) : cb.equal(root.get(field), value);
+        return value == null ? cb.isNull(getFieldPath(root,field)) : cb.equal(getFieldPath(root,field), value);
     }
 }
 
