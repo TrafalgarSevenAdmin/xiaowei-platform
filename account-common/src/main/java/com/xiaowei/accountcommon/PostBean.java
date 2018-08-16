@@ -25,5 +25,5 @@ public class PostBean implements Serializable {
     /**
      * 岗位级别
      */
-    private Integer level;
+    private String level;
 }
