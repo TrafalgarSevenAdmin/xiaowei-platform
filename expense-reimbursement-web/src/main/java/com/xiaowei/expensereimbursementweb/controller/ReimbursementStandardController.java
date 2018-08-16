@@ -87,7 +87,7 @@ public class ReimbursementStandardController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(reimbursementStandard, fieldsView));
     }
 
-    @ApiOperation("根据岗位级别查询舱位等级")
+    @ApiOperation("根据岗位级别查询舱位级别")
     @GetMapping("/shipLevel")
     public Result findShipLevelByPostLevel(@RequestParam("postLevel") String postLevel,
                                            @RequestParam("subjectCode") String subjectCode) {
