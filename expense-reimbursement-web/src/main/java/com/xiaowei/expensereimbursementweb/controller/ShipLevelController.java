@@ -1,0 +1,77 @@
+package com.xiaowei.expensereimbursementweb.controller;
+
+import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.result.FieldsView;
+import com.xiaowei.core.result.PageResult;
+import com.xiaowei.core.result.Result;
+import com.xiaowei.core.utils.ObjectToMapUtils;
+import com.xiaowei.core.validate.AutoErrorHandler;
+import com.xiaowei.core.validate.V;
+import com.xiaowei.expensereimbursement.entity.ShipLevel;
+import com.xiaowei.expensereimbursement.service.IShipLevelService;
+import com.xiaowei.expensereimbursementweb.dto.ShipLevelDTO;
+import com.xiaowei.expensereimbursementweb.query.ShipLevelQuery;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 舱位级别管理
+ */
+@Api(tags = "舱位级别接口")
+@RestController
+@RequestMapping("/api/shipLevel")
+public class ShipLevelController {
+
+    @Autowired
+    private IShipLevelService shipLevelService;
+
+    @ApiOperation(value = "添加舱位级别")
+    @AutoErrorHandler
+    @PostMapping("")
+    public Result insert(@RequestBody @Validated(V.Insert.class) ShipLevelDTO shipLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        ShipLevel shipLevel = BeanCopyUtils.copy(shipLevelDTO, ShipLevel.class);
+        shipLevel = shipLevelService.save(shipLevel);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(shipLevel, fieldsView));
+    }
+
+    @ApiOperation(value = "删除舱位级别")
+    @DeleteMapping("/{shipLevelId}")
+    public Result delete(@PathVariable("shipLevelId") String shipLevelId) throws Exception {
+        shipLevelService.delete(shipLevelId);
+        return Result.getSuccess();
+    }
+
+    @ApiOperation("舱位级别查询接口")
+    @GetMapping("")
+    public Result query(ShipLevelQuery shipLevelQuery, FieldsView fieldsView) {
+        //查询舱位级别设置默认条件
+        setDefaultCondition(shipLevelQuery);
+
+        if (shipLevelQuery.isNoPage()) {
+            List<ShipLevel> shipLevels = shipLevelService.query(shipLevelQuery, ShipLevel.class);
+            return Result.getSuccess(ObjectToMapUtils.listToMap(shipLevels, fieldsView));//以list形式返回,没有层级
+        } else {
+            PageResult pageResult = shipLevelService.queryPage(shipLevelQuery, ShipLevel.class);
+            pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
+            return Result.getSuccess(pageResult);//以分页列表形式返回
+        }
+    }
+
+    private void setDefaultCondition(ShipLevelQuery shipLevelQuery) {
+
+    }
+
+    @ApiOperation("根据id获取舱位级别")
+    @GetMapping("/{shipLevelId}")
+    public Result findById(@PathVariable("shipLevelId") String shipLevelId, FieldsView fieldsView) {
+        ShipLevel shipLevel = shipLevelService.findById(shipLevelId);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(shipLevel, fieldsView));
+    }
+
+}

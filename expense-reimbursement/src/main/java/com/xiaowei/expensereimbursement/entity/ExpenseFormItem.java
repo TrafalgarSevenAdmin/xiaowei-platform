@@ -65,6 +65,11 @@ public class ExpenseFormItem extends BaseEntity {
     @JsonIgnore
     private ExpenseForm expenseForm;
 
+    /**
+     * 数量
+     */
+    private Integer count;
+
     public List<Map<String, String>> getInvoiceFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.invoiceFileStore);
     }
