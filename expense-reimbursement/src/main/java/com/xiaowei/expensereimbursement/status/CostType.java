@@ -6,17 +6,9 @@ public enum CostType {
      */
     KILOMETRE(0),
     /**
-     * 按天数计费
-     */
-    QUALITYORDER(1),
-    /**
      * 按数量计费
      */
-    NUMBER(2),
-    /**
-     * 按金额计费
-     */
-    COST(3);
+    NUMBER(1);
 
     Integer status;
 

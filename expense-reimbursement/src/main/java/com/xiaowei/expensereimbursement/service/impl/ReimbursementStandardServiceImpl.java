@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -53,6 +54,11 @@ public class ReimbursementStandardServiceImpl extends BaseServiceImpl<Reimbursem
         reimbursementStandardRepository.save(reimbursementStandard);
 
         return reimbursementStandard;
+    }
+
+    @Override
+    public List<String> findShipLevelByPostLevel(String postLevel, String subjectCode) {
+        return reimbursementStandardRepository.findShipLevelByPostLevel(postLevel, subjectCode);
     }
 
     private void judgeAttribute(ReimbursementStandard reimbursementStandard, JudgeType judgeType) {
