@@ -9,7 +9,7 @@ import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.wechat.dto.ResourceUploadDto;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.io.FilenameUtils;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/resource")
 public class ResourceController {
@@ -50,7 +50,7 @@ public class ResourceController {
         try {
             fileModel.setIn(new FileInputStream(file));
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.toString(),e);
             throw new BusinessException("读取上传文件失败!");
         }
         //后缀名

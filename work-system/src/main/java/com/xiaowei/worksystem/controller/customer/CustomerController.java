@@ -12,7 +12,7 @@ import com.xiaowei.worksystem.entity.customer.Customer;
 import com.xiaowei.worksystem.service.customer.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @Api(tags = "服务对象")
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/api/customer")
 public class CustomerController {

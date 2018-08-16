@@ -7,7 +7,7 @@ import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
 import com.xiaowei.worksystem.service.IWorkOrderService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * 订单支付完成
  */
-@Log4j2
+@Slf4j
 @Component
 @RabbitListener(queues = MqQueueConstant.ORDER_DEFAULT_PAYED_QUEUE)
 public class OrderPayedReceiver {

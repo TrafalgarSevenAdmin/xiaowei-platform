@@ -40,10 +40,6 @@ spring:
     multipart:
       max-file-size: 1024MB
       max-request-size: 1024MB
-logging:
-  level:
-    com:
-      yulintu: DEBUG
 upload:
   path: @upload.path@ #将此路径用iis配置发布
   type: local

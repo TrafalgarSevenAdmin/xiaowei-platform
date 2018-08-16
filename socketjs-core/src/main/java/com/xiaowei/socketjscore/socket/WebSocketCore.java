@@ -1,6 +1,7 @@
 package com.xiaowei.socketjscore.socket;
 
 import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -16,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @ServerEndpoint("/webSocketCore/{userId}")
 @Component
+@Slf4j
 public class WebSocketCore {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
@@ -39,7 +41,7 @@ public class WebSocketCore {
         this.userId = userId;
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
-        System.out.println("有新连接加入,id为" + this.userId + "！当前在线人数为" + getOnlineCount());
+        log.info("有新连接加入,id为" + this.userId + "！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -49,7 +51,7 @@ public class WebSocketCore {
     public void onClose() {
         webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
-        System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
+        log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -60,7 +62,7 @@ public class WebSocketCore {
      */
     @OnMessage
     public void onMessage(String message, Session session) throws Exception {
-//        System.out.println("来自客户端的消息:" + message);
+//        log.info("来自客户端的消息:" + message);
 //        //群发消息
 //        for(WebSocketCore item: webSocketSet){
 //            try {
@@ -80,8 +82,7 @@ public class WebSocketCore {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        System.out.println("发生错误");
-        error.printStackTrace();
+        log.error("websocket发生错误", error);
     }
 
     /**
@@ -98,7 +99,7 @@ public class WebSocketCore {
             try {
                 webSocketCore.session.getBasicRemote().sendText(JSON.toJSONString(message));
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("websocket发送消息失败",e);
             }
         });
         //this.session.getAsyncRemote().sendText(message);

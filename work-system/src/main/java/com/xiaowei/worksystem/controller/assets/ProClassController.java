@@ -1,7 +1,6 @@
 package com.xiaowei.worksystem.controller.assets;
 
 import com.xiaowei.core.bean.BeanCopyUtils;
-import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -13,7 +12,7 @@ import com.xiaowei.worksystem.entity.assets.ProClass;
 import com.xiaowei.worksystem.service.assets.IProClassService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +22,7 @@ import java.util.List;
 
 
 @Api(tags = "产品分类")
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/api/assets/proClass")
 public class ProClassController {

@@ -13,7 +13,7 @@ import com.xiaowei.worksystem.entity.assets.Warehouse;
 import com.xiaowei.worksystem.service.assets.IWarehouseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @Api(tags = "仓库档案信息")
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/api/assets/warehouse")
 public class WarehouseController {

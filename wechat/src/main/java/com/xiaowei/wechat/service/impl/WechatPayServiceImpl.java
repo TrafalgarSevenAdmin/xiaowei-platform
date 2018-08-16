@@ -25,7 +25,7 @@ import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWechatPayService;
 import com.xiaowei.wechat.service.IWxUserService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@Log4j2
+@Slf4j
 @Service
 public class WechatPayServiceImpl implements IWechatPayService {
 

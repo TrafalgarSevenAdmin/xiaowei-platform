@@ -1,5 +1,6 @@
 package com.xiaowei.core.context;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 @WebFilter(urlPatterns = "/*")
 @Order(1)
 @Component
+@Slf4j
 public class ContextFilter implements Filter {
 
     @Override
@@ -29,7 +31,6 @@ public class ContextFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse rep = (HttpServletResponse) response;
-        System.out.println("sessionId:" + req.getSession().getId());
         ContextData contextData = new ContextData();
         contextData.setRequest(req);
         contextData.setResponse(rep);

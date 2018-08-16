@@ -4,8 +4,7 @@ import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MqQueueConstant;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
-import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -22,7 +21,7 @@ import java.util.Optional;
 /**
  * 将mq中的消息转发到微信去
  */
-@Log4j2
+@Slf4j
 @Component
 @RabbitListener(queues = MqQueueConstant.WX_MESSAGE_PUSH_QUEUE)
 public class MqMessageTransmitToWxReceiver {
