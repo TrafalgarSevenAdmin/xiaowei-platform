@@ -16,11 +16,6 @@ public class ReimbursementStandardDTO {
     @ApiModelProperty(value = "舱位级别")
     private String shipLevel;
     /**
-     * 出行方式
-     */
-    @ApiModelProperty(value = "出行方式")
-    private String outType;
-    /**
      * 城市级别
      */
     @ApiModelProperty(value = "城市级别")
@@ -40,11 +35,6 @@ public class ReimbursementStandardDTO {
      */
     @ApiModelProperty(value = "到达城市")
     private String endCity;
-    /**
-     * 计费类型
-     */
-    @ApiModelProperty(value = "计费类型")
-    private Integer costType;
     /**
      * 单价
      */

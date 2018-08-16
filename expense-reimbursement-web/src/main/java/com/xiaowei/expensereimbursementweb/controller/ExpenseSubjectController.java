@@ -22,9 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 费用科目管理
@@ -80,19 +78,11 @@ public class ExpenseSubjectController {
                 a -> StringUtils.isEmpty(a.getParentId()) ? "0" : a.getParentId(),
                 a -> a.getSubjectName(),
                 a -> false,
-                a -> {
-                    Map<String, Object> dataMap = new HashMap<>();
-                    dataMap.put("code", a.getCode());
-                    dataMap.put("accountContent", a.getAccountContent());
-                    dataMap.put("taxRate", a.getTaxRate());
-                    dataMap.put("level", a.getLevel());
-                    return dataMap;
-                },
+                a -> a,
                 a -> false
         ).create();
         return Result.getSuccess(jsonTreeData);
     }
-
 
     @ApiOperation("根据id获取费用科目")
     @GetMapping("/{subjectId}")
