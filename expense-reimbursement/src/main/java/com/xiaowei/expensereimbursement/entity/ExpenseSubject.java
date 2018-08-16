@@ -7,6 +7,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -44,6 +45,7 @@ public class ExpenseSubject extends BaseEntity {
     /**
      * 科目内容
      */
+    @Lob
     private String accountContent;
 
     /**

@@ -28,6 +28,7 @@ public class ExpenseFormItem extends BaseEntity {
     /**
      * 所属科目内容(json)
      */
+    @Lob
     private String subjectContent;
     /**
      * 填报金额
