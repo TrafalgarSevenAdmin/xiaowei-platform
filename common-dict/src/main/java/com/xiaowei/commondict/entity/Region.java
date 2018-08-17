@@ -38,4 +38,9 @@ public class Region extends BaseEntity {
     //父级行政区短代码
     @Column(name = "parentShortCode",length = 20)
     private String parentShortCode;
+
+    /**
+     * 城市级别
+     */
+    private String cityLevel;
 }

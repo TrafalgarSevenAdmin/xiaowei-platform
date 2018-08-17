@@ -61,6 +61,11 @@ public class ReimbursementStandardServiceImpl extends BaseServiceImpl<Reimbursem
         return reimbursementStandardRepository.findShipLevelByPostLevel(postLevel, subjectCode);
     }
 
+    @Override
+    public List<String> findCityLevelByPostLevel(String postLevel, String subjectCode) {
+        return reimbursementStandardRepository.findCityLevelByPostLevel(postLevel, subjectCode);
+    }
+
     private void judgeAttribute(ReimbursementStandard reimbursementStandard, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             reimbursementStandard.setId(null);

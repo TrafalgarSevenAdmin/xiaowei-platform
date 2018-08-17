@@ -1,6 +1,7 @@
 package com.xiaowei.commondict.dto;
 
 import com.xiaowei.core.validate.V;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -30,5 +31,11 @@ public class RegionDTO {
    private String mergerName;
 
    private Integer level;
+
+   /**
+    * 城市级别
+    */
+   @ApiModelProperty(value = "城市级别")
+   private String cityLevel;
 
 }

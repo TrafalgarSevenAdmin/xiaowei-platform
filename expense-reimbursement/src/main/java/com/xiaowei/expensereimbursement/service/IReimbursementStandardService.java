@@ -15,4 +15,6 @@ public interface IReimbursementStandardService extends IBaseService<Reimbursemen
     ReimbursementStandard updateReimbursementStandard(ReimbursementStandard reimbursementStandard);
 
     List<String> findShipLevelByPostLevel(String postLevel, String subjectCode);
+
+    List<String> findCityLevelByPostLevel(String postLevel, String subjectCode);
 }

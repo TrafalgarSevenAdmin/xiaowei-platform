@@ -95,5 +95,13 @@ public class ReimbursementStandardController {
         return Result.getSuccess(shipLevels);
     }
 
+    @ApiOperation("根据岗位级别查询城市级别")
+    @GetMapping("/cityLevel")
+    public Result findCityLevelByPostLevel(@RequestParam("postLevel") String postLevel,
+                                           @RequestParam("subjectCode") String subjectCode) {
+        List<String> cityLevels = reimbursementStandardService.findCityLevelByPostLevel(postLevel, subjectCode);
+        return Result.getSuccess(cityLevels);
+    }
+
 
 }
