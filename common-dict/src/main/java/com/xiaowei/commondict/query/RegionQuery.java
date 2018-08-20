@@ -23,13 +23,19 @@ public class RegionQuery extends Query {
     private String parentCode;
     private Sort.Dir nameSort;
     private String mergerNameLike;
+    private Sort.Dir levelSort;
 
     @Override
     public void generateCondition() {
-        //根据用户名排序
+        if (Sort.Dir.asc.equals(levelSort)) {
+            addSort(Sort.Dir.asc, "level");
+        } else if(Sort.Dir.desc.equals(levelSort)){
+            addSort(Sort.Dir.desc, "level");
+        }
+        //根据名称排序
         if (Sort.Dir.asc.equals(nameSort)) {
             addSort(Sort.Dir.asc, "name");
-        } else {
+        } else if(Sort.Dir.desc.equals(nameSort)){
             addSort(Sort.Dir.desc, "name");
         }
         if (!StringUtils.isEmpty(mergerName)) {
