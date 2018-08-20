@@ -11,10 +11,12 @@ import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
 import com.xiaowei.expensereimbursement.entity.WorkOrderSelect;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
+import com.xiaowei.expensereimbursement.repository.RequestFormRepository;
 import com.xiaowei.expensereimbursement.repository.WorkOrderSelectRepository;
 import com.xiaowei.expensereimbursement.service.IExpenseFormService;
 import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
+import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private ExpenseFormItemRepository expenseFormItemRepository;
     @Autowired
     private WorkOrderSelectRepository workOrderSelectRepository;
+    @Autowired
+    private RequestFormRepository requestFormRepository;
 
     public ExpenseFormServiceImpl(@Qualifier("expenseFormRepository") BaseRepository repository) {
         super(repository);
@@ -242,10 +246,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     @Override
     public Map<String, Object> auditCountByUserId(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("preRequestCount", 0);
+        dataMap.put("preRequestCount", requestFormRepository.findPreRequestCountCount(userId,RequestFormStatus.PREAUDIT.getStatus()));
         dataMap.put("preFirstCount", expenseFormRepository.findFirstTrialCount(userId, ExpenseFormStatus.PREAUDIT.getStatus()));
         dataMap.put("preSecondCount", expenseFormRepository.findSecondTrialCount(userId, ExpenseFormStatus.FIRSTAUDIT.getStatus()));
-        dataMap.put("requestCount", 0);
+        dataMap.put("requestCount", requestFormRepository.findRequestCountCount(userId));
         dataMap.put("firstAuditCount", expenseFormRepository.findFirstAuditCount(userId));
         dataMap.put("secondAuditCount", expenseFormRepository.findSecondAuditCount(userId));
         return dataMap;
