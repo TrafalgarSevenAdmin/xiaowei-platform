@@ -48,7 +48,7 @@ public class RegionQuery extends Query {
             this.addFilter(Filter.eq("parentShortCode", parentCode));
         }
         if (!StringUtils.isEmpty(mergerNameLike)) {
-            this.addFilter(Filter.like("mergerName", "%" + mergerNameLike + "%"));
+            this.addFilter(Filter.like("mergerName", mergerNameLike + "%"));
         }
 
     }
