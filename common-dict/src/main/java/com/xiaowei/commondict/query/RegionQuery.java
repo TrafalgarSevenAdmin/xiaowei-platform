@@ -22,6 +22,7 @@ public class RegionQuery extends Query {
     private String shortCode;
     private String parentCode;
     private Sort.Dir nameSort;
+    private String mergerNameLike;
 
     @Override
     public void generateCondition() {
@@ -45,6 +46,9 @@ public class RegionQuery extends Query {
         }
         if (!StringUtils.isEmpty(parentCode)) {
             this.addFilter(Filter.eq("parentShortCode", parentCode));
+        }
+        if (!StringUtils.isEmpty(mergerNameLike)) {
+            this.addFilter(Filter.like("mergerName", "%" + mergerNameLike + "%"));
         }
 
     }
