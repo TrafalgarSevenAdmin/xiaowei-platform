@@ -29,7 +29,7 @@ public class ExpenseForm extends BaseEntity {
      */
     private String workOrderCode;
     /**
-     * 报销单标号
+     * 报销单编号
      */
     @Column(unique = true,updatable = false)
     private String code;

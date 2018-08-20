@@ -114,4 +114,11 @@ public class ExpenseFormController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 
+    @ApiOperation("删除报销单")
+    @DeleteMapping("/{expenseFormId}")
+    public Result delete(@PathVariable("expenseFormId") String expenseFormId) {
+        expenseFormService.delete(expenseFormId);
+        return Result.getSuccess();
+    }
+
 }

@@ -192,6 +192,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (audit) {//是否驳回
             one.setStatus(ExpenseFormStatus.FIRSTAUDIT.getStatus());
         } else {
+            //设置驳回次数
+            one.setTurnDownCount(one.getTurnDownCount() == null ? 1 : (one.getTurnDownCount() + 1));
             one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
         }
         one.setFirstOption(expenseForm.getFirstOption());//初审意见
@@ -239,13 +241,13 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
 
     @Override
     public Map<String, Object> auditCountByUserId(String userId) {
-        Map<String,Object> dataMap = new HashMap<>();
-        dataMap.put("preRequestCount",0);
-        dataMap.put("preFirstCount",expenseFormRepository.findFirstTrialCount(userId,ExpenseFormStatus.PREAUDIT.getStatus()));
-        dataMap.put("preSecondCount",expenseFormRepository.findSecondTrialCount(userId,ExpenseFormStatus.FIRSTAUDIT.getStatus()));
-        dataMap.put("requestCount",0);
-        dataMap.put("firstAuditCount",expenseFormRepository.findFirstAuditCount(userId));
-        dataMap.put("secondAuditCount",expenseFormRepository.findSecondAuditCount(userId));
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("preRequestCount", 0);
+        dataMap.put("preFirstCount", expenseFormRepository.findFirstTrialCount(userId, ExpenseFormStatus.PREAUDIT.getStatus()));
+        dataMap.put("preSecondCount", expenseFormRepository.findSecondTrialCount(userId, ExpenseFormStatus.FIRSTAUDIT.getStatus()));
+        dataMap.put("requestCount", 0);
+        dataMap.put("firstAuditCount", expenseFormRepository.findFirstAuditCount(userId));
+        dataMap.put("secondAuditCount", expenseFormRepository.findSecondAuditCount(userId));
         return dataMap;
     }
 
