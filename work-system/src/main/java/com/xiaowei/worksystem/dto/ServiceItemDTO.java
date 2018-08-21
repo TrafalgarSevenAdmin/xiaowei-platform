@@ -13,6 +13,7 @@ import java.sql.Time;
 
 @Data
 public class ServiceItemDTO implements Serializable{
+    private String code;
     /**
      * 是否收费
      */
@@ -43,10 +44,15 @@ public class ServiceItemDTO implements Serializable{
     private WorkOrder workOrder;
 
     /**
-     * 收费
+     * 保内收费
      */
-    @ApiModelProperty(value = "收费")
+    @ApiModelProperty(value = "保内收费")
     private Double toll;
+    /**
+     * 保外收费
+     */
+    @ApiModelProperty(value = "保外收费")
+    private Double outToll;
 
     /**
      * 是否需要审核
