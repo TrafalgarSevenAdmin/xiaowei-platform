@@ -10,6 +10,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.dto.WorkFlowDTO;
 import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import com.xiaowei.worksystem.query.WorkFlowQuery;
+import com.xiaowei.worksystem.service.IWorkFlowItemService;
 import com.xiaowei.worksystem.service.IWorkFlowService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +28,8 @@ public class WorkFlowController {
 
     @Autowired
     private IWorkFlowService workFlowService;
+    @Autowired
+    private IWorkFlowItemService workFlowItemService;
 
     @ApiOperation(value = "添加流程模板")
     @AutoErrorHandler
@@ -77,6 +80,7 @@ public class WorkFlowController {
     @GetMapping("/{workFlowId}")
     public Result findById(@PathVariable("workFlowId") String workFlowId, FieldsView fieldsView) {
         WorkFlow workFlow = workFlowService.findById(workFlowId);
+        workFlow.setWorkFlowItems(workFlowItemService.findByWorkFlowId(workFlowId));
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workFlow, fieldsView));
     }
 }

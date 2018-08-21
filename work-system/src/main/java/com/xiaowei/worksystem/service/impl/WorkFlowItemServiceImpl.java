@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class WorkFlowItemServiceImpl extends BaseServiceImpl<WorkFlowItem> implements IWorkFlowItemService {
@@ -20,4 +22,8 @@ public class WorkFlowItemServiceImpl extends BaseServiceImpl<WorkFlowItem> imple
         super(repository);
     }
 
+    @Override
+    public List<WorkFlowItem> findByWorkFlowId(String workFlowId) {
+        return workFlowItemRepository.findByWorkFlowId(workFlowId);
+    }
 }
