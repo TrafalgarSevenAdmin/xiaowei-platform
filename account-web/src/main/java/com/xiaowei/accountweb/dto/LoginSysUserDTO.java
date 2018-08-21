@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 public class LoginSysUserDTO {
 
     @ApiModelProperty(value = "登录用户名")
-    @Size(min = 5,max = 20,message = "登录名[5-20]位!")
+    @Size(min = 2,max = 20,message = "登录名[2-20]位!")
     @NotBlank(message = "登录名必填!")
     private String loginName;
 
