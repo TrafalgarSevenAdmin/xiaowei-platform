@@ -1,16 +1,15 @@
 package com.xiaowei.expensereimbursementweb.dto;
 
-import com.xiaowei.expensereimbursement.entity.ExpenseSubject;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class ShipLevelDTO {
     /**
-     * 所属科目
+     * 所属科目编号
      */
-    @ApiModelProperty(value = "所属科目")
-    private ExpenseSubject expenseSubject;
+    @ApiModelProperty(value = "所属科目编号")
+    private String subjectCode;
     /**
      * 舱位级别
      */

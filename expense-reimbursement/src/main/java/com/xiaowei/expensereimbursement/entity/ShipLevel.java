@@ -14,9 +14,9 @@ import javax.persistence.Table;
 @Data
 public class ShipLevel extends BaseEntity {
     /**
-     * 所属科目
+     * 所属科目编号
      */
-    private ExpenseSubject expenseSubject;
+    private String subjectCode;
     /**
      * 舱位级别
      */
