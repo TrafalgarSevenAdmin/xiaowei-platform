@@ -31,7 +31,7 @@ public class RequestFormDTO {
     /**
      * 审核总计金额
      */
-    @NotNull(groups = {RequestFormDTO.Audit.class,V.Update.class},message = "审核总计金额!")
+    @NotNull(groups = {Audit.class},message = "审核总计金额!")
     @ApiModelProperty(value = "审核总计金额")
     private Double trialAmount;
 
