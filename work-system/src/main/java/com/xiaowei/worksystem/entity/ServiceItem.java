@@ -26,6 +26,7 @@ import java.util.Map;
 @SQLDelete(sql = "update w_serviceitem set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class ServiceItem extends BaseEntity{
+    private String code;
     /**
      * 是否收费
      */
@@ -64,9 +65,13 @@ public class ServiceItem extends BaseEntity{
     private WorkOrder workOrder;
 
     /**
-     * 收费
+     * 保内收费
      */
     private Double toll;
+    /**
+     * 保外收费
+     */
+    private Double outToll;
 
     /**
      * 是否需要审核

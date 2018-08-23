@@ -4,6 +4,7 @@ package com.xiaowei.commonupload.service;
 import com.xiaowei.commonupload.entity.FileStore;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -24,4 +25,10 @@ public interface IFileStoreService  {
     FileStore save(FileStore fileStore);
 
     List<FileStore> findByIds(List<Serializable> ids);
+
+    List<String> getCheckIds(String table,String field);
+
+    void updateCheckDate(List<String> ids, Date checkDate);
+
+    void deleteFileStoreByCheckDate(Date currentDate);
 }

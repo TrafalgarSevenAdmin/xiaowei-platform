@@ -1,7 +1,6 @@
 package com.xiaowei.account.query;
 
 import com.xiaowei.account.consts.SuperUser;
-import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import lombok.Data;
@@ -18,7 +17,7 @@ public class UserQuery extends Query {
     private Set<String> roleIds = new HashSet<>();
     private String companyId;
     private String departmentId;
-    private String postId;
+    private String postCode;
     private String roleCode;
 
     @Override
@@ -43,9 +42,9 @@ public class UserQuery extends Query {
             setDistinct(true);
             addFilter(new Filter("department.id", Filter.Operator.eq, departmentId));
         }
-        if (StringUtils.isNotEmpty(postId)) {
+        if (StringUtils.isNotEmpty(postCode)) {
             setDistinct(true);
-            addFilter(new Filter("post.id", Filter.Operator.eq, postId));
+            addFilter(new Filter("post.code", Filter.Operator.eq, postCode));
         }
     }
 

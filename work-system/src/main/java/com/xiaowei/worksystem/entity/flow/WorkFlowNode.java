@@ -11,6 +11,7 @@ import java.sql.Time;
 @Entity
 @Table(name = "W_WORKFLOWNODE")
 public class WorkFlowNode extends BaseEntity {
+    private String code;
     /**
      * 是否收费
      */
@@ -28,9 +29,13 @@ public class WorkFlowNode extends BaseEntity {
      */
     private String standard;
     /**
-     * 收费
+     * 保内收费
      */
     private Double toll;
+    /**
+     * 保外收费
+     */
+    private Double outToll;
 
     /**
      * 是否需要审核

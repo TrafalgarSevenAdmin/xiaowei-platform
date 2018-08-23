@@ -22,9 +22,12 @@ import java.util.List;
 @Where(clause = "delete_flag <> true")
 public class SysUser extends BaseEntity {
 
+    private String code;
+
     /**
      * 登录名称
      */
+    @Column(unique = true)
     private String loginName;
 
     /**

@@ -5,12 +5,15 @@ import com.xiaowei.commonupload.repository.FileStoreRepository;
 import com.xiaowei.commonupload.service.IFileStoreService;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,21 +34,40 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStore> implements 
         this.fileStoreRepository = (FileStoreRepository) baseRepository;
     }
 
-    @Cacheable(value = "fileStore",key = "#id")
+    @Cacheable(value = "fileStore", key = "#id")
     @Override
     public FileStore findById(Serializable id) {
         Optional<FileStore> byId = fileStoreRepository.findById(id);
-        return byId.isPresent()?byId.get():null;
+        return byId.isPresent() ? byId.get() : null;
     }
 
-    @CacheEvict(value = "fileStore",key = "#id")
+    @CacheEvict(value = "fileStore", key = "#id")
     @Override
     public void delete(Serializable id) {
         fileStoreRepository.deleteById(id);
     }
 
-    public FileStore save(FileStore fileStore){
+    public FileStore save(FileStore fileStore) {
         return fileStoreRepository.save(fileStore);
+    }
+
+    @Override
+    public List<String> getCheckIds(String table, String field) {
+        val sql = "select " + field + " from " + table;
+
+        return getEntityManager().createNativeQuery(sql).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void updateCheckDate(List<String> ids, Date checkDate) {
+        fileStoreRepository.updateCheckDate(ids, checkDate);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFileStoreByCheckDate(Date currentDate) {
+        fileStoreRepository.deleteFileStoreByCheckDate(currentDate);
     }
 
     @Override

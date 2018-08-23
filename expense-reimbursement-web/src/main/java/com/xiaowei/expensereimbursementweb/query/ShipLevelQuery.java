@@ -7,13 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class ShipLevelQuery extends Query {
-    private String expenseSubjectId;
+    private String subjectCode;
     private String shipLevel;
 
     @Override
     public void generateCondition() {
-        if (StringUtils.isNotEmpty(expenseSubjectId)) {
-            addFilter(new Filter("expenseSubject.id", Filter.Operator.eq, expenseSubjectId));
+        if (StringUtils.isNotEmpty(subjectCode)) {
+            addFilter(new Filter("subjectCode", Filter.Operator.eq, subjectCode));
         }
         if (StringUtils.isNotEmpty(shipLevel)) {
             addFilter(new Filter("shipLevel", Filter.Operator.eq, shipLevel));
