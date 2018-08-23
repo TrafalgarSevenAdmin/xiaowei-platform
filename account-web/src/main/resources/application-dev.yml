@@ -51,3 +51,12 @@ upload:
 checkfield:
   names:
     - sys_company.logo
+    - SYS_DEPARTMENT.logo
+    - W_ENGINEERWORK.arrive_file_store
+    - E_EXPENSEFORM.form_file_store
+    - E_EXPENSEFORMITEM.invoice_file_store
+    - E_EXPENSEFORMITEM.voucher_file_store
+    - W_REQUESTWORKORDER.repair_file_store
+    - W_SERVICEITEM.quality_file_store
+    - W_WORKORDER.repair_file_store
+

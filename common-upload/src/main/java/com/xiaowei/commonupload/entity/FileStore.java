@@ -39,6 +39,9 @@ public class FileStore extends BaseEntity {
      */
     private String userId;
 
+    /**
+     * 检测时间
+     */
     @Temporal(TemporalType.DATE)
     private Date checkDate;
 
