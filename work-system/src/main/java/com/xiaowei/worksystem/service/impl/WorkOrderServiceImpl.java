@@ -484,7 +484,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertOptional(optional, "没有查询到该工单");
         WorkOrder workOrder = optional.get();
         //待付费
-        if(WorkOrderUserStatus.PAIED.getStatus().equals(workOrder.getUserStatus())){
+        if (!WorkOrderUserStatus.PAIED.getStatus().equals(workOrder.getUserStatus())) {
             throw new BusinessException("工单状态错误!");
         }
         //先从订单表查询,如果有工单的支付订单,则返回该支付订单,否则新建返回
