@@ -29,7 +29,7 @@ public class BaseEntity implements Serializable {
      * 创建时间
      */
     @Column(updatable = false)
-    private Date createdTime;
+    private Date createdTime = new Date();
 
     @Column(nullable=false,columnDefinition="Boolean default false")
     private Boolean delete_flag = false;

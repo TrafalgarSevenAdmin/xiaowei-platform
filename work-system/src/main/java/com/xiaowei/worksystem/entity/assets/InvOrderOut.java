@@ -7,6 +7,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +85,27 @@ public class InvOrderOut extends BaseEntity {
 //            joinColumns={@JoinColumn(name="code")},
 //            inverseJoinColumns={@JoinColumn(name="code")})
     public List<InvOrderOutItem> invOrderOutItems;
+
+
+    /**
+     * 审核时间
+     */
+    Date auditTime;
+
+    /**
+     * 审核意见
+     */
+    String auditReason;
+
+    /**
+     * 审核人
+     */
+    String auditUserId;
+
+    /**
+     * 审核人名称
+     */
+    String auditUserName;
 
     // TODO: 2018/7/6 0006 附加字段
     // 部门审批	该业务单对应的部门经理审批意见

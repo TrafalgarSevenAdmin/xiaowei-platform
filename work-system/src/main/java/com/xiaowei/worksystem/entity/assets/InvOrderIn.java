@@ -7,6 +7,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class InvOrderIn extends BaseEntity {
     public String relevantCode;
 
     /**
-     *部门名称
+     * 部门名称
      * 该业务单对应的部门名称
      */
     public String departmentName;
@@ -61,8 +62,6 @@ public class InvOrderIn extends BaseEntity {
      */
     public Integer type;
 
-
-
     /**
      * 申请人
      * 该业务单对应的申请人姓名
@@ -81,10 +80,28 @@ public class InvOrderIn extends BaseEntity {
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "code",referencedColumnName = "code")
-//    @JoinTable(name="w_inv_order_in_item",
-//            joinColumns={@JoinColumn(name="code")},
-//            inverseJoinColumns={@JoinColumn(name="code")})
     public List<InvOrderInItem> invOrderInItems;
+
+    /**
+     * 审核时间
+     */
+    Date auditTime;
+
+    /**
+     * 审核意见
+     */
+    String auditReason;
+
+    /**
+     * 审核人
+     */
+    String auditUserId;
+
+    /**
+     * 审核人名称
+     */
+    String auditUserName;
+
 
     // TODO: 2018/7/6 0006 附加字段
     // 部门审批	该业务单对应的部门经理审批意见

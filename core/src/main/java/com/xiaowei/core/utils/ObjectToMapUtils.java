@@ -4,6 +4,7 @@ package com.xiaowei.core.utils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.core.result.FieldsView;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -134,6 +135,64 @@ public class ObjectToMapUtils {
             return objectToIncludeFieldMap(obj,fieldsView.getFields().toArray(new String[0]));
         }else{
             return objectToExcludeFieldMap(obj,fieldsView.getFields().toArray(new String[0]));
+        }
+    }
+
+    /**
+     * 任何对象去配置的需要包含或不需要包含的对象/字段
+     * 带层级关系
+     * @param obj           需要转换的对象
+     * @param view 配置的字段
+     * @return
+     */
+    public static <T> T AnyToHandleField(Object obj, FieldsView view) {
+        return AnyToHandleField(obj, view.getFields().toArray(new String[0]), view.isInclude(), null);
+    }
+
+    public static <T> T AnyToHandleField(Object obj, String[] fields, boolean include, String parent) {
+        if(obj==null){
+            return null;
+        }
+        //若是集合
+        if (obj instanceof Collection) {
+            ArrayList<Object> objects = new ArrayList<>();
+            for (Object o : ((Collection) obj)) {
+                objects.add(AnyToHandleField(o, fields,include,parent));
+            }
+            return (T) objects;
+        } else {
+            //不是集合
+            Map<String, Object> data = new HashMap<>();
+            PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(obj.getClass());
+            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                String prefix = (StringUtils.isNotEmpty(parent) ? (parent + ".") : "") + propertyDescriptor.getName();
+                if (include && !Arrays.stream(fields).filter(s -> s.startsWith(prefix)).findFirst().isPresent()) {
+                    //包含，但包含的字段不存在
+                    continue;
+                }
+                if (!include && ArrayUtils.contains(fields, prefix)) {
+                    //不包含，但不包含的字段存在
+                    continue;
+                }
+                if (fields != null
+                        && !"class".equals(propertyDescriptor.getName())) {
+                    Method method = propertyDescriptor.getReadMethod();
+                    if (method.getAnnotation(JsonIgnore.class) == null) {
+                        try {
+                            Object result = method.invoke(obj);
+                            Optional<String> first = Arrays.stream(fields).filter(s -> s.startsWith(prefix)).findFirst();
+                            if (first.isPresent() && !first.get().equals(prefix)) {
+                                //还需要进入下一层中处理
+                                result = AnyToHandleField(result, fields,include, prefix);
+                            }
+                            data.put(propertyDescriptor.getName(), result);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+            return (T) data;
         }
     }
 }

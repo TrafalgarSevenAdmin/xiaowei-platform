@@ -47,6 +47,11 @@
         </dependency>
         <dependency>
             <groupId>com.xiaowei</groupId>
+            <artifactId>flow</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xiaowei</groupId>
             <artifactId>pay</artifactId>
             <version>1.0</version>
         </dependency>

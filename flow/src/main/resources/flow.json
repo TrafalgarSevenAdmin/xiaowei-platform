@@ -1,0 +1,80 @@
+[
+  {
+    "ext": null,
+    "viewer": [],
+    "code": "CKD",
+    "delete_time": null,
+    "name": "出库单流程",
+    "start": {
+      "name": "填写",
+      "code": null,
+      "describe": null,
+      "ext": null,
+      "enterCondition": null,
+      "nextNodes": [
+        {
+          "name": "审核",
+          "code": null,
+          "describe": null,
+          "ext": null,
+          "enterCondition": null,
+          "nextNodes": [],
+          "auth": [
+            {
+              "userId": "1",
+              "roleId": null,
+              "departmentId": null
+            }
+          ]
+        }
+      ],
+      "auth": [
+        {
+          "userId": "1",
+          "roleId": null,
+          "departmentId": null
+        }
+      ]
+    },
+    "describe": null
+  },
+  {
+    "ext": null,
+    "viewer": [],
+    "code": "RKD",
+    "delete_time": null,
+    "name": "入库单流程",
+    "start": {
+      "name": "填写",
+      "code": null,
+      "describe": null,
+      "ext": null,
+      "enterCondition": null,
+      "nextNodes": [
+        {
+          "name": "审核",
+          "code": null,
+          "describe": null,
+          "ext": null,
+          "enterCondition": null,
+          "nextNodes": [],
+          "auth": [
+            {
+              "userId": "1",
+              "roleId": null,
+              "departmentId": null
+            }
+          ]
+        }
+      ],
+      "auth": [
+        {
+          "userId": "1",
+          "roleId": null,
+          "departmentId": null
+        }
+      ]
+    },
+    "describe": null
+  }
+]

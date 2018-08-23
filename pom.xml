@@ -45,6 +45,7 @@
         <module>common-log4j</module>
         <module>common-upload</module>
         <module>pay</module>
+        <module>flow</module>
         <module>work-system</module>
         <module>common-dict</module>
         <module>mq-core</module>
