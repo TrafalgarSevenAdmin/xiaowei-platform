@@ -24,4 +24,6 @@ public interface ServiceItemRepository extends BaseRepository<ServiceItem> {
     @Query("delete from ServiceItem s where s.workOrder.id = ?1")
     void deleteByWorkOrderId(String workOrderId);
 
+    @Query("select s from ServiceItem s where s.workOrder.id = ?1 and s.status = ?2 order by s.orderNumber asc")
+    List<ServiceItem> findByWorkOrderIdAndStatusOrderByOrderNumber(String workOrderId, Integer status);
 }

@@ -47,7 +47,7 @@ public class ScheduledTask {
             }
         }
         //2.批量处理文件数据,更新检测时间,每一批为10000条数据
-        final List<List<String>> list = MyListUtils.createList(fileIds.stream().collect(Collectors.toList()), 10000);
+        final List<List<String>> list = MyListUtils.createList(fileIds.stream().collect(Collectors.toList()), 1000);
         list.stream().forEach(strings -> fileStoreService.updateCheckDate(strings, currentDate));
         //3.删除未符合检测的数据
         fileStoreService.deleteFileStoreByCheckDate(currentDate);
