@@ -2,15 +2,20 @@ package com.xiaowei.commonupload.entity;
 
 
 import com.xiaowei.core.basic.entity.BaseEntity;
+import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
 
 /**
  * 文件仓库
  */
 @Table(name = "sys_file_store")
 @Entity
+@Data
 public class FileStore extends BaseEntity {
 
     /**
@@ -34,35 +39,7 @@ public class FileStore extends BaseEntity {
      */
     private String userId;
 
-    public String getOriginalFilename() {
-        return originalFilename;
-    }
+    @Temporal(TemporalType.DATE)
+    private Date checkDate;
 
-    public void setOriginalFilename(String originalFilename) {
-        this.originalFilename = originalFilename;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 }

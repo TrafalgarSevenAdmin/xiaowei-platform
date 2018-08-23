@@ -48,3 +48,6 @@ upload:
     - prove #证明
     - contract #合同
     - logo #头像
+checkfield:
+  names:
+    - sys_company.logo
