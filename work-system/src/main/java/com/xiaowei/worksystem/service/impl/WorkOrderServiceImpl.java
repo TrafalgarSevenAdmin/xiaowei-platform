@@ -599,6 +599,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
                 serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());
                 if(isEmpty){
                     serviceItem.setBeginTime(new Date());
+                    workOrder.setCurrentOrderNumber(serviceItem.getOrderNumber());//设置当前处理步骤
                     isEmpty = false;
                 }
                 serviceItemRepository.save(serviceItem);
