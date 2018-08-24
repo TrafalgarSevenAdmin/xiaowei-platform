@@ -72,11 +72,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <label>localhost</label>
                 <server.host>http://test.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>admin</datasource.password>
                 <redis.url>127.0.0.1</redis.url>
+                <fluentd.url>192.168.1.218</fluentd.url>
+                <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>192.168.1.218</rabbitmq.host>
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
@@ -93,11 +96,14 @@
         <profile>
             <id>dev</id>
             <properties>
+                <label>dev</label>
                 <server.host>http://test.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://192.168.1.218:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>192.168.1.218</redis.url>
+                <fluentd.url>192.168.1.218</fluentd.url>
+                <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>192.168.1.218</rabbitmq.host>
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
@@ -115,11 +121,14 @@
         <profile>
             <id>release</id>
             <properties>
+                <label>release</label>
                 <server.host>http://gongdan.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://119.23.224.29:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>119.23.224.29</redis.url>
+                <fluentd.url>119.23.224.29</fluentd.url>
+                <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>119.23.224.29</rabbitmq.host>
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
