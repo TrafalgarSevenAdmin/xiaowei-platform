@@ -237,34 +237,36 @@ public class WechatPayServiceImpl implements IWechatPayService {
     private Boolean judgeAttributeIpAddr(XwOrder myOrder,XwOrderResult result) {
         String ipAddr = ContextUtils.getIpAddr();
         result.setIp(ipAddr);
-        //判断来源的ip地址是否在白名单中
-        Object hostsObject = redisTemplate.opsForValue().get(MagicValueStore.wxHostsList);
-        if (!(hostsObject == null)) {
-            List<String> hosts = (List<String>) hostsObject;
-            if (hosts.contains(ipAddr)) {
-                return true;
-            }
-        }
-        //在获取服务ip地址失败或者redis中不存在此ip名单时，重新获取服务器地址列表，以便及时更新服务器ip
-        try {
-            String[] callbackIP = wxMpService.getCallbackIP();
-            List<String> hosts = Arrays.asList(callbackIP);
-            //更新白名单地址
-            redisTemplate.opsForValue().set(MagicValueStore.wxHostsList, hosts);
-            if (hosts.contains(ipAddr)) {
-                return true;
-            } else {
-                myOrder.setStatus(PayStatus.abnormal);
-                myOrder.setMessage("回调来源不在微信ip列表中！");
-                log.error("回调来源不在微信ip列表中！不排除恶意攻击的可能");
-                return false;
-            }
-        } catch (WxErrorException e) {
-            log.warn("获取微信白名单出错！", e);
-            myOrder.setStatus(PayStatus.abnormal);
-            myOrder.setMessage("无法获取微信ip白名单！");
-            return false;
-        }
+        return true;
+        //这里取消ip来源的校验，因为通过实际测试，发现大多数回调都不是使用的微信提供的ip地址
+//        //判断来源的ip地址是否在白名单中
+//        Object hostsObject = redisTemplate.opsForValue().get(MagicValueStore.wxHostsList);
+//        if (!(hostsObject == null)) {
+//            List<String> hosts = (List<String>) hostsObject;
+//            if (hosts.contains(ipAddr)) {
+//                return true;
+//            }
+//        }
+//        //在获取服务ip地址失败或者redis中不存在此ip名单时，重新获取服务器地址列表，以便及时更新服务器ip
+//        try {
+//            String[] callbackIP = wxMpService.getCallbackIP();
+//            List<String> hosts = Arrays.asList(callbackIP);
+//            //更新白名单地址
+//            redisTemplate.opsForValue().set(MagicValueStore.wxHostsList, hosts);
+//            if (hosts.contains(ipAddr)) {
+//                return true;
+//            } else {
+//                myOrder.setStatus(PayStatus.abnormal);
+//                myOrder.setMessage("回调来源不在微信ip列表中！");
+//                log.error("回调来源不在微信ip列表中！不排除恶意攻击的可能");
+//                return false;
+//            }
+//        } catch (WxErrorException e) {
+//            log.warn("获取微信白名单出错！", e);
+//            myOrder.setStatus(PayStatus.abnormal);
+//            myOrder.setMessage("无法获取微信ip白名单！");
+//            return false;
+//        }
     }
 
     /**

@@ -1,11 +1,15 @@
 package com.xiaowei.wechat.controller;
 
 import com.xiaowei.account.authorization.WxUserLoginToken;
+import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
@@ -60,6 +64,9 @@ public class WechatAuthController {
     @Autowired
     private ServerInfoProperties serverInfoProperties;
 
+    @Autowired
+    private ISysRoleService sysRoleService;
+
     /**
      * 获取jsapi所需要的签名
      * @param url
@@ -107,8 +114,10 @@ public class WechatAuthController {
             sysUser.setCreatedTime(new Date());
             sysUser.setStatus(0);
             sysUser.setNickName(bindMobileDTO.getName());
+            //设置用户为普通用户角色
+            sysUser.setRoles(sysRoleService.query(new Query().addFilter(Filter.eq("code", "PTYH"))));
+            sysUser = sysUserService.saveUser(sysUser);
             user.setSysUser(sysUser);
-            sysUserService.saveUser(sysUser);
             wxUserService.save(user);
             //给个普通用户的标签。
             List<WxUserTag> wxUserTags = wxMpService.getUserTagService().tagGet();

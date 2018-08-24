@@ -30,7 +30,9 @@ spring:
     host: @redis.url@
     port: 6379
   fluentd:
-    host: 192.168.1.218
+    host: @fluentd.url@
+    port: @fluentd.port@
+    lable: @lable@
 #  rabbitmq:
 #    host: @rabbitmq.host@
 #    port: @rabbitmq.port@
