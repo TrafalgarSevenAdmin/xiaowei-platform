@@ -37,17 +37,21 @@ public class OrderPayedReceiver {
     @Transactional
     public void messageReceiver(String order) {
         log.info("收到订单" + order + "支付完成通知");
+        log.info("1-----------------------------");
         Optional<XwOrder> optional = xwOrderRepository.findById(order);
         EmptyUtils.assertOptional(optional,"没有查询到支付订单");
         XwOrder xwOrder = optional.get();
         //判断是否支付完成
         if(PayStatus.paid.equals(xwOrder.getStatus())){
             log.info("订单未支付完成:"+order);
+            log.info("2-----------------------------");
             return;
         }
         Integer xwType = xwOrder.getXwType();
         if(XwType.WORKORDER.getStatus().equals(xwType)){//工单支付订单
+            log.info("3-----------------------------");
             workOrderService.payServiceItem(xwOrder.getBusinessId());
+            log.info("4-----------------------------");
         }
 
     }
