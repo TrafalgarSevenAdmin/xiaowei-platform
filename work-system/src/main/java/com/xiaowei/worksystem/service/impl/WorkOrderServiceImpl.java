@@ -29,6 +29,7 @@ import com.xiaowei.worksystem.status.ServiceItemStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -45,7 +46,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements IWorkOrderService {
 
@@ -211,16 +212,19 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     @Transactional
     public WorkOrder payServiceItem(String workOrderId) {
+        log.info("5-----------------------------");
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //待付款
         if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.PAIED.getStatus())) {
+            log.info("6-----------------------------");
             throw new BusinessException("状态错误!");
         }
 
         onPaied(workOrder);
         workOrderRepository.save(workOrder);
+        log.info("10-----------------------------");
         return workOrder;
     }
 
@@ -493,7 +497,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             SysUser user = new SysUser();
             user.setId(LoginUserUtils.getLoginUser().getId());
             //省略根据工单计算订单金额,开发阶段默认1分钱
-            xwOrder = new XwOrder("1", user, "晓维快修-工单支付", 1, XwType.WORKORDER.getStatus());
+            xwOrder = new XwOrder(workOrder.getId(), user, "晓维快修-工单支付", 1, XwType.WORKORDER.getStatus());
             xwOrder = orderRepository.save(xwOrder);
         } else {
             xwOrder = xwOrders.get(0);
@@ -565,11 +569,14 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onPaied(WorkOrder workOrder) {
+        log.info("7-----------------------------");
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
+            log.info("8-----------------------------");
             return;
         }
+        log.info("9-----------------------------");
         serviceItems.stream().forEach(serviceItem -> {
             //所有项目由待付款变为完成状态
             serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());
