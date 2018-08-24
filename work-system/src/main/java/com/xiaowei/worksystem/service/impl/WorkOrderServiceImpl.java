@@ -498,7 +498,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             SysUser user = new SysUser();
             user.setId(LoginUserUtils.getLoginUser().getId());
             //省略根据工单计算订单金额,开发阶段默认1分钱
-            xwOrder = new XwOrder("1", user, "晓维快修-工单支付", 1, XwType.WORKORDER.getStatus());
+            xwOrder = new XwOrder(workOrder.getId(), user, "晓维快修-工单支付", 1, XwType.WORKORDER.getStatus());
             xwOrder = orderRepository.save(xwOrder);
         } else {
             xwOrder = xwOrders.get(0);
