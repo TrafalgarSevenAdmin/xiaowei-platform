@@ -4,17 +4,17 @@
     <springProperty scope="context" name="TAG" source="server.servlet.context-path"/>
     <springProperty scope="context" name="SPRING_FLUENTD_HOST" source="spring.fluentd.host"/>
     <springProperty scope="context" name="SPRING_FLUENTD_PORT" source="spring.fluentd.port"/>
-    <springProperty scope="context" name="SPRING_FLUENTD_LABLE" source="spring.fluentd.label"/>
+    <springProperty scope="context" name="SPRING_FLUENTD_LABEL" source="spring.fluentd.label"/>
     <springProperty scope="context" name="REDIS_HOST" source="spring.redis.host"/>
     <springProperty scope="context" name="RABBITMQ_HOST" source="spring.rabbitmq.host"/>
     <!--首先尝试从配置中取fluentd的服务地址，否则取redis或rabbitmq的地址，若都没有配置，就取localhost地址-->
     <property name="FLUENTD_HOST" value="${SPRING_FLUENTD_HOST:-${REDIS_HOST:-${RABBITMQ_HOST:-${DOCKER_HOST:-localhost}}}}"/>
     <property name="FLUENTD_PORT" value="${SPRING_FLUENTD_PORT:-24224}"/>
-    <property name="FLUENTD_LABLE" value="${SPRING_FLUENTD_LABLE:-normal}"/>
+    <property name="FLUENTD_LABEL" value="${SPRING_FLUENTD_LABEL:-normal}"/>
 
     <appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
         <tag>${TAG}</tag>
-        <label>${FLUENTD_LABLE}</label>
+        <label>${FLUENTD_LABEL}</label>
         <remoteHost>${FLUENTD_HOST}</remoteHost>
         <port>${FLUENTD_PORT}</port>
     </appender>

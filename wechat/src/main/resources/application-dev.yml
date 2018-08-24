@@ -35,7 +35,7 @@ spring:
   fluentd:
     host: @fluentd.url@
     port: @fluentd.port@
-    lable: @lable@
+    label: @label@
   rabbitmq:
     host: @rabbitmq.host@
     port: @rabbitmq.port@

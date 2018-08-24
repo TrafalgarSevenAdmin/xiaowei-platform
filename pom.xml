@@ -72,7 +72,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <lable>localhost</lable>
+                <label>localhost</label>
                 <server.host>http://test.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
@@ -96,7 +96,7 @@
         <profile>
             <id>dev</id>
             <properties>
-                <lable>dev</lable>
+                <label>dev</label>
                 <server.host>http://test.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://192.168.1.218:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
@@ -121,7 +121,7 @@
         <profile>
             <id>release</id>
             <properties>
-                <lable>release</lable>
+                <label>release</label>
                 <server.host>http://gongdan.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://119.23.224.29:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>

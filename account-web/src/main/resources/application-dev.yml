@@ -32,7 +32,7 @@ spring:
   fluentd:
     host: @fluentd.url@
     port: @fluentd.port@
-    lable: @lable@
+    label: @label@
   servlet:
     multipart:
       max-file-size: 1024MB
