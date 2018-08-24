@@ -226,7 +226,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         judgeSecondTrialAmount(expenseForm, one);
         //判断复审报销单明细
         double totalAmount = judgeSecondItem(expenseForm, one);
-        if (totalAmount != expenseForm.getFirstTrialAmount()) {
+        if (totalAmount != expenseForm.getSecondTrialAmount()) {
             //如果明细累加的复审总计金额与前端传送过来的总计金额不一致,则抛出异常
             throw new BusinessException("复审总计金额有误!");
         }
