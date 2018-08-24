@@ -18,6 +18,7 @@ import com.xiaowei.worksystem.query.ServiceItemQuery;
 import com.xiaowei.worksystem.service.IServiceItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -46,6 +47,7 @@ public class ServiceItemController {
     @ApiOperation(value = "工程师添加收费项目")
     @AutoErrorHandler
     @PostMapping("/{workOrderId}/engineer")
+    @RequiresPermissions("order:serviceitem:add")
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         List<ServiceItem> serviceItems = BeanCopyUtils.copyList(serviceItemDTOs, ServiceItem.class);
         serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
@@ -85,6 +87,7 @@ public class ServiceItemController {
 
     @ApiOperation(value = "工程师执行服务项目")
     @PutMapping("/{serviceItemId}/execute")
+    @RequiresPermissions("order:serviceitem:execute")
     public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, ExecuteServiceItemDTO executeServiceItemDTO, FieldsView fieldsView) throws Exception {
         ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId,
                 executeServiceItemDTO.getQualityFileStore(),
@@ -94,6 +97,7 @@ public class ServiceItemController {
 
     @ApiOperation(value = "质检服务项目")
     @PutMapping("/{serviceItemId}/quality")
+    @RequiresPermissions("order:serviceitem:quality")
     public Result qualityServiceItem(@PathVariable("serviceItemId") String serviceItemId, @RequestBody Boolean audit, FieldsView fieldsView) throws Exception {
         ServiceItem serviceItem = serviceItemService.qualityServiceItem(serviceItemId, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
@@ -101,6 +105,7 @@ public class ServiceItemController {
 
     @ApiOperation("服务项目查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:serviceitem:query")
     public Result query(ServiceItemQuery serviceItemQuery, FieldsView fieldsView) {
         //查询服务项目设置默认条件
         setDefaultCondition(serviceItemQuery);

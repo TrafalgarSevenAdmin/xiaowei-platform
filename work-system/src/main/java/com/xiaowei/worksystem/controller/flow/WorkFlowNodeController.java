@@ -13,6 +13,7 @@ import com.xiaowei.worksystem.query.WorkFlowNodeQuery;
 import com.xiaowei.worksystem.service.IWorkFlowNodeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +31,7 @@ public class WorkFlowNodeController {
     @ApiOperation(value = "添加流程节点")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:flownode:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkFlowNodeDTO workFlowNodeDTO, BindingResult bindingResult) throws Exception {
         WorkFlowNode workFlowNode = BeanCopyUtils.copy(workFlowNodeDTO, WorkFlowNode.class);
         return Result.getSuccess(workFlowNodeService.save(workFlowNode));
@@ -38,6 +40,7 @@ public class WorkFlowNodeController {
     @ApiOperation(value = "修改流程节点")
     @AutoErrorHandler
     @PutMapping("/{workFlowNodeId}")
+    @RequiresPermissions("order:flownode:update")
     public Result update(@PathVariable("workFlowNodeId") String workFlowNodeId, @RequestBody @Validated(V.Update.class) WorkFlowNodeDTO workFlowNodeDTO, BindingResult bindingResult) throws Exception {
         WorkFlowNode workFlowNode = BeanCopyUtils.copy(workFlowNodeDTO, WorkFlowNode.class);
         workFlowNode.setId(workFlowNodeId);
@@ -46,6 +49,7 @@ public class WorkFlowNodeController {
 
     @ApiOperation("删除流程节点")
     @DeleteMapping("/{workFlowNodeId}")
+    @RequiresPermissions("order:flownode:delete")
     public Result delete(@PathVariable("workFlowNodeId") String workFlowNodeId) {
         workFlowNodeService.delete(workFlowNodeId);
         return Result.getSuccess("删除成功");
@@ -53,6 +57,7 @@ public class WorkFlowNodeController {
 
     @ApiOperation("流程节点查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:flownode:query")
     public Result query(WorkFlowNodeQuery workFlowNodeQuery, FieldsView fieldsView) {
         //流程节点查询接口设置默认条件
         setDefaultCondition(workFlowNodeQuery);
@@ -72,6 +77,7 @@ public class WorkFlowNodeController {
 
     @ApiOperation("根据id获取权限")
     @GetMapping("/{workFlowNodeId}")
+    @RequiresPermissions("order:flownode:get")
     public Result findById(@PathVariable("workFlowNodeId") String workFlowNodeId, FieldsView fieldsView) {
         WorkFlowNode workFlowNode = workFlowNodeService.findById(workFlowNodeId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workFlowNode, fieldsView));

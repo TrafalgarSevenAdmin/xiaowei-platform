@@ -14,6 +14,7 @@ import com.xiaowei.worksystem.service.IWorkFlowItemService;
 import com.xiaowei.worksystem.service.IWorkFlowService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,7 @@ public class WorkFlowController {
     @ApiOperation(value = "添加流程模板")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:workflow:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkFlowDTO workFlowDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         WorkFlow workFlow = BeanCopyUtils.copy(workFlowDTO, WorkFlow.class);
         workFlow = workFlowService.saveWorkFlow(workFlow);
@@ -43,6 +45,7 @@ public class WorkFlowController {
     @ApiOperation(value = "修改流程模板")
     @AutoErrorHandler
     @PutMapping("/{workFlowId}")
+    @RequiresPermissions("order:workflow:update")
     public Result update(@PathVariable("workFlowId") String workFlowId, @RequestBody @Validated(V.Update.class) WorkFlowDTO workFlowDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         WorkFlow workFlow = BeanCopyUtils.copy(workFlowDTO, WorkFlow.class);
         workFlow.setId(workFlowId);
@@ -52,6 +55,7 @@ public class WorkFlowController {
 
     @ApiOperation("删除流程模板")
     @DeleteMapping("/{workFlowId}")
+    @RequiresPermissions("order:workflow:delete")
     public Result delete(@PathVariable("workFlowId") String workFlowId, FieldsView fieldsView) {
         workFlowService.deleteWorkFlow(workFlowId);
         return Result.getSuccess("删除成功");
@@ -59,6 +63,7 @@ public class WorkFlowController {
 
     @ApiOperation("流程模板查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:workflow:query")
     public Result query(WorkFlowQuery workFlowQuery, FieldsView fieldsView) {
         //流程模板查询接口设置默认条件
         setDefaultCondition(workFlowQuery);
@@ -78,6 +83,7 @@ public class WorkFlowController {
 
     @ApiOperation("根据id获取流程模板")
     @GetMapping("/{workFlowId}")
+    @RequiresPermissions("order:workflow:get")
     public Result findById(@PathVariable("workFlowId") String workFlowId, FieldsView fieldsView) {
         WorkFlow workFlow = workFlowService.findById(workFlowId);
         workFlow.setWorkFlowItems(workFlowItemService.findByWorkFlowId(workFlowId));

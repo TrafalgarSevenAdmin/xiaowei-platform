@@ -13,6 +13,7 @@ import com.xiaowei.worksystem.query.RequestWorkOrderQuery;
 import com.xiaowei.worksystem.service.IRequestWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +37,7 @@ public class RequestWorkOrderController {
     @ApiOperation(value = "添加工单请求")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:request:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) RequestWorkOrderDTO requestWorkOrderDTO,
                          BindingResult bindingResult,
                          FieldsView fieldsView) throws Exception {
@@ -52,6 +54,7 @@ public class RequestWorkOrderController {
 
     @ApiOperation("工单请求查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:request:query")
     public Result query(RequestWorkOrderQuery requestWorkOrderQuery, FieldsView fieldsView) {
         //查询工单请求设置默认条件
         setDefaultCondition(requestWorkOrderQuery);
@@ -72,6 +75,7 @@ public class RequestWorkOrderController {
 
     @ApiOperation("根据id获取工单请求")
     @GetMapping("/{requestWorkOrderId}")
+    @RequiresPermissions("order:request:get")
     public Result findById(@PathVariable("requestWorkOrderId") String requestWorkOrderId, FieldsView fieldsView) {
 
         RequestWorkOrder requestWorkOrder = requestWorkOrderService.findById(requestWorkOrderId);
@@ -80,6 +84,7 @@ public class RequestWorkOrderController {
 
     @ApiOperation("工单请求")
     @PutMapping("/{requestWorkOrderId}/status")
+    @RequiresPermissions("order:request:status")
     public Result updateStatus(@PathVariable("requestWorkOrderId") String requestWorkOrderId,
                                @RequestBody @Validated(RequestWorkOrderDTO.UpdateStatus.class) RequestWorkOrderDTO requestWorkOrderDTO,
                                BindingResult bindingResult,

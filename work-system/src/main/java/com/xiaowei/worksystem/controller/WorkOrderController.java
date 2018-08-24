@@ -21,6 +21,7 @@ import com.xiaowei.worksystem.service.IEvaluateService;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -50,6 +51,7 @@ public class WorkOrderController {
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:workorder:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
                          String workFlowId,
@@ -63,6 +65,7 @@ public class WorkOrderController {
     @ApiOperation(value = "添加评价")
     @AutoErrorHandler
     @PostMapping("/{workOrderId}/evaluate")
+    @RequiresPermissions("order:workorder:evaluate")
     public Result insertEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
         evaluate = evaluateService.saveEvaluate(workOrderId, evaluate);
@@ -72,6 +75,7 @@ public class WorkOrderController {
     @ApiOperation(value = "修改工单")
     @AutoErrorHandler
     @PutMapping("/{workOrderId}")
+    @RequiresPermissions("order:workorder:update")
     public Result update(@PathVariable("workOrderId") String workOrderId,
                          @RequestBody @Validated(V.Update.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
@@ -87,6 +91,7 @@ public class WorkOrderController {
     @ApiOperation(value = "用户确认项目")
     @AutoErrorHandler
     @PutMapping("/confirmed/{workOrderId}")
+    @RequiresPermissions("order:workorder:confirmed")
     public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId, @RequestBody List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
         workOrderService.confirmed(workOrderId, serviceItemIds);
         return Result.getSuccess();
@@ -95,6 +100,7 @@ public class WorkOrderController {
     @ApiOperation(value = "派单")
     @AutoErrorHandler
     @PutMapping("/distribute/{workOrderId}")
+    @RequiresPermissions("order:workorder:distribute")
     public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,
                                       @RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO,
                                       BindingResult bindingResult, FieldsView fieldsView) throws Exception {
@@ -139,6 +145,7 @@ public class WorkOrderController {
      */
     @ApiOperation(value = "创建订单")
     @PostMapping("/pay/{workOrderId}/create")
+    @RequiresPermissions("order:workorder:pay")
     public Result payItem(@PathVariable("workOrderId") String workOrderId) {
 
         return Result.getSuccess(workOrderService.createPay(workOrderId));
@@ -166,6 +173,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师出发")
     @AutoErrorHandler
     @PutMapping("/departe/{workOrderId}")
+    @RequiresPermissions("order:workorder:departe")
     public Result departeWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
         workOrderService.departeWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
         return Result.getSuccess();
@@ -174,6 +182,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师开始处理")
     @AutoErrorHandler
     @PutMapping("/inhand/{workOrderId}")
+    @RequiresPermissions("order:workorder:inhand")
     public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId,
                                   @RequestBody @Validated(V.Insert.class) DepartWorkOrderDTO departWorkOrderDTO,
                                   BindingResult bindingResult,
@@ -187,6 +196,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师处理完成")
     @AutoErrorHandler
     @PutMapping("/finishInhand/{workOrderId}")
+    @RequiresPermissions("order:workorder:finishInhand")
     public Result finishInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.finishInhand(workOrderId);
         //处理完成通知
@@ -198,6 +208,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师接单")
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")
+    @RequiresPermissions("order:workorder:received")
     public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody Boolean receive, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.receivedWorkOrder(workOrderId, receive);
         if (receive) {
@@ -242,6 +253,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工单终审")
     @AutoErrorHandler
     @PutMapping("/pigeonholed/{workOrderId}")
+    @RequiresPermissions("order:workorder:pigeonholed")
     public Result pigeonholed(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.pigeonholed(workOrderId);
         return Result.getSuccess();
@@ -250,6 +262,7 @@ public class WorkOrderController {
     @ApiOperation(value = "工程师预约")
     @AutoErrorHandler
     @PutMapping("/appointing/{workOrderId}")
+    @RequiresPermissions("order:workorder:appointing")
     public Result appointingWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.appointingWorkOrder(workOrderId);
         return Result.getSuccess();
@@ -257,6 +270,7 @@ public class WorkOrderController {
 
     @ApiOperation("工单查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:workorder:query")
     public Result query(WorkOrderQuery workOrderQuery, FieldsView fieldsView) {
         //查询工单设置默认条件
         setDefaultCondition(workOrderQuery);
@@ -277,6 +291,7 @@ public class WorkOrderController {
 
     @ApiOperation("根据id获取工单")
     @GetMapping("/{workOrderId}")
+    @RequiresPermissions("order:workorder:get")
     public Result findById(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
         WorkOrder workOrder = workOrderService.findById(workOrderId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
@@ -284,6 +299,7 @@ public class WorkOrderController {
 
     @ApiOperation("删除工单")
     @DeleteMapping("/{workOrderId}")
+    @RequiresPermissions("order:workorder:delete")
     public Result delete(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
         workOrderService.delete(workOrderId);
         return Result.getSuccess("删除成功");
