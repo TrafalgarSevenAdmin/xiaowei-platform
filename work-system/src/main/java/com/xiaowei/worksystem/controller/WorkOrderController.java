@@ -295,7 +295,7 @@ public class WorkOrderController {
     }
 
     @ApiOperation("当前登录用户查询普通用户工单的各种状态")
-    @GetMapping("/count/engineer")
+    @GetMapping("/count/proposer")
     @RequiresPermissions("order:workorder:pCount")
     public Result getCountFromProposer() {
         final String userId = LoginUserUtils.getLoginUser().getId();
@@ -303,7 +303,7 @@ public class WorkOrderController {
     }
 
     @ApiOperation("当前登录用户查询后台人员工单的各种状态")
-    @GetMapping("/count/engineer")
+    @GetMapping("/count/backgrounder")
     @RequiresPermissions("order:workorder:bCount")
     public Result getCountFromBackgrounder() {
         final String userId = LoginUserUtils.getLoginUser().getId();
