@@ -294,6 +294,22 @@ public class WorkOrderController {
         return Result.getSuccess(workOrderService.getCountFromEngineer(userId));
     }
 
+    @ApiOperation("当前登录用户查询普通用户工单的各种状态")
+    @GetMapping("/count/engineer")
+    @RequiresPermissions("order:workorder:pCount")
+    public Result getCountFromProposer() {
+        final String userId = LoginUserUtils.getLoginUser().getId();
+        return Result.getSuccess(workOrderService.getCountFromProposer(userId));
+    }
+
+    @ApiOperation("当前登录用户查询后台人员工单的各种状态")
+    @GetMapping("/count/engineer")
+    @RequiresPermissions("order:workorder:bCount")
+    public Result getCountFromBackgrounder() {
+        final String userId = LoginUserUtils.getLoginUser().getId();
+        return Result.getSuccess(workOrderService.getCountFromBackgrounder(userId));
+    }
+
     private void setDefaultCondition(WorkOrderQuery workOrderQuery) {
 
     }

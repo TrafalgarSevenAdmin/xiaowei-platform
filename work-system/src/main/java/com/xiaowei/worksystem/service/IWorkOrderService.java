@@ -39,4 +39,9 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     String createPay(String workOrderId);
 
     Map<String,Object> getCountFromEngineer(String userId);
+
+    Map<String,Object> getCountFromProposer(String userId);
+
+    Map<String,Object> getCountFromBackgrounder(String userId);
+
 }

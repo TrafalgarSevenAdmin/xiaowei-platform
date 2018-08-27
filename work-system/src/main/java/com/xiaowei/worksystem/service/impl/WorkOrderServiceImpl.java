@@ -14,20 +14,11 @@ import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
-import com.xiaowei.worksystem.entity.EngineerWork;
-import com.xiaowei.worksystem.entity.Equipment;
-import com.xiaowei.worksystem.entity.ServiceItem;
-import com.xiaowei.worksystem.entity.WorkOrder;
-import com.xiaowei.worksystem.repository.EngineerWorkRepository;
-import com.xiaowei.worksystem.repository.EquipmentRepository;
-import com.xiaowei.worksystem.repository.ServiceItemRepository;
-import com.xiaowei.worksystem.repository.WorkOrderRepository;
+import com.xiaowei.worksystem.entity.*;
+import com.xiaowei.worksystem.repository.*;
 import com.xiaowei.worksystem.repository.flow.WorkFlowItemRepository;
 import com.xiaowei.worksystem.service.IWorkOrderService;
-import com.xiaowei.worksystem.status.ServiceItemSource;
-import com.xiaowei.worksystem.status.ServiceItemStatus;
-import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
-import com.xiaowei.worksystem.status.WorkOrderUserStatus;
+import com.xiaowei.worksystem.status.*;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
 import com.xiaowei.worksystem.utils.WorkOrderUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +53,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private ShardedJedisPool shardedJedisPool;
     @Autowired
     private XwOrderRepository orderRepository;
+    @Autowired
+    private RequestWorkOrderRepository requestWorkOrderRepository;
 
     /**
      * 消息发送服务
@@ -513,9 +506,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     public Map<String, Object> getCountFromEngineer(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("receiveCount", workOrderRepository.findByEngineerIdAndStatusIn(userId,WorkOrderUtils.RECEIVE));
-        dataMap.put("inhandCount", workOrderRepository.findByEngineerIdAndStatusIn(userId, WorkOrderUtils.INHAND));
-        dataMap.put("finishedCount", workOrderRepository.findByEngineerIdAndStatusIn(userId,WorkOrderUtils.FINISHED));
+        dataMap.put("receiveCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId,WorkOrderUtils.RECEIVE));
+        dataMap.put("inhandCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId, WorkOrderUtils.INHAND));
+        dataMap.put("finishedCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId,WorkOrderUtils.FINISHED));
+        return dataMap;
+    }
+
+    @Override
+    public Map<String, Object> getCountFromProposer(String userId) {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("affirmCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId,WorkOrderUserStatus.AFFIRM.getStatus()));
+        dataMap.put("paiedCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId, WorkOrderUserStatus.PAIED.getStatus()));
+        dataMap.put("evaluatedCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId,WorkOrderUserStatus.EVALUATED.getStatus()));
+        return dataMap;
+    }
+
+    @Override
+    public Map<String, Object> getCountFromBackgrounder(String userId) {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("preCreateCount", requestWorkOrderRepository.findCountByStatus(RequestWorkOrderStatus.UNTREATED.getStatus()));
+        dataMap.put("distributeCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.DISTRIBUTE.getStatus()));
+        dataMap.put("receiveCount", workOrderRepository.findCountByBackgrounderAndStatus(userId,WorkOrderSystemStatus.RECEIVE.getStatus()));
+        dataMap.put("qualityCount", workOrderRepository.findCountByBackgrounderAndStatus(userId,WorkOrderSystemStatus.QUALITY.getStatus()));
+        dataMap.put("finishedCount", workOrderRepository.findCountByBackgrounderAndStatusIn(userId,WorkOrderUtils.FINISHED));
         return dataMap;
     }
 

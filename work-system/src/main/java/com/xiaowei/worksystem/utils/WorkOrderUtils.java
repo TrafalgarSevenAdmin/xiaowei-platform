@@ -15,6 +15,5 @@ public class WorkOrderUtils {
     //工程师处理完成
     public static final Integer[] FINISHED = {WorkOrderSystemStatus.FINISHHAND.getStatus(),
             WorkOrderSystemStatus.EXPENSEING.getStatus(),
-            WorkOrderSystemStatus.PREPIGEONHOLE.getStatus(),
-            WorkOrderSystemStatus.PIGEONHOLED.getStatus()};
+            WorkOrderSystemStatus.PREPIGEONHOLE.getStatus()};
 }
