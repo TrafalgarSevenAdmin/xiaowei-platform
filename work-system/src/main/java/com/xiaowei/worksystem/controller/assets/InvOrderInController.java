@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.controller.assets;
 
 import com.alibaba.fastjson.JSON;
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
@@ -14,27 +15,26 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.flow.constants.DataFieldsConst;
 import com.xiaowei.flow.entity.FlowTask;
 import com.xiaowei.flow.extend.TaskNodeComplete;
-import com.xiaowei.flow.manager.TaskManager;
+import com.xiaowei.flow.manager.FlowManager;
 import com.xiaowei.flow.pojo.CreateTaskParameter;
 import com.xiaowei.flow.pojo.TaskCompleteExtendParameter;
 import com.xiaowei.flow.pojo.TaskCompleteExtendResult;
 import com.xiaowei.worksystem.dto.AuditingDto;
 import com.xiaowei.worksystem.entity.assets.InvOrderIn;
-import com.xiaowei.worksystem.entity.assets.Warehouse;
 import com.xiaowei.worksystem.service.IInventoryService;
 import com.xiaowei.worksystem.service.assets.IInvOrderInService;
-import com.xiaowei.worksystem.service.impl.InventoryServiceImpl;
 import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
 
 
 @Api(tags = "入库单")
@@ -49,21 +49,44 @@ public class InvOrderInController {
     private IInventoryService inventoryService;
 
     @Autowired
-    private TaskManager taskManager;
+    private FlowManager flowManager;
 
     @ApiOperation(value = "创建入库单申请",notes = "这里不保存到数据库，只保存到流程中")
     @AutoErrorHandler
     @PostMapping("/task")
     public Result insert(@RequestBody @Validated(V.Insert.class) InvOrderIn invOrderIn, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
-        FlowTask rkd = taskManager.createTask(CreateTaskParameter.builder()
-                .flowCode("RKD")
-                //这里应该采用统一的单号生成器
-                .code(UUID.randomUUID().toString())
-                .name("入库单")
-                .ext(FastJsonUtils.objectToJson(invOrderIn))
-                .build());
-        //填写节点完成
-        taskManager.completeTask(rkd.getId());
+        FlowTask rkd;
+        if (StringUtils.isNotBlank(invOrderIn.getCode())) {
+            rkd = flowManager.getTaskManager().findTaskByCode(invOrderIn.getCode());
+            //判断这个任务是否在填写节点
+            if (!rkd.getNextNode().getCode().equals("start")) {
+                throw new BusinessException("任务不在填写节点！");
+            }
+            //完成填写节点
+            flowManager.getTaskManager().completeTask(rkd.getId(), new TaskNodeComplete() {
+                @Override
+                public TaskCompleteExtendResult execute(TaskCompleteExtendParameter parameter) {
+                    parameter.getTask().setExt(FastJsonUtils.objectToJson(invOrderIn));
+                    return TaskCompleteExtendResult.builder().build();
+                }
+
+                @Override
+                public void complete(TaskCompleteExtendParameter parameter) {
+
+                }
+            });
+        } else {
+            rkd = flowManager.getTaskManager().createTask(CreateTaskParameter.builder()
+                    .flowCode("RK")
+                    //这里应该采用统一的单号生成器
+                    .code(UUID.randomUUID().toString())
+                    .name("入库单")
+                    .ext(FastJsonUtils.objectToJson(invOrderIn))
+                    .build());
+            //填写节点完成
+            flowManager.getTaskManager().completeTask(rkd.getId());
+        }
+
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
@@ -74,7 +97,7 @@ public class InvOrderInController {
     @AutoErrorHandler
     @PutMapping("/task")
     public Result complete(@RequestBody @Validated() AuditingDto auditingDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
-        FlowTask rkd = taskManager.completeTask(auditingDto.getTaskId(), new TaskNodeComplete() {
+        FlowTask rkd = flowManager.getTaskManager().completeTask(auditingDto.getTaskId(), new TaskNodeComplete() {
             @Override
             public TaskCompleteExtendResult execute(TaskCompleteExtendParameter parameter) {
                 //不通过，就跳转到上一个节点，重新填写
@@ -97,6 +120,7 @@ public class InvOrderInController {
             invOrderIn.setAuditTime(parameter.getLastHistory().getCreatedTime());
             invOrderIn.setAuditUserId(parameter.getLastHistory().getOperationUserId());
             invOrderIn.setAuditUserName(parameter.getLastHistory().getOperationUserName());
+            invOrderIn.setCode(parameter.getTask().getCode());
             invOrderIn = invOrderInService.save(invOrderIn);
             //todo 变更仓库中的数据
             invOrderIn.getOutWarehouse();

@@ -306,6 +306,12 @@ public class TaskManager {
         return task;
     }
 
+    public FlowTask findTaskByCode(String code) {
+        FlowTask byCode = flowTaskService.findByCode(code);
+        Assert.notNull(byCode, "没有找到此任务：" + code);
+        return byCode;
+    }
+
     private void TaskHandlerNotify(FlowTask task) {
 
         //抄送人

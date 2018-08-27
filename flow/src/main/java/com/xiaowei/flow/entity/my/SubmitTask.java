@@ -10,25 +10,22 @@ import javax.persistence.Id;
 import java.util.Date;
 
 /**
- * 抄送视图
+ * 我提交的任务视图
  */
 @Data
 @Entity
 @Subselect("SELECT \n" +
         "DISTINCT task.id as task_Id,task.name as task_name,task.code as task_code,task.create_user_id as task_create_user_id,task.create_user_name as task_create_user_name,task.ext as task_ext,task.status as task_status,task.created_time as created_time,task.update_time as update_time,\n" +
         "flow.id as flow_id,flow.\"code\" as flow_code,flow.\"describe\" as flow_describe,flow.ext as flow_ext,flow.name as flow_name,\n" +
-        "record.id as record_id,record.action as record_action,record.ext as record_ext,record.operation_user_id as record_operation_user_id,record.operation_user_name as record_operation_user_name,record.reason as record_reason,\n" +
+        "record.id as record_id,record.action as record_action,record.ext as record_ext,record.operation_user_id as record_operation_user_id,record.operation_user_name as record_operation_user_name,record.reason as record_reason,record.created_time as record_operation_time,\n" +
         "now_node.id as now_node_id,now_node.\"code\" as now_node_code,now_node.\"describe\" as now_node_describe,now_node.ext as now_node_ext,now_node.name as now_node_name,\n" +
-        "next_node.id as next_node_id,next_node.\"code\" as next_node_code,next_node.\"describe\" as next_node_describe,next_node.ext as next_node_ext,next_node.name as next_node_name,\n" +
-        "auth.department_id as department_id,auth.role_id as role_id,auth.user_id as user_id\n" +
+        "next_node.id as next_node_id,next_node.\"code\" as next_node_code,next_node.\"describe\" as next_node_describe,next_node.ext as next_node_ext,next_node.name as next_node_name\n" +
         "from wf_task task\n" +
         "left join wf_definition flow on task.flow_id = flow.id\n" +
         "left join wf_task_execute_history record on task.now_task_id = record.id\n" +
         "left join wf_node_definition now_node on record.node_id = now_node.id\n" +
-        "left join wf_node_definition next_node on task.next_node_id = next_node.id\n" +
-        "left join wf_auth_grant auth on auth.task_id = task.id\n" +
-        "where auth.node_id is null")
-public class ViewTask {
+        "left join wf_node_definition next_node on task.next_node_id = next_node.id")
+public class SubmitTask {
     /**
      * 任务id
      */
@@ -101,66 +98,6 @@ public class ViewTask {
     String flowName;
 
     /**
-     * 上个操作记录id
-     */
-    String recordId;
-
-    /**
-     * 上个操作记录状态
-     */
-    TaskActionType recordAction;
-
-    /**
-     * 上个操作记录存放的业务数据
-     */
-    String recordExt;
-
-    /**
-     * 上个操作记录操作人
-     */
-    String recordOperationUserId;
-
-     /**
-     * 上个操作记录操作人名称
-     */
-    String recordOperationUserName;
-
-    /**
-     * 上个操作记录操作原因
-     */
-    String recordReason;
-
-    /**
-     * 已完成节点id
-     */
-    String nowNodeId;
-
-    /**
-     * 已完成节点代码
-     */
-    String nowNodeCode;
-
-    /**
-     * 已完成节点描述
-     */
-    String nowNodeDescribe;
-
-    /**
-     * 已完成节点扩展属性
-     */
-    String nowNodeExt;
-
-    /**
-     * 已完成节点名称
-     */
-    String nowNodeName;
-
-    /**
-     * 下一节点id
-     */
-    String nextNodeId;
-
-    /**
      * 下一节点代码
      */
     String nextNodeCode;
@@ -181,17 +118,37 @@ public class ViewTask {
     String nextNodeName;
 
     /**
-     * 抄送的部门id
+     * 操作人
      */
-    String departmentId;
+    String recordOperationUserId;
 
     /**
-     * 抄送的角色id
+     * 操作人名称
      */
-    String roleId;
+    String recordOperationUserName;
 
     /**
-     * 抄送的用户id
+     * 操作记录id
      */
-    String userId;
+    String recordId;
+
+    /**
+     * 操作记录状态
+     */
+    TaskActionType recordAction;
+
+    /**
+     * 操作记录存放的业务数据
+     */
+    String recordExt;
+
+    /**
+     * 操作记录操作原因
+     */
+    String recordReason;
+
+    /**
+     * 操作记录时间
+     */
+    String recordOperationTime;
 }

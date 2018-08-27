@@ -21,4 +21,8 @@ public class FlowTaskServiceImpl extends BaseServiceImpl<FlowTask> implements IF
     }
 
 
+    @Override
+    public FlowTask findByCode(String code) {
+        return flowTaskRepository.findByCode(code);
+    }
 }

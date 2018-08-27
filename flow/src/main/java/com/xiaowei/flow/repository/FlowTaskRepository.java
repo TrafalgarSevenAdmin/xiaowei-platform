@@ -6,4 +6,5 @@ import com.xiaowei.flow.entity.FlowTask;
 public interface FlowTaskRepository extends BaseRepository<FlowTask> {
 
 
+    FlowTask findByCode(String code);
 }

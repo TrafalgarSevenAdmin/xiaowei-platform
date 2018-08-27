@@ -43,22 +43,28 @@ public class FlowTaskController {
         return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(flowTask, fieldsView));
     }
 
-    @ApiOperation("获取代办任务")
+    @ApiOperation("获取我的代办任务")
     @GetMapping("/me/todo")
     public Result todoTask(Query query,FieldsView fieldsView) {
         return Result.getSuccess(flowManager.getTodoTaskManager().findMyTodoTask(query,fieldsView));
     }
 
-    @ApiOperation("获取抄送任务")
+    @ApiOperation("获取抄送抄送给我的任务")
     @GetMapping("/me/view")
     public Result viewTask(Query query,FieldsView fieldsView) {
         return Result.getSuccess( flowManager.getViewTaskManager().findMyViewTask(query,fieldsView));
     }
 
-    @ApiOperation("获取已处理任务")
+    @ApiOperation("获取经过我手处理过的任务")
     @GetMapping("/me/completed")
     public Result completedTask(Query query,FieldsView fieldsView) {
         return Result.getSuccess(flowManager.getMeCompleteTaskManager().findMyCompleteTask(query,fieldsView));
+    }
+
+    @ApiOperation("获取我提交的任务")
+    @GetMapping("/me/submit")
+    public Result submitTask(Query query,FieldsView fieldsView) {
+        return Result.getSuccess(flowManager.getMeSubmitTaskManager().findMySubmitTask(query,fieldsView));
     }
 
     @ApiOperation("查询流程任务")
