@@ -259,6 +259,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             workOrderRepository.save(workOrder);
             //设置为1分钟后自动质检通过
             messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * 60);
+            //有新的服务项目需要审核得到消息推送
+            webSocketCore.sendMessageToOne(new SocketCoreBean(null, null, serviceItem.getId(), SocketType.TOAUDIT.getType(), new Date()), serviceItem.getWorkOrder().getBackgrounder().getId());
             return true;
         } else {//不需要审核
             //状态更改为待收费还是完成由第四步确认

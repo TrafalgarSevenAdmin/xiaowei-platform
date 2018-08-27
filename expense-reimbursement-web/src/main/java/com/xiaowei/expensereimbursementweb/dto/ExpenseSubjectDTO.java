@@ -61,4 +61,10 @@ public class ExpenseSubjectDTO {
      */
     @ApiModelProperty(value = "是否按照岗位级别")
     private Boolean postLevel;
+    /**
+     * 申请单价限额
+     */
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "申请单价限额必填!")
+    @ApiModelProperty(value = "申请单价限额")
+    private Double requestQuota;
 }
