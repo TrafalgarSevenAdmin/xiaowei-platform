@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity.assets;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.status.ProductTagType;
 import lombok.Data;
@@ -17,6 +18,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "W_PRODUCT")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class Product extends BaseEntity {
     /**
      * 产品编码
@@ -44,16 +46,30 @@ public class Product extends BaseEntity {
      * 该产品对应的分类
      */
     @ManyToOne(targetEntity = ProClass.class)
-    @JoinColumn(name = "pro_class_id")
+    @JoinColumn(name = "pro_class_code",referencedColumnName = "code")
     @Fetch(FetchMode.JOIN)
     public ProClass proClass;
 
     /**
-     * 产品标签
-     * 该产品对应的标签：
-     * 1：好件，2：坏件
+     * 产品型号
      */
-    public Integer tag = ProductTagType.FINE.getStatus();
+    public String model;
+
+    /**
+     * 计量单位
+     */
+    public String unit;
+
+    /**
+     * 安全库存
+     * 库存产品的安全数量
+     */
+    public Integer saveNumbe;
+
+    /**
+     * 备注
+     */
+    public String note;
 
     // TODO 附加字段
     // 安全库存	该产品对应的安全库存

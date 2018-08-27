@@ -21,11 +21,11 @@ import com.xiaowei.flow.pojo.TaskCompleteExtendParameter;
 import com.xiaowei.flow.pojo.TaskCompleteExtendResult;
 import com.xiaowei.worksystem.dto.AuditingDto;
 import com.xiaowei.worksystem.entity.assets.InvOrderIn;
-import com.xiaowei.worksystem.service.IInventoryService;
 import com.xiaowei.worksystem.service.assets.IInvOrderInService;
 import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -38,15 +38,13 @@ import java.util.UUID;
 
 
 @Api(tags = "入库单")
+@Slf4j
 @RestController
 @RequestMapping("/api/assets/invOrderIn")
 public class InvOrderInController {
 
     @Autowired
     private IInvOrderInService invOrderInService;
-
-    @Autowired
-    private IInventoryService inventoryService;
 
     @Autowired
     private FlowManager flowManager;
@@ -90,7 +88,7 @@ public class InvOrderInController {
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(rkd, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(rkd, fieldsView));
     }
 
     @ApiOperation(value = "审核入库单申请")
@@ -111,7 +109,7 @@ public class InvOrderInController {
 
             @Override
             public void complete(TaskCompleteExtendParameter parameter) {
-                //节点完成，不在乎
+                log.debug("入库单任务{{}}的节点{}由{}完成", parameter.getTask().getCode(), parameter.getLastHistory().getNode().getName(), parameter.getLastHistory().getOperationUserName());
             }
         },parameter -> {
             //任务完成
@@ -122,14 +120,13 @@ public class InvOrderInController {
             invOrderIn.setAuditUserName(parameter.getLastHistory().getOperationUserName());
             invOrderIn.setCode(parameter.getTask().getCode());
             invOrderIn = invOrderInService.save(invOrderIn);
-            //todo 变更仓库中的数据
-            invOrderIn.getOutWarehouse();
-            invOrderIn.getInWarehouse();
+            log.debug("开始变更仓库中的数据");
+            invOrderInService.handleInvOrderIn(invOrderIn);
         });
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(rkd, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(rkd, fieldsView));
     }
 
     @ApiOperation(value = "修改")

@@ -27,6 +27,7 @@ import java.util.Set;
 @Table(name = "wf_definition")
 @SQLDelete(sql = "update wf_definition set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class FlowDefinition extends BaseEntity {
 
     @Tolerate

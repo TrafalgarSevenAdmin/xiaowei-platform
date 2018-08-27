@@ -1,5 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.status.WarehouseType;
@@ -18,6 +20,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "W_WAREHOUSE")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class Warehouse extends BaseEntity {
 
     /**
@@ -39,7 +42,7 @@ public class Warehouse extends BaseEntity {
     /**
      * 仓库分类
      * 该仓库对应的分类
-     * 1：备件库，2：个人库
+     * 0:虚拟厂库，1：公司厂库，2：个人库，
      */
     public WarehouseType type;
 
@@ -73,6 +76,7 @@ public class Warehouse extends BaseEntity {
     @ManyToOne(targetEntity = SysUser.class)
     @JoinColumn(name = "userId",insertable = false,updatable = false)
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private SysUser user;
 
 }

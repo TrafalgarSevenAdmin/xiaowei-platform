@@ -34,7 +34,7 @@ public class TaskHistoryController {
             fieldsView.getFields().addAll(DataFieldsConst.taskExecuteHistoryViewFilters);
         }
         FlowTaskExecuteHistory flowTaskExecuteHistory = taskHistoryService.findById(taskHistoryId);
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(flowTaskExecuteHistory, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flowTaskExecuteHistory, fieldsView));
     }
 
     @ApiOperation("查询任务记录")
@@ -47,11 +47,11 @@ public class TaskHistoryController {
         }
         if (query.isNoPage()) {
             List<FlowTaskExecuteHistory> flowTaskExecuteHistories = taskHistoryService.query(query, FlowTaskExecuteHistory.class);
-            Object data = ObjectToMapUtils.AnyToHandleField(flowTaskExecuteHistories, fieldsView);
+            Object data = ObjectToMapUtils.anyToHandleField(flowTaskExecuteHistories, fieldsView);
             return Result.getSuccess(data);//以list形式返回,没有层级
         } else {
             PageResult pageResult = taskHistoryService.queryPage(query, FlowTaskExecuteHistory.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(), fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
     }

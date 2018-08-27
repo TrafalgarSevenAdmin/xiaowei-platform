@@ -42,14 +42,14 @@ public class FlowDefinitionController {
     public Result insert(@RequestBody @Validated(V.Insert.class) FlowDefinition flowDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         FlowDefinition flow = BeanCopyUtils.copy(flowDto, FlowDefinition.class);
         flow = flowDefinitionService.save(flow);
-        return Result.getSuccess(ObjectToMapUtils.objectToMap(flow, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flow, fieldsView));
     }
 
     @ApiOperation("获取流程定义")
     @GetMapping("/{flowId}")
     public Result findById(@PathVariable("flowId") String flowId, FieldsView fieldsView) {
         FlowDefinition flow = flowDefinitionService.findById(flowId);
-        return Result.getSuccess(ObjectToMapUtils.objectToMap(flow, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flow, fieldsView));
     }
 
     @ApiOperation("获取流程的所有节点")
@@ -60,7 +60,7 @@ public class FlowDefinitionController {
             fieldsView.getFields().addAll(DataFieldsConst.nodeViewFilters);
         }
         List<FlowNode> flowNodes = flowNodeService.findAllNodes(flowId);
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(flowNodes, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flowNodes, fieldsView));
     }
 
     @ApiOperation("删除流程定义")
@@ -76,10 +76,10 @@ public class FlowDefinitionController {
 
         if (query.isNoPage()) {
             List<FlowDefinition> flows = flowDefinitionService.query(query, FlowDefinition.class);
-            return Result.getSuccess(ObjectToMapUtils.listToMap(flows, fieldsView));//以list形式返回,没有层级
+            return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flows, fieldsView));//以list形式返回,没有层级
         } else {
             PageResult pageResult = flowDefinitionService.queryPage(query, FlowDefinition.class);
-            pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
     }

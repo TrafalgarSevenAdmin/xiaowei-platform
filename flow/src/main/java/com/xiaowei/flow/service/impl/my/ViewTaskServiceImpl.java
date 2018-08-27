@@ -49,10 +49,10 @@ public class ViewTaskServiceImpl extends BaseServiceImpl<ViewTask> implements IV
 
         if (query.isNoPage()) {
             List<ViewTask> todoTasks = this.query(query, ViewTask.class);
-            return (T) ObjectToMapUtils.AnyToHandleField(todoTasks, fieldsView);
+            return (T) ObjectToMapUtils.anyToHandleField(todoTasks, fieldsView);
         } else {
             PageResult pageResult = this.queryPage(query, ViewTask.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(),fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(),fieldsView));
             return (T)pageResult;
         }
     }

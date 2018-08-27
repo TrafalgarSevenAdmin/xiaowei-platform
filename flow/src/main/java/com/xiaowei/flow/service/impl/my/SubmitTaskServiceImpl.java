@@ -9,7 +9,6 @@ import com.xiaowei.core.query.rundi.query.Sort;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.utils.ObjectToMapUtils;
-import com.xiaowei.flow.entity.my.CompleteTask;
 import com.xiaowei.flow.entity.my.SubmitTask;
 import com.xiaowei.flow.extend.LoginUser;
 import com.xiaowei.flow.repository.my.SubmitTaskRepository;
@@ -47,10 +46,10 @@ public class SubmitTaskServiceImpl extends BaseServiceImpl<SubmitTask> implement
         }
         if (query.isNoPage()) {
             List<SubmitTask> completeTasks = this.query(query, SubmitTask.class);
-            return (T) ObjectToMapUtils.AnyToHandleField(completeTasks, fieldsView);
+            return (T) ObjectToMapUtils.anyToHandleField(completeTasks, fieldsView);
         } else {
             PageResult pageResult = this.queryPage(query, SubmitTask.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(),fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(),fieldsView));
             return (T)pageResult;
         }
     }
