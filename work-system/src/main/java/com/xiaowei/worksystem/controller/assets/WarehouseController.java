@@ -1,7 +1,6 @@
 package com.xiaowei.worksystem.controller.assets;
 
 import com.xiaowei.core.bean.BeanCopyUtils;
-import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -70,10 +69,10 @@ public class WarehouseController {
     public Result query(Query query, FieldsView fieldsView) {
         if (query.isNoPage()) {
             List<Warehouse> warehouses = warehouseService.query(query, Warehouse.class);
-            return Result.getSuccess(ObjectToMapUtils.listToMap(warehouses, fieldsView));//以list形式返回,没有层级
+            return Result.getSuccess(ObjectToMapUtils.anyToHandleField(warehouses, fieldsView));//以list形式返回,没有层级
         } else {
             PageResult pageResult = warehouseService.queryPage(query, Warehouse.class);
-            pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
     }

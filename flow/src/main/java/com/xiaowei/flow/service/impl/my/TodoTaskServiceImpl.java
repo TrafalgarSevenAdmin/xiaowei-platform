@@ -43,10 +43,10 @@ public class TodoTaskServiceImpl extends BaseServiceImpl<TodoTask> implements IT
 
         if (query.isNoPage()) {
             List<TodoTask> todoTasks = this.query(query, TodoTask.class);
-            return (T) ObjectToMapUtils.AnyToHandleField(todoTasks,fieldsView);
+            return (T) ObjectToMapUtils.anyToHandleField(todoTasks,fieldsView);
         } else {
             PageResult pageResult = this.queryPage(query, TodoTask.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(),fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(),fieldsView));
             return (T)pageResult;
         }
     }

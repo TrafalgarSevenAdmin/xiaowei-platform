@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -17,8 +18,9 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "W_INVENTORY")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class Inventory  extends BaseEntity {
-    // TODO: 2018/7/6 0006 租户编码	该库存对应的租户编码
+    // TODO: 2018/7/6 0006 租户编码
 
     /**
      * 产品信息
@@ -53,12 +55,11 @@ public class Inventory  extends BaseEntity {
      * 安全库存
      * 库存产品的安全数量
      */
-    public Integer saveNumber;
-
+    public Integer saveNumber = 10;
 
     /**
      * 在途数量
      */
-    public Integer passageNumber;
+    public Integer passageNumber = 0;
 
 }

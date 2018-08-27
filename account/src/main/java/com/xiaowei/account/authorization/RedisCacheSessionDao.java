@@ -28,7 +28,8 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisCacheSessionDao.class);
 
-    private int sessionTimeOut = 3600;
+    //12小时的超时时间
+    private int sessionTimeOut = 60*12;
 
     private final static String PREFIX = "USER_";
 
@@ -53,7 +54,7 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
 
     @Override
     protected void doUpdate(Session session) {
-        redisTemplate.opsForValue().set(session.getId().toString(), session,sessionTimeOut, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(session.getId().toString(), session,sessionTimeOut, TimeUnit.MINUTES);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity.assets;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "W_PRO_BRAND")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class ProBrand extends BaseEntity {
     /**
      * 品牌编码

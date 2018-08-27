@@ -47,10 +47,10 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<CompleteTask> imple
         }
         if (query.isNoPage()) {
             List<CompleteTask> completeTasks = this.query(query, CompleteTask.class);
-            return (T) ObjectToMapUtils.AnyToHandleField(completeTasks, fieldsView);
+            return (T) ObjectToMapUtils.anyToHandleField(completeTasks, fieldsView);
         } else {
             PageResult pageResult = this.queryPage(query, CompleteTask.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(),fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(),fieldsView));
             return (T)pageResult;
         }
     }

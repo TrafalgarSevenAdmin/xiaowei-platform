@@ -1,6 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -17,9 +18,8 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "W_INV_ORDER_IN_ITEM")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class InvOrderInItem extends BaseEntity {
-
-    // TODO: 2018/7/6 0006 流程编码 模板编码
 
     /**
      * 入库单编码
@@ -37,9 +37,15 @@ public class InvOrderInItem extends BaseEntity {
     public Product product;
 
     /**
-     * 物料数量
-     * 该业务单对应的物料数量
+     * 库存数量-好件
+     * 库存产品数量-好件
      */
-    public Integer number;
+    public Integer fineNumber;
+
+    /**
+     * 库存数量-坏件
+     * 库存产品数量-坏件
+     */
+    public Integer badNumber;
 
 }

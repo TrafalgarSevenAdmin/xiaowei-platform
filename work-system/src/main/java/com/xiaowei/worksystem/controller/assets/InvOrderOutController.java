@@ -3,7 +3,6 @@ package com.xiaowei.worksystem.controller.assets;
 import com.alibaba.fastjson.JSON;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
-import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -16,12 +15,10 @@ import com.xiaowei.flow.constants.DataFieldsConst;
 import com.xiaowei.flow.entity.FlowTask;
 import com.xiaowei.flow.extend.TaskNodeComplete;
 import com.xiaowei.flow.manager.FlowManager;
-import com.xiaowei.flow.manager.TaskManager;
 import com.xiaowei.flow.pojo.CreateTaskParameter;
 import com.xiaowei.flow.pojo.TaskCompleteExtendParameter;
 import com.xiaowei.flow.pojo.TaskCompleteExtendResult;
 import com.xiaowei.worksystem.dto.AuditingDto;
-import com.xiaowei.worksystem.entity.assets.InvOrderIn;
 import com.xiaowei.worksystem.entity.assets.InvOrderOut;
 import com.xiaowei.worksystem.service.assets.IInvOrderOutService;
 import io.swagger.annotations.Api;
@@ -33,7 +30,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,7 +83,7 @@ public class InvOrderOutController {
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(ckd, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(ckd, fieldsView));
     }
 
     @ApiOperation(value = "审核出库单申请")
@@ -119,13 +115,12 @@ public class InvOrderOutController {
             invOrderOut.setCode(parameter.getTask().getCode());
             invOrderOut = invOrderOutService.save(invOrderOut);
             //todo 变更仓库中的数据
-            invOrderOut.getOutWarehouse();
-            invOrderOut.getInWarehouse();
+            invOrderOutService.handleInvOrderOut(invOrderOut);
         });
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(ckd, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(ckd, fieldsView));
     }
 
     @ApiOperation(value = "修改")

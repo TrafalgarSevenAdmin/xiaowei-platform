@@ -47,7 +47,7 @@ public class ShiroConfiguration {
 		simpleCookie.setName("_s");
 		simpleCookie.setHttpOnly(true);
 		simpleCookie.setPath("/");
-		simpleCookie.setMaxAge(3600);
+		simpleCookie.setMaxAge(43200);
 		defaultWebSessionManager.setSessionIdCookie(simpleCookie);
 		return defaultWebSessionManager;
 	}

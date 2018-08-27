@@ -40,7 +40,7 @@ public class FlowTaskController {
             fieldsView.getFields().addAll(DataFieldsConst.taskViewFilters);
         }
         FlowTask flowTask = flowTaskService.findById(flowTaskId);
-        return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(flowTask, fieldsView));
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flowTask, fieldsView));
     }
 
     @ApiOperation("获取我的代办任务")
@@ -75,10 +75,10 @@ public class FlowTaskController {
         }
         if (query.isNoPage()) {
             List<FlowTask> flowTasks = flowTaskService.query(query, FlowTask.class);
-            return Result.getSuccess(ObjectToMapUtils.AnyToHandleField(flowTasks, fieldsView));//以list形式返回,没有层级
+            return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flowTasks, fieldsView));//以list形式返回,没有层级
         } else {
             PageResult pageResult = flowTaskService.queryPage(query, FlowTask.class);
-            pageResult.setRows(ObjectToMapUtils.AnyToHandleField(pageResult.getRows(), fieldsView));
+            pageResult.setRows(ObjectToMapUtils.anyToHandleField(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
     }

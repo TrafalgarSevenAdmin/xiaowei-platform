@@ -5,4 +5,9 @@ import com.xiaowei.worksystem.entity.assets.InvOrderOut;
 
 public interface IInvOrderOutService extends IBaseService<InvOrderOut> {
 
+    /**
+     * 处理出库调拨单
+     * @param invOrderOut
+     */
+    void handleInvOrderOut(InvOrderOut invOrderOut);
 }

@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity.assets;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.status.InvOrderOutType;
 import lombok.Data;
@@ -16,9 +17,8 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "W_INV_ORDER_OUT")
+@JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class InvOrderOut extends BaseEntity {
-
-    // TODO: 2018/7/6 0006 流程编码 模板编码
 
     /**
      * 出库单编码
