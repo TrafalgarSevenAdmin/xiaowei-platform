@@ -2,19 +2,19 @@
   {
     "ext": null,
     "viewer": [],
-    "code": "CKD",
+    "code": "CK",
     "delete_time": null,
     "name": "出库单流程",
     "start": {
       "name": "填写",
-      "code": null,
+      "code": "start",
       "describe": null,
       "ext": null,
       "enterCondition": null,
       "nextNodes": [
         {
           "name": "审核",
-          "code": null,
+          "code": "auditing",
           "describe": null,
           "ext": null,
           "enterCondition": null,
@@ -41,19 +41,19 @@
   {
     "ext": null,
     "viewer": [],
-    "code": "RKD",
+    "code": "RK",
     "delete_time": null,
     "name": "入库单流程",
     "start": {
       "name": "填写",
-      "code": null,
+      "code": "start",
       "describe": null,
       "ext": null,
       "enterCondition": null,
       "nextNodes": [
         {
           "name": "审核",
-          "code": null,
+          "code": "auditing",
           "describe": null,
           "ext": null,
           "enterCondition": null,

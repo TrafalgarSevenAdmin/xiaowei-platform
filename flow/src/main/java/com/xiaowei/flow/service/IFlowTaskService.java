@@ -5,4 +5,10 @@ import com.xiaowei.flow.entity.FlowTask;
 
 public interface IFlowTaskService extends IBaseService<FlowTask> {
 
+    /**
+     * 根据任务代码搜索
+     * @param code
+     * @return
+     */
+    FlowTask findByCode(String code);
 }

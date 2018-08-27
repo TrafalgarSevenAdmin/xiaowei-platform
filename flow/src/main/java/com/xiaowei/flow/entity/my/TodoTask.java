@@ -15,9 +15,9 @@ import java.util.Date;
 @Data
 @Entity
 @Subselect("SELECT \n" +
-        "task.id as task_Id,task.name as task_name,task.code as task_code,task.create_user_id as task_create_user_id,task.create_user_name as task_create_user_name,task.ext as task_ext,task.status as task_status,task.update_time as update_time,\n" +
+        "DISTINCT task.id as task_Id,task.name as task_name,task.code as task_code,task.create_user_id as task_create_user_id,task.create_user_name as task_create_user_name,task.ext as task_ext,task.status as task_status,task.created_time as created_time,task.update_time as update_time,\n" +
         "flow.id as flow_id,flow.\"code\" as flow_code,flow.\"describe\" as flow_describe,flow.ext as flow_ext,flow.name as flow_name,\n" +
-        "record.id as record_id,record.action as record_action,record.ext as record_ext,record.operation_user_id as record_operation_user_id,record.operation_user_name as record_operation_user_name,\n" +
+        "record.id as record_id,record.action as record_action,record.ext as record_ext,record.operation_user_id as record_operation_user_id,record.operation_user_name as record_operation_user_name,record.reason as record_reason,\n" +
         "now_node.id as now_node_id,now_node.\"code\" as now_node_code,now_node.\"describe\" as now_node_describe,now_node.ext as now_node_ext,now_node.name as now_node_name,\n" +
         "next_node.id as next_node_id,next_node.\"code\" as next_node_code,next_node.\"describe\" as next_node_describe,next_node.ext as next_node_ext,next_node.name as next_node_name,\n" +
         "auth.department_id as department_id,auth.role_id as role_id,auth.user_id as user_id\n" +
@@ -65,6 +65,11 @@ public class TodoTask {
      * 任务状态
      */
     TaskStatus taskStatus;
+
+    /**
+     * 创建时间
+     */
+    Date createdTime;
 
     /**
      * 最后一次更新时间
@@ -120,6 +125,11 @@ public class TodoTask {
      * 上个操作记录操作人名称
      */
     String recordOperationUserName;
+
+    /**
+     * 上个操作记录操作原因
+     */
+    String recordReason;
 
     /**
      * 已完成节点id

@@ -1,6 +1,7 @@
 package com.xiaowei.flow.manager;
 
 import com.xiaowei.flow.service.my.ICompleteTaskService;
+import com.xiaowei.flow.service.my.ISubmitTaskService;
 import com.xiaowei.flow.service.my.ITodoTaskService;
 import com.xiaowei.flow.service.my.IViewTaskService;
 import lombok.Data;
@@ -33,7 +34,13 @@ public class FlowManager {
      * 我操作过的任务检索
      */
     @Autowired
-    ICompleteTaskService MeCompleteTaskManager;
+    ICompleteTaskService meCompleteTaskManager;
+
+    /**
+     * 我提交的任务检索
+     */
+    @Autowired
+    ISubmitTaskService meSubmitTaskManager;
 
 
 }
