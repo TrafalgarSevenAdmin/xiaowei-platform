@@ -16,6 +16,7 @@ import com.xiaowei.expensereimbursement.service.IRequestFormService;
 import com.xiaowei.expensereimbursement.status.RequestFormItemStatus;
 import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -114,6 +115,10 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         //如果工单已归档,则抛出异常
         if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
+        }
+        //查询是否有其他申请单
+        if(CollectionUtils.isNotEmpty(requestFormRepository.findByWorkOrderCode(workOrderCode))){
+            throw new BusinessException("该工单已有申请单!");
         }
     }
 

@@ -9,6 +9,7 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.expensereimbursement.entity.RequestForm;
 import com.xiaowei.expensereimbursement.service.IRequestFormService;
+import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursementweb.dto.RequestFormDTO;
 import com.xiaowei.expensereimbursementweb.query.RequestFormQuery;
 import io.swagger.annotations.Api;
@@ -37,6 +38,9 @@ public class RequestFormController {
     public Result insert(@RequestBody @Validated(V.Insert.class) RequestFormDTO requestFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         RequestForm requestForm = BeanCopyUtils.copy(requestFormDTO, RequestForm.class);
         requestForm = requestFormService.saveRequestForm(requestForm);
+        if(requestForm.getStatus().equals(RequestFormStatus.PREAUDIT.getStatus())){
+            //微信推送给审核人
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestForm, fieldsView));
     }
 

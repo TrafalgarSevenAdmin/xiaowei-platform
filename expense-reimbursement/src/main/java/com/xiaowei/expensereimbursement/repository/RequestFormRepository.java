@@ -4,6 +4,8 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.expensereimbursement.entity.RequestForm;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface RequestFormRepository extends BaseRepository<RequestForm>{
 
     @Query(value = "select count(*) from e_requestform_trial where " +
@@ -16,4 +18,7 @@ public interface RequestFormRepository extends BaseRepository<RequestForm>{
 
     @Query("select count(rf) from RequestForm rf where rf.audit.id = ?1")
     Long findRequestCountCount(String userId);
+
+    @Query("select r from RequestForm r where r.workOrderCode = ?1")
+    List<RequestForm> findByWorkOrderCode(String workOrderCode);
 }
