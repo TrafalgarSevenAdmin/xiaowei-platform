@@ -6,6 +6,7 @@ import com.xiaowei.core.basic.service.IBaseService;
 import com.xiaowei.worksystem.entity.WorkOrder;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface IWorkOrderService extends IBaseService<WorkOrder> {
@@ -36,4 +37,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder pigeonholed(String workOrderId);
 
     String createPay(String workOrderId);
+
+    Map<String,Object> getCountFromEngineer(String userId);
 }

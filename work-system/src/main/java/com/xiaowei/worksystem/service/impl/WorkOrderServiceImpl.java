@@ -29,6 +29,7 @@ import com.xiaowei.worksystem.status.ServiceItemStatus;
 import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
+import com.xiaowei.worksystem.utils.WorkOrderUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,10 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -507,6 +505,21 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
+     * 当前登录用户查询工程师工单的各种状态
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public Map<String, Object> getCountFromEngineer(String userId) {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("receiveCount", workOrderRepository.findByEngineerIdAndStatusIn(userId,WorkOrderUtils.RECEIVE));
+        dataMap.put("inhandCount", workOrderRepository.findByEngineerIdAndStatusIn(userId, WorkOrderUtils.INHAND));
+        dataMap.put("finishedCount", workOrderRepository.findByEngineerIdAndStatusIn(userId,WorkOrderUtils.FINISHED));
+        return dataMap;
+    }
+
+    /**
      * 设置服务项目
      *
      * @param workOrder
@@ -603,7 +616,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             //如果匹配上,则表示是用户确认的项目
             if (serviceItemIds.contains(serviceItemId)) {
                 serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());
-                if(isEmpty){
+                if (isEmpty) {
                     serviceItem.setBeginTime(new Date());
                     workOrder.setCurrentOrderNumber(serviceItem.getOrderNumber());//设置当前处理步骤
                     isEmpty = false;

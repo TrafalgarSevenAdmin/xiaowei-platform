@@ -44,16 +44,11 @@ public class RequestFormItem extends BaseEntity {
     private String state;
 
     /**
-     * 所属报销单
+     * 所属申请单
      */
     @ManyToOne(targetEntity = RequestForm.class,fetch = FetchType.LAZY)
     @JoinColumn(name = "requestFormId")
     @JsonIgnore
     private RequestForm requestForm;
-
-    /**
-     * 数量
-     */
-    private Integer count;
 
 }

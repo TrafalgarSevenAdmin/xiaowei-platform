@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.controller;
 
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
@@ -283,6 +284,14 @@ public class WorkOrderController {
             pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
+    }
+
+    @ApiOperation("当前登录用户查询工程师工单的各种状态")
+    @GetMapping("/count/engineer")
+    @RequiresPermissions("order:workorder:eCount")
+    public Result getCountFromEngineer() {
+        final String userId = LoginUserUtils.getLoginUser().getId();
+        return Result.getSuccess(workOrderService.getCountFromEngineer(userId));
     }
 
     private void setDefaultCondition(WorkOrderQuery workOrderQuery) {
