@@ -51,4 +51,9 @@ public class RequestFormItem extends BaseEntity {
     @JsonIgnore
     private RequestForm requestForm;
 
+    /**
+     * 数量
+     */
+    private Integer count;
+
 }

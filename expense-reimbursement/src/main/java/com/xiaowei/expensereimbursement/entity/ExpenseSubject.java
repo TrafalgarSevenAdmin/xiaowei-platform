@@ -78,9 +78,5 @@ public class ExpenseSubject extends BaseEntity {
      * 是否按照岗位级别
      */
     private Boolean postLevel;
-    /**
-     * 申请单价限额
-     */
-    private Double requestQuota;
 
 }
