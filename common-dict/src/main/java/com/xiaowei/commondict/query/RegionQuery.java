@@ -29,13 +29,13 @@ public class RegionQuery extends Query {
     public void generateCondition() {
         if (Sort.Dir.asc.equals(levelSort)) {
             addSort(Sort.Dir.asc, "level");
-        } else if(Sort.Dir.desc.equals(levelSort)){
+        } else if (Sort.Dir.desc.equals(levelSort)) {
             addSort(Sort.Dir.desc, "level");
         }
         //根据名称排序
         if (Sort.Dir.asc.equals(nameSort)) {
             addSort(Sort.Dir.asc, "name");
-        } else if(Sort.Dir.desc.equals(nameSort)){
+        } else if (Sort.Dir.desc.equals(nameSort)) {
             addSort(Sort.Dir.desc, "name");
         }
         if (!StringUtils.isEmpty(mergerName)) {
@@ -54,7 +54,7 @@ public class RegionQuery extends Query {
             this.addFilter(Filter.eq("parentShortCode", parentCode));
         }
         if (!StringUtils.isEmpty(mergerNameLike)) {
-            this.addFilter(Filter.like("mergerName", mergerNameLike + "%"));
+            this.addFilter(Filter.like("mergerName", "%" + mergerNameLike + "%"));
         }
 
     }
