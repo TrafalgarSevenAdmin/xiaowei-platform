@@ -255,6 +255,17 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         return dataMap;
     }
 
+    @Override
+    public Map<String, Object> expenserCount(String userId) {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("auditCount", expenseFormRepository.findByUserIdAndStatusIn(userId,new Integer[]{ExpenseFormStatus.PREAUDIT.getStatus(),
+                ExpenseFormStatus.FIRSTAUDIT.getStatus()}));
+        dataMap.put("turndownCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.TURNDOWN.getStatus()));
+        dataMap.put("agreedCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.SECONDAUDIT.getStatus()));
+        dataMap.put("draftCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.DRAFT.getStatus()));
+        return dataMap;
+    }
+
     private void judgeSecondTrialAmount(ExpenseForm expenseForm, ExpenseForm one) {
         final Double secondTrialAmount = expenseForm.getSecondTrialAmount();
         EmptyUtils.assertObject(secondTrialAmount, "没有传入复审总计金额");

@@ -27,4 +27,10 @@ public interface ExpenseFormRepository extends BaseRepository<ExpenseForm>{
 
     @Query("select count(e) from ExpenseForm e where e.secondAudit.id = ?1")
     Long findSecondAuditCount(String userId);
+
+    @Query("select count(e) from ExpenseForm e where e.expenseUser.id = ?1 and e.status in ?2")
+    Long findByUserIdAndStatusIn(String userId, Integer[] integers);
+
+    @Query("select count(e) from ExpenseForm e where e.expenseUser.id = ?1 and e.status = ?2")
+    Long findByUserIdAndStatus(String userId, Integer status);
 }

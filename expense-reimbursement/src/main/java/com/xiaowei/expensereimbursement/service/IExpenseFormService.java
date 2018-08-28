@@ -18,4 +18,7 @@ public interface IExpenseFormService extends IBaseService<ExpenseForm> {
     ExpenseForm secondAudit(ExpenseForm expenseForm, Boolean audit);
 
     Map<String,Object> auditCountByUserId(String userId);
+
+    Map<String,Object> expenserCount(String userId);
+
 }

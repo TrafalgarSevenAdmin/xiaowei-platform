@@ -84,12 +84,20 @@ public class ExpenseFormController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 
-    @ApiOperation("当前登录用户查询报销单各种状态数量")
+    @ApiOperation("审核人查询报销单各种状态数量")
     @GetMapping("/audit/count")
     @RequiresPermissions("expense:expenseForm:auditCount")
     public Result auditCount() {
         final String userId = LoginUserUtils.getLoginUser().getId();
         return Result.getSuccess(expenseFormService.auditCountByUserId(userId));
+    }
+
+    @ApiOperation("报销人查询报销单各种状态数量")
+    @GetMapping("/expenser/count")
+    @RequiresPermissions("expense:expenseForm:expenserCount")
+    public Result expenserCount() {
+        final String userId = LoginUserUtils.getLoginUser().getId();
+        return Result.getSuccess(expenseFormService.expenserCount(userId));
     }
 
 
