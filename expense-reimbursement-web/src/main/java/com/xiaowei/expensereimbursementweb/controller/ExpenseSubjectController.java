@@ -17,6 +17,7 @@ import com.xiaowei.expensereimbursementweb.query.ExpenseSubjectQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +39,7 @@ public class ExpenseSubjectController {
     @ApiOperation(value = "添加费用科目")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("expense:subject:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ExpenseSubjectDTO expenseSubjectDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseSubject expenseSubject = BeanCopyUtils.copy(expenseSubjectDTO, ExpenseSubject.class);
         expenseSubject.setAccountContent(JSONArray.toJSONString(expenseSubjectDTO.getAccountContentBeans()));
@@ -49,6 +51,7 @@ public class ExpenseSubjectController {
     @ApiOperation(value = "修改费用科目")
     @AutoErrorHandler
     @PutMapping("/{subjectId}")
+    @RequiresPermissions("expense:subject:update")
     public Result update(@PathVariable("subjectId") String subjectId, @RequestBody @Validated(V.Update.class) ExpenseSubjectDTO expenseSubjectDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseSubject expenseSubject = BeanCopyUtils.copy(expenseSubjectDTO, ExpenseSubject.class);
         expenseSubject.setAccountContent(JSONArray.toJSONString(expenseSubjectDTO.getAccountContentBeans()));
@@ -59,6 +62,7 @@ public class ExpenseSubjectController {
 
     @ApiOperation("费用科目查询接口")
     @GetMapping("")
+    @RequiresPermissions("expense:subject:query")
     public Result query(ExpenseSubjectQuery expenseSubjectQuery, FieldsView fieldsView) {
         if (expenseSubjectQuery.isNoPage()) {
             List<ExpenseSubject> expenseSubjects = expenseSubjectService.query(expenseSubjectQuery, ExpenseSubject.class);
@@ -72,6 +76,7 @@ public class ExpenseSubjectController {
 
     @ApiOperation("费用科目树结构查询接口")
     @GetMapping("/tree")
+    @RequiresPermissions("expense:subject:tree")
     public Result tree() {
         final List<JsonTreeData> jsonTreeData = new JsonTreeCreater<ExpenseSubject>(expenseSubjectService.findAll(),
                 item -> item.getId(),
@@ -86,6 +91,7 @@ public class ExpenseSubjectController {
 
     @ApiOperation("根据id获取费用科目")
     @GetMapping("/{subjectId}")
+    @RequiresPermissions("expense:subject:get")
     public Result findById(@PathVariable("subjectId") String subjectId, FieldsView fieldsView) {
         ExpenseSubject expenseSubject = expenseSubjectService.findById(subjectId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseSubject, fieldsView));

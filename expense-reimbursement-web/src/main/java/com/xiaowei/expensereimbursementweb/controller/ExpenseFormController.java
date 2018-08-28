@@ -14,6 +14,7 @@ import com.xiaowei.expensereimbursementweb.dto.ExpenseFormDTO;
 import com.xiaowei.expensereimbursementweb.query.ExpenseFormQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +36,7 @@ public class ExpenseFormController {
     @ApiOperation(value = "添加报销单")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("expense:expenseForm:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm = expenseFormService.saveExpenseForm(expenseForm);
@@ -44,6 +46,7 @@ public class ExpenseFormController {
     @ApiOperation(value = "修改报销单")
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}")
+    @RequiresPermissions("expense:expenseForm:update")
     public Result update(@PathVariable("expenseFormId") String expenseFormId, @RequestBody @Validated(V.Update.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
@@ -54,6 +57,7 @@ public class ExpenseFormController {
     @ApiOperation(value = "报销单初审")
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}/first")
+    @RequiresPermissions("expense:expenseForm:first")
     public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId,
                              @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO,
                              BindingResult bindingResult,
@@ -68,6 +72,7 @@ public class ExpenseFormController {
     @ApiOperation(value = "报销单复审")
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}/second")
+    @RequiresPermissions("expense:expenseForm:second")
     public Result secondAudit(@PathVariable("expenseFormId") String expenseFormId,
                               @RequestBody @Validated(ExpenseFormDTO.SecondAudit.class) ExpenseFormDTO expenseFormDTO,
                               BindingResult bindingResult,
@@ -81,6 +86,7 @@ public class ExpenseFormController {
 
     @ApiOperation("当前登录用户查询报销单各种状态数量")
     @GetMapping("/audit/count")
+    @RequiresPermissions("expense:expenseForm:auditCount")
     public Result auditCount() {
         final String userId = LoginUserUtils.getLoginUser().getId();
         return Result.getSuccess(expenseFormService.auditCountByUserId(userId));
@@ -89,6 +95,7 @@ public class ExpenseFormController {
 
     @ApiOperation("报销单查询接口")
     @GetMapping("")
+    @RequiresPermissions("expense:expenseForm:query")
     public Result query(ExpenseFormQuery expenseFormQuery, FieldsView fieldsView) {
         //查询报销单设置默认条件
         setDefaultCondition(expenseFormQuery);
@@ -109,6 +116,7 @@ public class ExpenseFormController {
 
     @ApiOperation("根据id获取报销单")
     @GetMapping("/{expenseFormId}")
+    @RequiresPermissions("expense:expenseForm:get")
     public Result findById(@PathVariable("expenseFormId") String expenseFormId, FieldsView fieldsView) {
         ExpenseForm expenseForm = expenseFormService.findById(expenseFormId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
@@ -116,6 +124,7 @@ public class ExpenseFormController {
 
     @ApiOperation("删除报销单")
     @DeleteMapping("/{expenseFormId}")
+    @RequiresPermissions("expense:expenseForm:delete")
     public Result delete(@PathVariable("expenseFormId") String expenseFormId) {
         expenseFormService.delete(expenseFormId);
         return Result.getSuccess();

@@ -13,6 +13,7 @@ import com.xiaowei.expensereimbursementweb.dto.ShipLevelDTO;
 import com.xiaowei.expensereimbursementweb.query.ShipLevelQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,7 @@ public class ShipLevelController {
     @ApiOperation(value = "添加舱位级别")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("expense:shipLevel:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ShipLevelDTO shipLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ShipLevel shipLevel = BeanCopyUtils.copy(shipLevelDTO, ShipLevel.class);
         shipLevel = shipLevelService.save(shipLevel);
@@ -42,6 +44,7 @@ public class ShipLevelController {
 
     @ApiOperation(value = "删除舱位级别")
     @DeleteMapping("/{shipLevelId}")
+    @RequiresPermissions("expense:shipLevel:delete")
     public Result delete(@PathVariable("shipLevelId") String shipLevelId) throws Exception {
         shipLevelService.delete(shipLevelId);
         return Result.getSuccess();
@@ -49,6 +52,7 @@ public class ShipLevelController {
 
     @ApiOperation("舱位级别查询接口")
     @GetMapping("")
+    @RequiresPermissions("expense:shipLevel:query")
     public Result query(ShipLevelQuery shipLevelQuery, FieldsView fieldsView) {
         //查询舱位级别设置默认条件
         setDefaultCondition(shipLevelQuery);
@@ -69,6 +73,7 @@ public class ShipLevelController {
 
     @ApiOperation("根据id获取舱位级别")
     @GetMapping("/{shipLevelId}")
+    @RequiresPermissions("expense:shipLevel:get")
     public Result findById(@PathVariable("shipLevelId") String shipLevelId, FieldsView fieldsView) {
         ShipLevel shipLevel = shipLevelService.findById(shipLevelId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(shipLevel, fieldsView));

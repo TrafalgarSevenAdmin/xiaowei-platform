@@ -146,14 +146,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (equipment == null) {
             return;
         }
-        String code = equipment.getEquipmentNo();
-        Equipment byCode = equipmentRepository.findByEquipmentNo(code);
-        if (byCode == null) {
-            //如果没有设备,则新增一个设备
-            workOrder.setEquipment(equipmentRepository.save(equipment));
-        } else {
-            workOrder.setEquipment(byCode);
-        }
+        final Optional<Equipment> optional = equipmentRepository.findById(equipment.getId());
+        EmptyUtils.assertOptional(optional,"没有查询到该设备");
     }
 
     @Override

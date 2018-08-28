@@ -14,6 +14,7 @@ import com.xiaowei.expensereimbursementweb.dto.RequestFormDTO;
 import com.xiaowei.expensereimbursementweb.query.RequestFormQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +36,7 @@ public class RequestFormController {
     @ApiOperation(value = "添加费用申请")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("expense:requestForm:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) RequestFormDTO requestFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         RequestForm requestForm = BeanCopyUtils.copy(requestFormDTO, RequestForm.class);
         requestForm = requestFormService.saveRequestForm(requestForm);
@@ -47,6 +49,7 @@ public class RequestFormController {
     @ApiOperation(value = "修改费用申请")
     @AutoErrorHandler
     @PutMapping("/{requestFormId}")
+    @RequiresPermissions("expense:requestForm:update")
     public Result update(@PathVariable("requestFormId") String requestFormId, @RequestBody @Validated(V.Update.class) RequestFormDTO requestFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         RequestForm requestForm = BeanCopyUtils.copy(requestFormDTO, RequestForm.class);
         requestForm.setId(requestFormId);
@@ -57,6 +60,7 @@ public class RequestFormController {
     @ApiOperation(value = "费用申请审核")
     @AutoErrorHandler
     @PutMapping("/{requestFormId}/audit")
+    @RequiresPermissions("expense:requestForm:audit")
     public Result firstAudit(@PathVariable("requestFormId") String requestFormId,
                              @RequestBody @Validated(RequestFormDTO.Audit.class) RequestFormDTO requestFormDTO,
                              BindingResult bindingResult,
@@ -67,17 +71,10 @@ public class RequestFormController {
         requestForm = requestFormService.audit(requestForm, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestForm, fieldsView));
     }
-//
-//    @ApiOperation("当前登录用户查询费用申请各种状态数量")
-//    @GetMapping("/audit/count")
-//    public Result auditCount() {
-//        final String userId = LoginUserUtils.getLoginUser().getId();
-//        return Result.getSuccess(expenseFormService.auditCountByUserId(userId));
-//    }
-
 
     @ApiOperation("费用申请查询接口")
     @GetMapping("")
+    @RequiresPermissions("expense:requestForm:query")
     public Result query(RequestFormQuery requestFormQuery, FieldsView fieldsView) {
         //查询费用申请设置默认条件
         setDefaultCondition(requestFormQuery);
@@ -98,6 +95,7 @@ public class RequestFormController {
 
     @ApiOperation("根据id获取费用申请")
     @GetMapping("/{requestFormId}")
+    @RequiresPermissions("expense:requestForm:get")
     public Result findById(@PathVariable("requestFormId") String requestFormId, FieldsView fieldsView) {
         RequestForm requestForm = requestFormService.findById(requestFormId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestForm, fieldsView));
@@ -105,6 +103,7 @@ public class RequestFormController {
 
     @ApiOperation("删除费用申请")
     @DeleteMapping("/{requestFormId}")
+    @RequiresPermissions("expense:requestForm:delete")
     public Result delete(@PathVariable("requestFormId") String requestFormId) {
         requestFormService.delete(requestFormId);
         return Result.getSuccess();

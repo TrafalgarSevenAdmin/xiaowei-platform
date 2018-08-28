@@ -14,6 +14,7 @@ import com.xiaowei.expensereimbursementweb.dto.ReimbursementStandardDTO;
 import com.xiaowei.expensereimbursementweb.query.ReimbursementStandardQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +38,7 @@ public class ReimbursementStandardController {
     @ApiOperation(value = "添加费用报销标准")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("expense:standard:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ReimbursementStandardDTO reimbursementStandardDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ReimbursementStandard reimbursementStandard = BeanCopyUtils.copy(reimbursementStandardDTO, ReimbursementStandard.class);
         reimbursementStandard = reimbursementStandardService.saveReimbursementStandard(reimbursementStandard);
@@ -46,6 +48,7 @@ public class ReimbursementStandardController {
     @ApiOperation(value = "修改费用报销标准")
     @AutoErrorHandler
     @PutMapping("/{standardId}")
+    @RequiresPermissions("expense:standard:update")
     public Result update(@PathVariable("standardId") String standardId, @RequestBody @Validated(V.Update.class) ReimbursementStandardDTO reimbursementStandardDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ReimbursementStandard reimbursementStandard = BeanCopyUtils.copy(reimbursementStandardDTO, ReimbursementStandard.class);
         reimbursementStandard.setId(standardId);
@@ -55,6 +58,7 @@ public class ReimbursementStandardController {
 
     @ApiOperation(value = "删除费用报销标准")
     @DeleteMapping("/{standardId}")
+    @RequiresPermissions("expense:standard:delete")
     public Result delete(@PathVariable("standardId") String standardId) throws Exception {
         reimbursementStandardService.deleteReimbursementStandard(standardId);
         return Result.getSuccess();
@@ -62,6 +66,7 @@ public class ReimbursementStandardController {
 
     @ApiOperation("费用报销标准查询接口")
     @GetMapping("")
+    @RequiresPermissions("expense:standard:query")
     public Result query(ReimbursementStandardQuery reimbursementStandardQuery, FieldsView fieldsView) {
         //查询费用报销标准设置默认条件
         setDefaultCondition(reimbursementStandardQuery);
@@ -82,6 +87,7 @@ public class ReimbursementStandardController {
 
     @ApiOperation("根据id获取费用报销标准")
     @GetMapping("/{standardId}")
+    @RequiresPermissions("expense:standard:get")
     public Result findById(@PathVariable("standardId") String standardId, FieldsView fieldsView) {
         ReimbursementStandard reimbursementStandard = reimbursementStandardService.findById(standardId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(reimbursementStandard, fieldsView));
@@ -89,6 +95,7 @@ public class ReimbursementStandardController {
 
     @ApiOperation("根据岗位级别查询舱位级别")
     @GetMapping("/shipLevel")
+    @RequiresPermissions("expense:standard:shipLevel")
     public Result findShipLevelByPostLevel(@RequestParam("postLevel") String postLevel,
                                            @RequestParam("subjectCode") String subjectCode) {
         List<String> shipLevels = reimbursementStandardService.findShipLevelByPostLevel(postLevel, subjectCode);
@@ -97,6 +104,7 @@ public class ReimbursementStandardController {
 
     @ApiOperation("根据岗位级别查询城市级别")
     @GetMapping("/cityLevel")
+    @RequiresPermissions("expense:standard:cityLevel")
     public Result findCityLevelByPostLevel(@RequestParam("postLevel") String postLevel,
                                            @RequestParam("subjectCode") String subjectCode) {
         List<String> cityLevels = reimbursementStandardService.findCityLevelByPostLevel(postLevel, subjectCode);
