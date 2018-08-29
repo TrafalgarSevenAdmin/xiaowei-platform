@@ -8,9 +8,14 @@ import java.io.Serializable;
 public enum TaskType implements Serializable {
 
     /**
-     * 自动转成待归档
+     * 报销中
      */
-    AUTO_PREPIGEONHOLE,
+    TO_EXPENSEING,
+
+    /**
+     * 报销完成
+     */
+    FINISHED_EXPENSE,
 
     /**
      * 自动通过审核

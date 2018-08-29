@@ -547,6 +547,25 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
+     * 报销完成
+     *
+     * @param workOrderCode
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder finishedExpense(String workOrderCode) {
+        WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
+        EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
+        //工单报销中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工单状态变更为处理完成
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
      * 设置服务项目
      *
      * @param workOrder

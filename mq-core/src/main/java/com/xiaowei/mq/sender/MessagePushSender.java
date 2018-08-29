@@ -28,8 +28,8 @@ public class MessagePushSender {
     /**
      * 发送工单报销中的消息
      */
-    public void sendWorkOrderExpenseingMessage(String workOrderCode) {
-        amqpTemplate.convertAndSend(MqQueueConstant.WK_EXPENSEING__QUEUE, workOrderCode);
+    public void sendWorkOrderExpenseingMessage(TaskMessage taskMessage) {
+        amqpTemplate.convertAndSend(MqQueueConstant.WK_EXPENSEING__QUEUE, taskMessage);
     }
 
     /**

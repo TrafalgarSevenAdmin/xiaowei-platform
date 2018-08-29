@@ -18,6 +18,8 @@ import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
 import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
+import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //保存科目明细
         judgeItemIsUniqueAndAmount(expenseForm);
         //修改工单状态为报销中
-        messagePushSender.sendWorkOrderExpenseingMessage(expenseForm.getWorkOrderCode());
+        messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(),TaskType.TO_EXPENSEING));
         return expenseForm;
     }
 
@@ -245,6 +247,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         one.setSecondAuditTime(new Date());//复审时间
         if (audit) {//是否驳回
             one.setStatus(ExpenseFormStatus.SECONDAUDIT.getStatus());
+            //修改工单状态为处理完成
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(),TaskType.FINISHED_EXPENSE));
         } else {
             one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
         }
