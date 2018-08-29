@@ -27,6 +27,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -52,6 +53,7 @@ public class InvOrderInController {
     @ApiOperation(value = "创建入库单申请",notes = "这里不保存到数据库，只保存到流程中")
     @AutoErrorHandler
     @PostMapping("/task")
+    @RequiresPermissions("order:assets:inventory:in:create")
     public Result insert(@RequestBody @Validated(V.Insert.class) InvOrderIn invOrderIn, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         FlowTask rkd;
         if (StringUtils.isNotBlank(invOrderIn.getCode())) {
@@ -94,6 +96,7 @@ public class InvOrderInController {
     @ApiOperation(value = "审核入库单申请")
     @AutoErrorHandler
     @PutMapping("/task")
+    @RequiresPermissions("order:assets:inventory:in:auditing")
     public Result complete(@RequestBody @Validated() AuditingDto auditingDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         FlowTask rkd = flowManager.getTaskManager().completeTask(auditingDto.getTaskId(), new TaskNodeComplete() {
             @Override
@@ -132,6 +135,7 @@ public class InvOrderInController {
     @ApiOperation(value = "修改")
     @AutoErrorHandler
     @PutMapping("/{invOrderInId}")
+    @RequiresPermissions("order:assets:inventory:in:update")
     public Result update(@RequestBody @Validated(V.Insert.class) InvOrderIn invOrderInDto, BindingResult bindingResult,
                          @PathVariable("invOrderInId") String invOrderInId, FieldsView fieldsView) throws Exception {
         InvOrderIn invOrderIn = BeanCopyUtils.copy(invOrderInDto, InvOrderIn.class);
@@ -142,6 +146,7 @@ public class InvOrderInController {
 
     @ApiOperation("根据id获取")
     @GetMapping("/{invOrderInId}")
+    @RequiresPermissions("order:assets:inventory:in:get")
     public Result findById(@PathVariable("invOrderInId") String invOrderInId, FieldsView fieldsView) {
         InvOrderIn invOrderIn = invOrderInService.findById(invOrderInId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(invOrderIn, fieldsView));
@@ -149,6 +154,7 @@ public class InvOrderInController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{invOrderInId}")
+    @RequiresPermissions("order:assets:inventory:in:delete")
     public Result delete(@PathVariable("invOrderInId") String invOrderInId, FieldsView fieldsView) {
         invOrderInService.delete(invOrderInId);
         return Result.getSuccess("删除成功");
@@ -156,6 +162,7 @@ public class InvOrderInController {
 
     @ApiOperation("查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:assets:inventory:in:query")
     public Result query(Query query, FieldsView fieldsView) {
         query.addFilter(new Filter("status", Filter.Operator.neq, CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {

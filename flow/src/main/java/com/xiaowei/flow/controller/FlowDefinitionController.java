@@ -16,6 +16,7 @@ import com.xiaowei.flow.service.IFlowNodeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +40,7 @@ public class FlowDefinitionController {
     @AutoErrorHandler
     @PostMapping("")
     @ApiOperation("添加流程")
+    @RequiresPermissions("flow:definition:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) FlowDefinition flowDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         FlowDefinition flow = BeanCopyUtils.copy(flowDto, FlowDefinition.class);
         flow = flowDefinitionService.save(flow);
@@ -47,6 +49,7 @@ public class FlowDefinitionController {
 
     @ApiOperation("获取流程定义")
     @GetMapping("/{flowId}")
+    @RequiresPermissions("flow:definition:get")
     public Result findById(@PathVariable("flowId") String flowId, FieldsView fieldsView) {
         FlowDefinition flow = flowDefinitionService.findById(flowId);
         return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flow, fieldsView));
@@ -54,6 +57,7 @@ public class FlowDefinitionController {
 
     @ApiOperation("获取流程的所有节点")
     @GetMapping("/{flowId}/nodes")
+    @RequiresPermissions("flow:definition:nodes")
     public Result findAllNode(@PathVariable("flowId") String flowId, FieldsView fieldsView ) {
         if (!fieldsView.isInclude()) {
             //过滤掉不需要再此返回给前端的字段
@@ -65,6 +69,7 @@ public class FlowDefinitionController {
 
     @ApiOperation("删除流程定义")
     @DeleteMapping("/{flowId}")
+    @RequiresPermissions("flow:definition:delete")
     public Result delete(@PathVariable("flowId") String flowId, FieldsView fieldsView) {
         flowDefinitionService.delete(flowId);
         return Result.getSuccess("删除成功");
@@ -72,8 +77,8 @@ public class FlowDefinitionController {
 
     @ApiOperation("流程定义查询")
     @GetMapping("")
+    @RequiresPermissions("flow:definition:query")
     public Result query(Query query, FieldsView fieldsView) {
-
         if (query.isNoPage()) {
             List<FlowDefinition> flows = flowDefinitionService.query(query, FlowDefinition.class);
             return Result.getSuccess(ObjectToMapUtils.anyToHandleField(flows, fieldsView));//以list形式返回,没有层级
