@@ -3,9 +3,11 @@ package com.xiaowei.worksystem.query;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.query.rundi.query.Sort;
+import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+@Data
 public class WorkOrderQuery extends Query {
     private String proposerId;
     private String backgrounderId;
@@ -42,43 +44,4 @@ public class WorkOrderQuery extends Query {
         }
     }
 
-    public String getProposerId() {
-        return proposerId;
-    }
-
-    public void setProposerId(String proposerId) {
-        this.proposerId = proposerId;
-    }
-
-    public String getBackgrounderId() {
-        return backgrounderId;
-    }
-
-    public void setBackgrounderId(String backgrounderId) {
-        this.backgrounderId = backgrounderId;
-    }
-
-    public String getEngineerId() {
-        return engineerId;
-    }
-
-    public void setEngineerId(String engineerId) {
-        this.engineerId = engineerId;
-    }
-
-    public String[] getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(String[] userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    public String[] getSystemStatus() {
-        return systemStatus;
-    }
-
-    public void setSystemStatus(String[] systemStatus) {
-        this.systemStatus = systemStatus;
-    }
 }
