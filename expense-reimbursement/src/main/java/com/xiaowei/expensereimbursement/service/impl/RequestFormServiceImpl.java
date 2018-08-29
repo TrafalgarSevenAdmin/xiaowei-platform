@@ -103,8 +103,10 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
             //设置无法修改的属性
             requestForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
+
         //验证所属工单
         judgeWorkOrder(requestForm);
+
     }
 
     private void judgeWorkOrder(RequestForm requestForm) {
@@ -113,8 +115,11 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrderSelect, "没有查询到所属工单");
         //如果工单已归档,则抛出异常
-        if (workOrderSelect.getSystemStatus() == 10) {
+        if (workOrderSelect.getSystemStatus() != 10) {
             throw new BusinessException("该工单已经关闭!");
+        }
+        if (workOrderSelect.getSystemStatus() != 7) {
+            throw new BusinessException("该工单状态无法创建申请单!");
         }
         //查询是否有其他申请单
         if(CollectionUtils.isNotEmpty(requestFormRepository.findByWorkOrderCode(workOrderCode))){

@@ -44,4 +44,8 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     Map<String,Object> getCountFromBackgrounder(String userId);
 
+    WorkOrder expenseing(String workOrderCode);
+
+    WorkOrder finishedExpense(String workOrderCode);
+
 }

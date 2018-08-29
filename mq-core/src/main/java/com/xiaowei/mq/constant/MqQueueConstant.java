@@ -13,6 +13,11 @@ public class MqQueueConstant {
     public static final String WX_MESSAGE_PUSH_QUEUE = "wx_message_push_queue";
 
     /**
+     * 发送工单报销中的消息
+     */
+    public static final String WK_EXPENSEING__QUEUE = "wk_expenseing__queue";
+
+    /**
      * 订单支付完成的消息
      * 默认使用此队列通知，若有其他的支付入口发生，可以通过此更改回调通知地址
      */

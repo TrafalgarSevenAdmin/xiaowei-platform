@@ -34,6 +34,13 @@ public class RabbitMQConfig {
         return new Queue(DELAY_TASK_QUEUE,true);
     }
 
+    // 创建推送的消息队列
+    @Bean
+    public Queue wkExpenseingQueue() {
+        //持久化
+        return new Queue(WK_EXPENSEING__QUEUE,true);
+    }
+
     /**
      * 延时交换机，用于分发延时任务
      * @return

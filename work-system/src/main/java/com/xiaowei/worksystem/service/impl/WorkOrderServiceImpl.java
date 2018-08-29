@@ -147,7 +147,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             return;
         }
         final Optional<Equipment> optional = equipmentRepository.findById(equipment.getId());
-        EmptyUtils.assertOptional(optional,"没有查询到该设备");
+        EmptyUtils.assertOptional(optional, "没有查询到该设备");
     }
 
     @Override
@@ -458,7 +458,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
         //工单处理完成
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus()) &&
+                !workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.PIGEONHOLED.getStatus());//工单状态变更为归档
@@ -500,18 +501,18 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     public Map<String, Object> getCountFromEngineer(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("receiveCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId,WorkOrderUtils.RECEIVE));
+        dataMap.put("receiveCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId, WorkOrderUtils.RECEIVE));
         dataMap.put("inhandCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId, WorkOrderUtils.INHAND));
-        dataMap.put("finishedCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId,WorkOrderUtils.FINISHED));
+        dataMap.put("finishedCount", workOrderRepository.findCountByEngineerIdAndStatusIn(userId, WorkOrderUtils.FINISHED));
         return dataMap;
     }
 
     @Override
     public Map<String, Object> getCountFromProposer(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("affirmCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId,WorkOrderUserStatus.AFFIRM.getStatus()));
+        dataMap.put("affirmCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId, WorkOrderUserStatus.AFFIRM.getStatus()));
         dataMap.put("paiedCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId, WorkOrderUserStatus.PAIED.getStatus()));
-        dataMap.put("evaluatedCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId,WorkOrderUserStatus.EVALUATED.getStatus()));
+        dataMap.put("evaluatedCount", workOrderRepository.findCountByProposerIdAndUserStatus(userId, WorkOrderUserStatus.EVALUATED.getStatus()));
         return dataMap;
     }
 
@@ -520,10 +521,48 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("preCreateCount", requestWorkOrderRepository.findCountByStatus(RequestWorkOrderStatus.UNTREATED.getStatus()));
         dataMap.put("distributeCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.DISTRIBUTE.getStatus()));
-        dataMap.put("receiveCount", workOrderRepository.findCountByBackgrounderAndStatus(userId,WorkOrderSystemStatus.RECEIVE.getStatus()));
-        dataMap.put("qualityCount", workOrderRepository.findCountByBackgrounderAndStatus(userId,WorkOrderSystemStatus.QUALITY.getStatus()));
-        dataMap.put("finishedCount", workOrderRepository.findCountByBackgrounderAndStatusIn(userId,WorkOrderUtils.FINISHED));
+        dataMap.put("receiveCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.RECEIVE.getStatus()));
+        dataMap.put("qualityCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.QUALITY.getStatus()));
+        dataMap.put("finishedCount", workOrderRepository.findCountByBackgrounderAndStatusIn(userId, WorkOrderUtils.FINISHED));
         return dataMap;
+    }
+
+    /**
+     * 报销中
+     *
+     * @param workOrderCode
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder expenseing(String workOrderCode) {
+        WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
+        EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
+        //工单处理完成
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.EXPENSEING.getStatus());//工单状态变更为报销中
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 报销完成
+     *
+     * @param workOrderCode
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder finishedExpense(String workOrderCode) {
+        WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
+        EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
+        //工单报销中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工单状态变更为处理完成
+        return workOrderRepository.save(workOrder);
     }
 
     /**

@@ -3,7 +3,6 @@ package com.xiaowei.worksystem.query;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.query.rundi.query.Sort;
-import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +12,7 @@ public class WorkOrderQuery extends Query {
     private String engineerId;
     private String[] userStatus;
     private String[] systemStatus;
+    private String code;
 
     @Override
     public void generateCondition() {
@@ -36,6 +36,9 @@ public class WorkOrderQuery extends Query {
         //后台状态过滤
         if(ArrayUtils.isNotEmpty(systemStatus)){
             addFilter(new Filter("systemStatus", Filter.Operator.in,systemStatus));
+        }
+        if(StringUtils.isNotEmpty(code)){
+            addFilter(new Filter("code", Filter.Operator.eq,code));
         }
     }
 

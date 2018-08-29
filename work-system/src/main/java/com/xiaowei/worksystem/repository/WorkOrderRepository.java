@@ -18,4 +18,6 @@ public interface WorkOrderRepository extends BaseRepository<WorkOrder>{
     @Query("select count(w) from WorkOrder w where w.backgrounder.id = ?1 and w.systemStatus in ?2")
     Long findCountByBackgrounderAndStatusIn(String userId, Integer[] finished);
 
+    @Query("select w from WorkOrder w where w.code = ?1")
+    WorkOrder findByCode(String workOrderCode);
 }
