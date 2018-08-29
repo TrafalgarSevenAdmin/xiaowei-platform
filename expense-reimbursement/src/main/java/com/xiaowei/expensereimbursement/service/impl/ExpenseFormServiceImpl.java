@@ -18,6 +18,7 @@ import com.xiaowei.expensereimbursement.status.ExpenseFormItemStatus;
 import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
 import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
+import com.xiaowei.mq.sender.MessagePushSender;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,6 +43,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private WorkOrderSelectRepository workOrderSelectRepository;
     @Autowired
     private RequestFormRepository requestFormRepository;
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     public ExpenseFormServiceImpl(@Qualifier("expenseFormRepository") BaseRepository repository) {
         super(repository);
@@ -57,6 +60,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断所有明细的费用科目是否唯一以及合计金额是否正确
         //保存科目明细
         judgeItemIsUniqueAndAmount(expenseForm);
+        //修改工单状态为报销中
+        messagePushSender.sendWorkOrderExpenseingMessage(expenseForm.getWorkOrderCode());
         return expenseForm;
     }
 
@@ -66,6 +71,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             expenseForm.setTurnDownCount(0);//初始化驳回次数
             expenseForm.setCode(getCurrentDayMaxCode());
             expenseForm.setCreatedTime(new Date());
+            //验证所属工单
+            judgeWorkOrder(expenseForm);
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             String expenseFormId = expenseForm.getId();
             EmptyUtils.assertString(expenseFormId, "没有传入对象id");
@@ -78,9 +85,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
 
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
+            expenseForm.setWorkOrderCode(one.getWorkOrderCode());
         }
-        //验证所属工单
-        judgeWorkOrder(expenseForm);
 
     }
 
@@ -90,8 +96,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrderSelect, "没有查询到所属工单");
         //如果工单已归档,则抛出异常
-        if (workOrderSelect.getSystemStatus() == 10) {
-            throw new BusinessException("该工单已经关闭!");
+        if (workOrderSelect.getSystemStatus() != 7) {
+            throw new BusinessException("该工单状态无法创建报销单!");
         }
     }
 
