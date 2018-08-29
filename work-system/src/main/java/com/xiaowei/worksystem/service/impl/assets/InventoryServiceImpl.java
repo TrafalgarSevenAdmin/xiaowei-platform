@@ -1,33 +1,21 @@
-package com.xiaowei.worksystem.service.impl;
+package com.xiaowei.worksystem.service.impl.assets;
 
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
-import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
-import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.worksystem.dto.InventoryChageDTO;
-import com.xiaowei.worksystem.entity.Equipment;
-import com.xiaowei.worksystem.entity.EquipmentModified;
-import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.entity.assets.Inventory;
-import com.xiaowei.worksystem.repository.EquipmentModifiedRepository;
 import com.xiaowei.worksystem.repository.assets.InventoryRepository;
-import com.xiaowei.worksystem.service.IEquipmentModifiedService;
-import com.xiaowei.worksystem.service.IEquipmentService;
-import com.xiaowei.worksystem.service.IInventoryService;
-import com.xiaowei.worksystem.service.IWorkOrderService;
+import com.xiaowei.worksystem.service.assets.IInventoryService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 

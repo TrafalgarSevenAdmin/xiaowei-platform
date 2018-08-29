@@ -11,6 +11,7 @@ import com.xiaowei.flow.service.ITaskHistoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class TaskHistoryController {
 
     @ApiOperation("获取任务记录")
     @GetMapping("/{taskHistoryId}")
+    @RequiresPermissions("flow:task:history:get")
     public Result findById(@PathVariable("taskHistoryId") String taskHistoryId, FieldsView fieldsView) {
         //移除不需要的字段,避免循环，减少流量
         if (!fieldsView.isInclude()) {
@@ -39,8 +41,8 @@ public class TaskHistoryController {
 
     @ApiOperation("查询任务记录")
     @GetMapping("")
+    @RequiresPermissions("flow:task:history:query")
     public Result query(Query query,FieldsView fieldsView) {
-
         //移除不需要的字段,避免循环，减少流量
         if (!fieldsView.isInclude()) {
             fieldsView.getFields().addAll(DataFieldsConst.taskExecuteHistoryViewFilters);

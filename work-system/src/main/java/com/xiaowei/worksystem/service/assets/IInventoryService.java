@@ -1,4 +1,4 @@
-package com.xiaowei.worksystem.service;
+package com.xiaowei.worksystem.service.assets;
 
 
 import com.xiaowei.core.basic.service.IBaseService;

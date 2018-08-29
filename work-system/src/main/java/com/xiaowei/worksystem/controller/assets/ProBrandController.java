@@ -14,6 +14,7 @@ import com.xiaowei.worksystem.service.assets.IProBrandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,7 @@ public class ProBrandController {
     @ApiOperation(value = "添加")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:assets:proBrand:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ProBrand proBrandDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ProBrand proBrand = BeanCopyUtils.copy(proBrandDto, ProBrand.class);
         proBrand = proBrandService.save(proBrand);
@@ -43,6 +45,7 @@ public class ProBrandController {
     @ApiOperation(value = "修改")
     @AutoErrorHandler
     @PutMapping("/{proBrandId}")
+    @RequiresPermissions("order:assets:proBrand:update")
     public Result update(@RequestBody @Validated(V.Insert.class) ProBrand proBrandDto, BindingResult bindingResult,
                          @PathVariable("proBrandId") String proBrandId, FieldsView fieldsView) throws Exception {
         ProBrand proBrand = BeanCopyUtils.copy(proBrandDto, ProBrand.class);
@@ -50,9 +53,9 @@ public class ProBrandController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(proBrand, fieldsView));
     }
 
-
     @ApiOperation("根据id获取")
     @GetMapping("/{proBrandId}")
+    @RequiresPermissions("order:assets:proBrand:get")
     public Result findById(@PathVariable("proBrandId") String proBrandId, FieldsView fieldsView) {
         ProBrand proBrand = proBrandService.findById(proBrandId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(proBrand, fieldsView));
@@ -60,6 +63,7 @@ public class ProBrandController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{proBrandId}")
+    @RequiresPermissions("order:assets:proBrand:delete")
     public Result delete(@PathVariable("proBrandId") String proBrandId, FieldsView fieldsView) {
         proBrandService.delete(proBrandId);
         return Result.getSuccess("删除成功");
@@ -67,6 +71,7 @@ public class ProBrandController {
 
     @ApiOperation("查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:assets:proBrand:query")
     public Result query(Query query, FieldsView fieldsView) {
         if (query.isNoPage()) {
             List<ProBrand> proBrands = proBrandService.query(query, ProBrand.class);

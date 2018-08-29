@@ -14,6 +14,7 @@ import com.xiaowei.worksystem.service.assets.IProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,7 @@ public class ProductController {
     @ApiOperation(value = "添加")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:assets:product:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) Product productDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Product product = BeanCopyUtils.copy(productDto, Product.class);
         product = productService.save(product);
@@ -43,6 +45,7 @@ public class ProductController {
     @ApiOperation(value = "修改")
     @AutoErrorHandler
     @PutMapping("/{productId}")
+    @RequiresPermissions("order:assets:product:update")
     public Result update(@RequestBody @Validated(V.Insert.class) Product productDto, BindingResult bindingResult,
                          @PathVariable("productId") String productId, FieldsView fieldsView) throws Exception {
         Product product = BeanCopyUtils.copy(productDto, Product.class);
@@ -53,6 +56,7 @@ public class ProductController {
 
     @ApiOperation("根据id获取")
     @GetMapping("/{productId}")
+    @RequiresPermissions("order:assets:product:get")
     public Result findById(@PathVariable("productId") String productId, FieldsView fieldsView) {
         Product product = productService.findById(productId);
         return Result.getSuccess(ObjectToMapUtils.anyToHandleField(product, fieldsView));
@@ -60,6 +64,7 @@ public class ProductController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{productId}")
+    @RequiresPermissions("order:assets:product:delete")
     public Result delete(@PathVariable("productId") String productId, FieldsView fieldsView) {
         productService.delete(productId);
         return Result.getSuccess("删除成功");
@@ -67,6 +72,7 @@ public class ProductController {
 
     @ApiOperation("查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:assets:product:query")
     public Result query(Query query, FieldsView fieldsView) {
         if (query.isNoPage()) {
             List<Product> products = productService.query(query, Product.class);

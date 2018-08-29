@@ -13,6 +13,7 @@ import com.xiaowei.worksystem.service.assets.IProClassService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class ProClassController {
     @ApiOperation(value = "添加")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:assets:proClass:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) ProClass proClassDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ProClass proClass = BeanCopyUtils.copy(proClassDto, ProClass.class);
         proClass = proClassService.save(proClass);
@@ -42,6 +44,7 @@ public class ProClassController {
     @ApiOperation(value = "修改")
     @AutoErrorHandler
     @PutMapping("/{proClassId}")
+    @RequiresPermissions("order:assets:proClass:update")
     public Result update(@RequestBody @Validated(V.Insert.class) ProClass proClassDto, BindingResult bindingResult,
                          @PathVariable("proClassId") String proClassId, FieldsView fieldsView) throws Exception {
         ProClass proClass = BeanCopyUtils.copy(proClassDto, ProClass.class);
@@ -52,6 +55,7 @@ public class ProClassController {
 
     @ApiOperation("根据id获取")
     @GetMapping("/{proClassId}")
+    @RequiresPermissions("order:assets:proClass:get")
     public Result findById(@PathVariable("proClassId") String proClassId, FieldsView fieldsView) {
         ProClass proClass = proClassService.findById(proClassId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(proClass, fieldsView));
@@ -59,6 +63,7 @@ public class ProClassController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{proClassId}")
+    @RequiresPermissions("order:assets:proClass:delete")
     public Result delete(@PathVariable("proClassId") String proClassId, FieldsView fieldsView) {
         proClassService.delete(proClassId);
         return Result.getSuccess("删除成功");
@@ -66,6 +71,7 @@ public class ProClassController {
 
     @ApiOperation("查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:assets:proClass:query")
     public Result query(Query query, FieldsView fieldsView) {
         if (query.isNoPage()) {
             List<ProClass> proClasss = proClassService.query(query, ProClass.class);

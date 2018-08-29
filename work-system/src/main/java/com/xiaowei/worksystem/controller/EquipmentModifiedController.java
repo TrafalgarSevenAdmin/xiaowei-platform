@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 设备管理
+ * 设备修改管理
  */
-@Api(tags = "设备接口")
+@Api(tags = "设备修改接口")
 @RestController
 @RequestMapping("/api/equipment/modified")
 public class EquipmentModifiedController {
@@ -41,7 +41,7 @@ public class EquipmentModifiedController {
     @ApiOperation(value = "添加待修改的设备",notes = "此接口由工程师提交修改的信息,因此调用此方法必须要工程师登陆")
     @AutoErrorHandler
     @PostMapping("/{workOrderId}")
-//    @RequiresRoles("engineer")
+    @RequiresPermissions("order:equipment:modified:commit")
     public Result commitModified(@RequestBody @Validated(V.Update.class) EquipmentDTO equipmentDTO, BindingResult bindingResult,
                                  @PathVariable("workOrderId") String workOrderId,FieldsView fieldsView) throws Exception {
         EquipmentModified equipment = BeanCopyUtils.copy(equipmentDTO, EquipmentModified.class);
@@ -52,6 +52,7 @@ public class EquipmentModifiedController {
     @ApiOperation(value = "通过此设备修改申请",notes = "此接口由后台管理员审核通过")
     @AutoErrorHandler
     @PutMapping("/pass/{modifiedId}")
+    @RequiresPermissions("order:equipment:modified:pass")
     public Result passModified(@PathVariable("modifiedId") String modifiedId,FieldsView fieldsView) throws Exception {
         equipmentExamineService.passModified(modifiedId);
         return Result.getSuccess("设备修改申请已通过");
@@ -59,6 +60,7 @@ public class EquipmentModifiedController {
 
     @ApiOperation(value = "根据id获取待更新的设备信息")
     @GetMapping("/{equipmentId}")
+    @RequiresPermissions("order:equipment:modified:get")
     public Result findById(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
         EquipmentModified equipment = equipmentExamineService.findById(equipmentId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(equipment, fieldsView));
@@ -66,6 +68,7 @@ public class EquipmentModifiedController {
 
     @ApiOperation("删除申请")
     @DeleteMapping("/{equipmentId}")
+    @RequiresPermissions("order:equipment:modified:delete")
     public Result delete(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
         equipmentExamineService.delete(equipmentId);
         return Result.getSuccess("删除成功");
@@ -73,6 +76,7 @@ public class EquipmentModifiedController {
 
     @ApiOperation("查询待审核的设备信息接口")
     @GetMapping("")
+    @RequiresPermissions("order:equipment:modified:query")
     public Result query(Query query, FieldsView fieldsView) {
         if (query.isNoPage()) {
             List<EquipmentModified> equipments = equipmentExamineService.query(query, Equipment.class);

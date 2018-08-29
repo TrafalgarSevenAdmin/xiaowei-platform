@@ -14,6 +14,7 @@ import com.xiaowei.worksystem.service.customer.ICustomerUserService;
 import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class CustomerUserController {
     @ApiOperation(value = "添加")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:customer:user:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) CustomerUser customerUserDto, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         CustomerUser customerUser = BeanCopyUtils.copy(customerUserDto, CustomerUser.class);
         customerUser = customerUserService.save(customerUser);
@@ -42,6 +44,7 @@ public class CustomerUserController {
     @ApiOperation(value = "修改")
     @AutoErrorHandler
     @PutMapping("/{customerUserId}")
+    @RequiresPermissions("order:customer:user:update")
     public Result update(@RequestBody @Validated(V.Insert.class) CustomerUser customerUserDto, BindingResult bindingResult,
                          @PathVariable("customerUserId") String customerUserId, FieldsView fieldsView) throws Exception {
         CustomerUser customerUser = BeanCopyUtils.copy(customerUserDto, CustomerUser.class);
@@ -52,6 +55,7 @@ public class CustomerUserController {
 
     @ApiOperation("根据id获取")
     @GetMapping("/{customerUserId}")
+    @RequiresPermissions("order:customer:user:get")
     public Result findById(@PathVariable("customerUserId") String customerUserId, FieldsView fieldsView) {
         CustomerUser customerUser = customerUserService.findById(customerUserId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(customerUser, fieldsView));
@@ -59,6 +63,7 @@ public class CustomerUserController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{customerUserId}")
+    @RequiresPermissions("order:customer:user:delete")
     public Result delete(@PathVariable("customerUserId") String customerUserId, FieldsView fieldsView) {
         customerUserService.delete(customerUserId);
         return Result.getSuccess("删除成功");
@@ -66,6 +71,7 @@ public class CustomerUserController {
 
     @ApiOperation("查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:customer:user:query")
     public Result query(Query query, FieldsView fieldsView) {
         query.addFilter(new Filter("status", Filter.Operator.neq, CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {

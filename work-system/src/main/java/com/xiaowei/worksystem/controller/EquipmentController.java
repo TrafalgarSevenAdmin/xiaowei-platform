@@ -17,6 +17,7 @@ import com.xiaowei.worksystem.service.impl.customer.CustomerServiceImpl;
 import com.xiaowei.worksystem.status.CommonStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -41,15 +42,16 @@ public class EquipmentController {
 
     @ApiOperation("根据服务对象id获取其下所有的设备")
     @GetMapping("/{customerId}/equipments")
+    @RequiresPermissions("order:customer:info:equipments")
     public Result findBycustomerId(@PathVariable("customerId") String customerId, FieldsView fieldsView) {
         List<Equipment> equipments = equipmentService.findBycustomerId(customerId);
         return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));
     }
 
-
     @ApiOperation(value = "添加设备")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:equipment:add")
     public Result insert(@RequestBody @Validated(V.Insert.class) EquipmentDTO equipmentDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Equipment equipment = BeanCopyUtils.copy(equipmentDTO, Equipment.class);
         equipment = equipmentService.saveEquipment(equipment);
@@ -59,6 +61,7 @@ public class EquipmentController {
     @ApiOperation(value = "修改设备")
     @AutoErrorHandler
     @PutMapping("/{equipmentId}")
+    @RequiresPermissions("order:equipment:update")
     public Result update(@RequestBody @Validated(V.Insert.class) EquipmentDTO equipmentDTO, BindingResult bindingResult,
                          @PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) throws Exception {
         Equipment equipment = BeanCopyUtils.copy(equipmentDTO, Equipment.class);
@@ -69,6 +72,7 @@ public class EquipmentController {
 
     @ApiOperation("根据id获取设备")
     @GetMapping("/{equipmentId}")
+    @RequiresPermissions("order:equipment:get")
     public Result findById(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
         Equipment equipment = equipmentService.findById(equipmentId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(equipment, fieldsView));
@@ -76,6 +80,7 @@ public class EquipmentController {
 
     @ApiOperation("删除设备")
     @DeleteMapping("/{equipmentId}")
+    @RequiresPermissions("order:equipment:delete")
     public Result delete(@PathVariable("equipmentId") String equipmentId, FieldsView fieldsView) {
         equipmentService.delete(equipmentId);
         return Result.getSuccess("删除成功");
@@ -83,6 +88,7 @@ public class EquipmentController {
 
     @ApiOperation("设备查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:equipment:query")
     public Result query(Query query, FieldsView fieldsView) {
         query.addFilter(new Filter("status", Filter.Operator.neq,CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {
