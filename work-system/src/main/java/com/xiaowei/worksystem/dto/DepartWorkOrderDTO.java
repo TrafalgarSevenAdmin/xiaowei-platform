@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DepartWorkOrderDTO {
     @ApiModelProperty(value = "到达图片")
-    @NotBlank(groups = {V.Insert.class},message = "到达图片必填!")
     private String arriveFileStore;
 
     @ApiModelProperty(value = "到达地点wkt")

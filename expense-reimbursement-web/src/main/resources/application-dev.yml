@@ -33,13 +33,13 @@ spring:
     host: @fluentd.url@
     port: @fluentd.port@
     label: @label@
-#  rabbitmq:
-#    host: @rabbitmq.host@
-#    port: @rabbitmq.port@
-#    username: @rabbitmq.username@
-#    password: @rabbitmq.password@
-#    publisher-confirms: true
-#    virtual-host: @rabbitmq.virtual.host@
+  rabbitmq:
+    host: @rabbitmq.host@
+    port: @rabbitmq.port@
+    username: @rabbitmq.username@
+    password: @rabbitmq.password@
+    publisher-confirms: true
+    virtual-host: @rabbitmq.virtual.host@
   servlet:
     multipart:
       max-file-size: 1024MB
