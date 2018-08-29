@@ -72,7 +72,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             expenseForm.setCode(getCurrentDayMaxCode());
             expenseForm.setCreatedTime(new Date());
             //验证所属工单
-            judgeWorkOrder(expenseForm);
+            judgeWorkOrder(expenseForm,7);
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             String expenseFormId = expenseForm.getId();
             EmptyUtils.assertString(expenseFormId, "没有传入对象id");
@@ -82,22 +82,25 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             if (!ArrayUtils.contains(ExpenseFormUtils.CANUPDATE, one.getStatus())) {
                 throw new BusinessException("报销单当前不允许修改");
             }
-
+            //验证所属工单
+            judgeWorkOrder(expenseForm,8);
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
-            expenseForm.setWorkOrderCode(one.getWorkOrderCode());
         }
 
     }
 
-    private void judgeWorkOrder(ExpenseForm expenseForm) {
+    private void judgeWorkOrder(ExpenseForm expenseForm,Integer status) {
         final String workOrderCode = expenseForm.getWorkOrderCode();
         EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
         final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrderSelect, "没有查询到所属工单");
         //如果工单已归档,则抛出异常
-        if (workOrderSelect.getSystemStatus() != 7) {
-            throw new BusinessException("该工单状态无法创建报销单!");
+        if (workOrderSelect.getSystemStatus() != 10) {
+            throw new BusinessException("该工单已经关闭!");
+        }
+        if (workOrderSelect.getSystemStatus() != status) {
+            throw new BusinessException("该工单状态异常!");
         }
     }
 
