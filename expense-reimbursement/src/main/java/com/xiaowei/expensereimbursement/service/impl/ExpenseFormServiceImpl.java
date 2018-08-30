@@ -21,6 +21,7 @@ import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +31,8 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.*;
+
+import static com.xiaowei.expensereimbursement.status.ExpenseFormStatus.*;
 
 
 @Service
@@ -62,19 +65,25 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断所有明细的费用科目是否唯一以及合计金额是否正确
         //保存科目明细
         judgeItemIsUniqueAndAmount(expenseForm);
-        //修改工单状态为报销中
-        messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(),TaskType.TO_EXPENSEING));
+        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+            //修改工单状态为报销中
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        }
         return expenseForm;
     }
 
     private void judgeAttribute(ExpenseForm expenseForm, JudgeType judgeType) {
+        if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus()) &&
+                !expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+            throw new BusinessException("传入状态非法");
+        }
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             expenseForm.setId(null);
             expenseForm.setTurnDownCount(0);//初始化驳回次数
             expenseForm.setCode(getCurrentDayMaxCode());
             expenseForm.setCreatedTime(new Date());
             //验证所属工单
-            judgeWorkOrder(expenseForm,7);
+            judgeWorkOrder(expenseForm);
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             String expenseFormId = expenseForm.getId();
             EmptyUtils.assertString(expenseFormId, "没有传入对象id");
@@ -85,14 +94,14 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
                 throw new BusinessException("报销单当前不允许修改");
             }
             //验证所属工单
-            judgeWorkOrder(expenseForm,8);
+            judgeWorkOrder(expenseForm);
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
         }
 
     }
 
-    private void judgeWorkOrder(ExpenseForm expenseForm,Integer status) {
+    private WorkOrderSelect judgeWorkOrder(ExpenseForm expenseForm) {
         final String workOrderCode = expenseForm.getWorkOrderCode();
         EmptyUtils.assertString(workOrderCode, "没有传入所属工单编号");
         final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
@@ -101,9 +110,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
         }
-        if (workOrderSelect.getSystemStatus() != status) {
+        if (workOrderSelect.getSystemStatus() != 7 && workOrderSelect.getSystemStatus() != 8) {
             throw new BusinessException("该工单状态异常!");
         }
+        return workOrderSelect;
     }
 
     /**
@@ -165,13 +175,48 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     public ExpenseForm updateExpenseForm(ExpenseForm expenseForm) {
         //判定参数是否合规
         judgeAttribute(expenseForm, JudgeType.UPDATE);
+
         expenseFormRepository.save(expenseForm);
         //判断所有明细的费用科目是否唯一以及合计金额是否正确
         expenseFormItemRepository.deleteByExpenseFormId(expenseForm.getId());
         //先删除明细,再保存明细
         judgeItemIsUniqueAndAmount(expenseForm);
+        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+            //修改工单状态为报销中
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        }
+
+
         return expenseForm;
     }
+
+//    /**
+//     * 判断所属工单是否有变化
+//     *
+//     * @param expenseForm
+//     * @param oldStatus
+//     * @param oldWorkOrderCode
+//     */
+//    private void judgeIsExchange(ExpenseForm expenseForm, Integer oldStatus, String oldWorkOrderCode) {
+//        if (expenseForm.getWorkOrderCode().equals(oldWorkOrderCode)) {//所属工单没有发生变化
+//            if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+//                //修改工单状态为报销中
+//                messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+//            }
+//        } else {//所属工单发生了变化
+//            if (expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus())) {
+//                return;
+//            } else {
+//                //修改工单状态为报销中
+//                messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+//                if (ExpenseFormStatus.DRAFT.getStatus().equals(oldStatus)) {//如果之前是草稿状态,则不管
+//                    return;
+//                }else if(ExpenseFormStatus.TURNDOWN.getStatus().equals(oldStatus)){
+//
+//                }
+//            }
+//        }
+//    }
 
     /**
      * 报销单初审
@@ -188,8 +233,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         ExpenseForm one = optional.get();
         //判断状态
-        if (!ExpenseFormStatus.PREAUDIT.getStatus().equals(one.getStatus()) &&
-                !ExpenseFormStatus.TURNDOWN.getStatus().equals(one.getStatus())) {
+        if (!PREAUDIT.getStatus().equals(one.getStatus()) &&
+                !TURNDOWN.getStatus().equals(one.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         //判断初审总计金额是否合规
@@ -205,14 +250,34 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         judgeFirstAudit(expenseForm, one);
         one.setFirstAuditTime(new Date());//初审时间
         if (audit) {//是否驳回
-            one.setStatus(ExpenseFormStatus.FIRSTAUDIT.getStatus());
+            one.setStatus(FIRSTAUDIT.getStatus());
         } else {
             //设置驳回次数
             one.setTurnDownCount(one.getTurnDownCount() == null ? 1 : (one.getTurnDownCount() + 1));
-            one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
+            one.setStatus(TURNDOWN.getStatus());
+            finishedExpense(one);
         }
         one.setFirstOption(expenseForm.getFirstOption());//初审意见
         return expenseFormRepository.save(one);
+    }
+
+    private void finishedExpense(ExpenseForm one) {
+        //如果有其他报销单,并且报销单状态为报销中的状态,则不修改工单状态;否则,修改工单状态为处理完成
+        final List<ExpenseForm> expenseForms = expenseFormRepository.findByWorkOrderCodeAndNotId(one.getWorkOrderCode(), one.getId());
+        if(CollectionUtils.isEmpty(expenseForms)){
+            //修改工单状态为处理完成
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
+        }else{
+            for (ExpenseForm expenseForm : expenseForms) {
+                if(expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())||
+                        expenseForm.getStatus().equals(ExpenseFormStatus.FIRSTAUDIT.getStatus())||
+                        expenseForm.getStatus().equals(ExpenseFormStatus.SECONDAUDIT.getStatus())){
+                    return;
+                }
+            }
+            //修改工单状态为处理完成
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
+        }
     }
 
     /**
@@ -230,7 +295,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         ExpenseForm one = optional.get();
         //判断状态
-        if (!ExpenseFormStatus.FIRSTAUDIT.getStatus().equals(one.getStatus())) {
+        if (!FIRSTAUDIT.getStatus().equals(one.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         //判断复审总计金额是否合规
@@ -246,22 +311,21 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         judgeSecondAudit(expenseForm, one);
         one.setSecondAuditTime(new Date());//复审时间
         if (audit) {//是否驳回
-            one.setStatus(ExpenseFormStatus.SECONDAUDIT.getStatus());
-            //修改工单状态为处理完成
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(),TaskType.FINISHED_EXPENSE));
+            one.setStatus(SECONDAUDIT.getStatus());
         } else {
-            one.setStatus(ExpenseFormStatus.TURNDOWN.getStatus());
+            one.setStatus(TURNDOWN.getStatus());
         }
         one.setSecondOption(expenseForm.getSecondOption());//复审意见
+        finishedExpense(one);
         return expenseFormRepository.save(one);
     }
 
     @Override
     public Map<String, Object> auditCountByUserId(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("preRequestCount", requestFormRepository.findPreRequestCountCount(userId,RequestFormStatus.PREAUDIT.getStatus()));
-        dataMap.put("preFirstCount", expenseFormRepository.findFirstTrialCount(userId, ExpenseFormStatus.PREAUDIT.getStatus()));
-        dataMap.put("preSecondCount", expenseFormRepository.findSecondTrialCount(userId, ExpenseFormStatus.FIRSTAUDIT.getStatus()));
+        dataMap.put("preRequestCount", requestFormRepository.findPreRequestCountCount(userId, RequestFormStatus.PREAUDIT.getStatus()));
+        dataMap.put("preFirstCount", expenseFormRepository.findFirstTrialCount(userId, PREAUDIT.getStatus()));
+        dataMap.put("preSecondCount", expenseFormRepository.findSecondTrialCount(userId, FIRSTAUDIT.getStatus()));
         dataMap.put("requestCount", requestFormRepository.findRequestCountCount(userId));
         dataMap.put("firstAuditCount", expenseFormRepository.findFirstAuditCount(userId));
         dataMap.put("secondAuditCount", expenseFormRepository.findSecondAuditCount(userId));
@@ -271,10 +335,10 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     @Override
     public Map<String, Object> expenserCount(String userId) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("auditCount", expenseFormRepository.findByUserIdAndStatusIn(userId,new Integer[]{ExpenseFormStatus.PREAUDIT.getStatus(),
-                ExpenseFormStatus.FIRSTAUDIT.getStatus()}));
-        dataMap.put("turndownCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.TURNDOWN.getStatus()));
-        dataMap.put("agreedCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.SECONDAUDIT.getStatus()));
+        dataMap.put("auditCount", expenseFormRepository.findByUserIdAndStatusIn(userId, new Integer[]{PREAUDIT.getStatus(),
+                FIRSTAUDIT.getStatus()}));
+        dataMap.put("turndownCount", expenseFormRepository.findByUserIdAndStatus(userId, TURNDOWN.getStatus()));
+        dataMap.put("agreedCount", expenseFormRepository.findByUserIdAndStatus(userId, SECONDAUDIT.getStatus()));
         dataMap.put("draftCount", expenseFormRepository.findByUserIdAndStatus(userId, ExpenseFormStatus.DRAFT.getStatus()));
         return dataMap;
     }
