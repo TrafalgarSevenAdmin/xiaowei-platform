@@ -629,14 +629,11 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onPaied(WorkOrder workOrder) {
-        log.info("7-----------------------------");
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
-            log.info("8-----------------------------");
             return;
         }
-        log.info("9-----------------------------");
         serviceItems.stream().forEach(serviceItem -> {
             //所有项目由待付款变为完成状态
             serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());
