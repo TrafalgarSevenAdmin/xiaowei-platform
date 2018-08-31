@@ -237,7 +237,6 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             workOrder.setSystemStatus(WorkOrderSystemStatus.APPOINTING.getStatus());//系统状态变更为预约中
         } else {//拒绝接单
             workOrder.setEngineer(null);
-            workOrder.setBackgrounder(null);
             workOrder.setSystemStatus(WorkOrderSystemStatus.DISTRIBUTE.getStatus());//系统状态变更为待派发
             //删除工单服务项目
             serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
