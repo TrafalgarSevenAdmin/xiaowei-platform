@@ -4,6 +4,8 @@ import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ExpenseFormRepository extends BaseRepository<ExpenseForm>{
 
     @Query(value = "select count(*) from e_expenseform_first_trial where " +
@@ -33,4 +35,7 @@ public interface ExpenseFormRepository extends BaseRepository<ExpenseForm>{
 
     @Query("select count(e) from ExpenseForm e where e.expenseUser.id = ?1 and e.status = ?2")
     Long findByUserIdAndStatus(String userId, Integer status);
+
+    @Query("select e from ExpenseForm e where e.workOrderCode = ?1 and e.id <> ?2")
+    List<ExpenseForm> findByWorkOrderCodeAndNotId(String workOrderCode, String id);
 }

@@ -70,6 +70,11 @@
             <artifactId>common-log4j</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.xiaowei</groupId>
+            <artifactId>common-dict</artifactId>
+            <version>1.0</version>
+        </dependency>
 	</dependencies>
 
 	<build>

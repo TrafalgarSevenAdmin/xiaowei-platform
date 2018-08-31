@@ -1,5 +1,6 @@
 package com.xiaowei.commondict.query;
 
+import com.hankcs.hanlp.tokenizer.StandardTokenizer;
 import com.xiaowei.commondict.region.RegionUtils;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
@@ -24,6 +25,7 @@ public class RegionQuery extends Query {
     private Sort.Dir nameSort;
     private String mergerNameLike;
     private Sort.Dir levelSort;
+    private String mergerNameSplit;
 
     @Override
     public void generateCondition() {
@@ -55,6 +57,13 @@ public class RegionQuery extends Query {
         }
         if (!StringUtils.isEmpty(mergerNameLike)) {
             this.addFilter(Filter.like("mergerName", "%" + mergerNameLike + "%"));
+        }
+        if (!StringUtils.isEmpty(mergerNameSplit)) {
+            StandardTokenizer.segment(mergerNameSplit).stream().map(term -> term.word)
+                    .distinct().forEach(word ->{
+                System.out.println(word);
+                this.addFilter(Filter.like("mergerName", "%" + word + "%"));
+            });
         }
 
     }

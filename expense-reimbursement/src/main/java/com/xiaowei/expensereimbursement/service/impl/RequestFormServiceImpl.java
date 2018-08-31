@@ -115,7 +115,7 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         final WorkOrderSelect workOrderSelect = workOrderSelectRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrderSelect, "没有查询到所属工单");
         //如果工单已归档,则抛出异常
-        if (workOrderSelect.getSystemStatus() != 10) {
+        if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
         }
         if (workOrderSelect.getSystemStatus() != 7) {

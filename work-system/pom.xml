@@ -91,11 +91,6 @@
         </dependency>
         <dependency>
             <groupId>com.xiaowei</groupId>
-            <artifactId>common-dict</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.xiaowei</groupId>
             <artifactId>socketjs-core</artifactId>
             <version>1.0</version>
         </dependency>

@@ -538,8 +538,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     public WorkOrder expenseing(String workOrderCode) {
         WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
-        //工单处理完成
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+        //工单处理完成或者报销中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())&&
+                !workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.EXPENSEING.getStatus());//工单状态变更为报销中
@@ -628,14 +629,11 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void onPaied(WorkOrder workOrder) {
-        log.info("7-----------------------------");
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderIdAndStatus(workOrder.getId(), ServiceItemStatus.PAIED.getStatus());
         if (CollectionUtils.isEmpty(serviceItems)) {
-            log.info("8-----------------------------");
             return;
         }
-        log.info("9-----------------------------");
         serviceItems.stream().forEach(serviceItem -> {
             //所有项目由待付款变为完成状态
             serviceItem.setStatus(ServiceItemStatus.COMPLETED.getStatus());
