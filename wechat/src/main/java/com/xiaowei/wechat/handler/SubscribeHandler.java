@@ -39,12 +39,13 @@ public class SubscribeHandler extends AbstractHandler {
         if (userWxInfo != null) {
             WxUser user = BeanCopyUtils.copy(userWxInfo, WxUser.class);
             //添加关注用户到本地
-            wxUserService.saveOrUpdate(user);
-            Optional<WxUser> byOpenId = wxUserService.findByOpenId(user.getOpenId());
-            user = byOpenId.get();
+            user = wxUserService.saveOrUpdate(user);
             //如果存在真实名称就设置这个用户的备注
-            if (user.getSysUser() != null && StringUtils.isNotEmpty(user.getSysUser().getNickName())) {
-                weixinService.getUserService().userUpdateRemark(userWxInfo.getOpenId(),user.getSysUser().getNickName());
+            if (user.getSysUser() != null) {
+                if (StringUtils.isNotEmpty(user.getSysUser().getNickName())) {
+                    weixinService.getUserService().userUpdateRemark(userWxInfo.getOpenId(), user.getSysUser().getNickName());
+                }
+                wxUserService.syncUserTag(user.getSysUser(), user.getOpenId());
             }
         }
 
