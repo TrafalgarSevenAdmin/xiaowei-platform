@@ -1,5 +1,6 @@
 package com.xiaowei.flow.pojo;
 
+import com.xiaowei.flow.constants.TaskActionType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -27,5 +28,11 @@ public class TaskCompleteExtendResult {
      * 理由
      */
     String reason;
+
+    /**
+     * 执行状态
+     */
+    TaskActionType action;
+
 
 }

@@ -7,7 +7,7 @@
             "type": "view",
             "name": "绑定手机",
             "key": null,
-            "url": "http://localhost:8888/xwkx-web/common/bindEd",
+            "url": "http://gongdan.xwseries.com/xwkx-web/common/bindEd",
             "value": null,
             "newsInfo": null
           },

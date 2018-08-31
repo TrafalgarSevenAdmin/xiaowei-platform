@@ -1,5 +1,6 @@
 package com.xiaowei.flow.manager;
 
+import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.flow.constants.TaskActionType;
@@ -94,7 +95,6 @@ public class TaskManager {
         String taskId = flowTask.getId();
         log.debug("正在创建新的任务:{}，任务id:{}", parameter.getName(),parameter.getCode());
 
-        // TODO: 2018/8/22 0022 任务通知
         log.debug("配置抄送人");
         if (null != parameter.getViewer()) {
             flowTask.setViewer(parameter.getViewer());
@@ -220,6 +220,7 @@ public class TaskManager {
                 .lastHistory(task.getNowTaskHistory())
                 .build()
         );
+
         //业务指定的下一个节点
         FlowNode tempNextNode = null;
         if (StringUtils.isNotBlank(result.getNextNodeId())) {
@@ -228,13 +229,38 @@ public class TaskManager {
         }
 
         //获取配置指定的下一个节点
-        FlowNode configNextNode = null;
-        Collection<FlowNode> nextNodes = nowNode.getNextNodes();
-        if (CollectionUtils.isNotEmpty(nextNodes)) {
-            // TODO: 2018/8/21 0021 此为第一期，暂时不做分支节点功能
-            //直接取第一个节点
-            configNextNode = nextNodes.iterator().next();
+        FlowNode configNextNode = getNextFlowNode(nowNode);
+
+        //流程动作判定
+        if (result.getAction() == null) {
+            if (tempNextNode == null || configNextNode == null || tempNextNode.getId().equals(configNextNode.getId())) {
+                //没有指定下一个任务或到达完成节点或者下一个任务与流程定义一致，说明任务运行正常
+                result.setAction(TaskActionType.NORMAL);
+            } else {
+                //任务未按照配置流程顺序运行
+                result.setAction(TaskActionType.ABNORMAL);
+            }
+        } else {
+            switch (result.getAction()) {
+                case NORMAL:
+                    Assert.isTrue(tempNextNode == null || configNextNode == null || tempNextNode.getCode().equals(configNextNode.getCode()), "流程动作错误！");
+                case CLOSE:
+                    throw new BusinessException("流程状态错误，不允许直接关闭此流程！");
+                case ABNORMAL:
+                    //若没有配置下一个节点，那么默认回退到上一个节点
+                    if (tempNextNode == null) {
+                        tempNextNode = task.getNowTaskHistory().getNode();
+                    } else {
+                        Assert.isTrue(!(tempNextNode.getCode().equals(configNextNode.getCode())), "流程状态设置错误！不属于异常操作");
+                    }
+                case FORWARD:
+                    //流程转发时，当前节点不会变更。因此下一节点还是当前节点
+                    tempNextNode = nowNode;
+                case Finished:
+                    Assert.isTrue(configNextNode == null, "流程状态错误！不能直接完成此流程");
+            }
         }
+
 
         FlowNode nextNode = tempNextNode != null ? tempNextNode : configNextNode;
 
@@ -245,20 +271,12 @@ public class TaskManager {
                 .node(nowNode)
                 .ext(result.getExt())
                 .reason(result.getReason())
+                .action(result.getAction())
                 .operationUserId(loginUser.getUserId())
                 .operationUserName(loginUser.getUserName())
                 .task(task)
                 .build();
         nowTaskHistory.setCreatedTime(new Date());
-
-        //判断动作
-        if (tempNextNode == null || configNextNode==null || tempNextNode.getId().equals(configNextNode.getId())) {
-            //没有指定下一个任务或到达完成节点或者下一个任务与流程定义一致，说明任务运行正常
-            nowTaskHistory.setAction(TaskActionType.NORMAL);
-        }else {
-            //任务未按照配置流程顺序运行
-            nowTaskHistory.setAction(TaskActionType.ABNORMAL);
-        }
 
         if (nextNode == null) {
             //找不到最后的节点就说明任务完成
@@ -304,6 +322,21 @@ public class TaskManager {
                     .build());
         }
         return task;
+    }
+
+    /**
+     * 获取下一个流程节点
+     * @param nowNode
+     * @return
+     */
+    private FlowNode getNextFlowNode(FlowNode nowNode) {
+        Collection<FlowNode> nextNodes = nowNode.getNextNodes();
+        if (CollectionUtils.isNotEmpty(nextNodes)) {
+            // TODO: 2018/8/21 0021 此为第一期，暂时不做分支节点功能
+            //直接取第一个节点
+            return nextNodes.iterator().next();
+        }
+        return null;
     }
 
     public FlowTask findTaskByCode(String code) {
