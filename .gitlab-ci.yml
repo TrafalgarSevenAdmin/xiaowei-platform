@@ -161,7 +161,7 @@ release_expense:
  only:
    - release
  script:
-   - mvn  -Dmaven.test.skip=true -P dev clean package
+   - mvn  -Dmaven.test.skip=true -P release clean package
    - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
    - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME

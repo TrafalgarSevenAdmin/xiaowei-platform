@@ -53,14 +53,6 @@
               }
             ],
             "newsInfo": null
-          },
-          {
-            "type": "view",
-            "name": "个人中心",
-            "key": null,
-            "url": "http://gongdan.xwseries.com/xwkx-web/common/todo",
-            "subButtons": null,
-            "newsInfo": null
           }
         ]
       }
@@ -70,89 +62,34 @@
       "menu": {
         "buttons": [
           {
-            "type": null,
-            "name": "维修服务",
+            "type": "view",
+            "name": "我的工单",
             "key": null,
-            "url": null,
+            "url": "http://gongdan.xwseries.com/xwkx-web/engineer/enMyOrders",
             "value": null,
-            "subButtons": [
-              {
-                "type": "view",
-                "name": "快速报修",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/user/repairService",
-                "value": null,
-                "subButtons": null,
-                "newsInfo": null
-              },
-              {
-                "type": "view",
-                "name": "保修工单",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/user/myOrders",
-                "value": null,
-                "subButtons": null,
-                "newsInfo": null
-              }
-            ],
             "newsInfo": null
           },
           {
             "type": null,
-            "name": "工程师",
+            "name": "个人中心",
             "key": null,
             "url": null,
             "value": null,
             "subButtons": [
-              {
-                "type": "view",
-                "name": "我的工单",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/engineer/enMyOrders",
-                "value": null,
-                "subButtons": null,
-                "newsInfo": null
-              },
-              {
-                "type": "view",
-                "name": "个人中心",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/common/todo",
-                "subButtons": null,
-                "newsInfo": null
-              },
               {
                 "type": "view",
                 "name": "费用申请",
                 "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/common/todo",
-                "subButtons": null,
-                "newsInfo": null
-              }
-            ],
-            "newsInfo": null
-          },
-          {
-            "type": null,
-            "name": "行政服务",
-            "key": null,
-            "url": null,
-            "value": null,
-            "subButtons": [
-              {
-                "type": "view",
-                "name": "打卡",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/attend/map",
+                "url": "http://gongdan.xwseries.com/xwkx-web/expense/requestList",
                 "value": null,
                 "subButtons": null,
                 "newsInfo": null
               },
               {
                 "type": "view",
-                "name": "打卡记录",
+                "name": "费用报销",
                 "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/attend/list",
+                "url": "http://gongdan.xwseries.com/xwkx-web/expense/expenseList",
                 "value": null,
                 "subButtons": null,
                 "newsInfo": null
@@ -164,43 +101,33 @@
       }
     },
     {
-      "tagName": "开发",
+      "tagName": "派单员",
       "menu": {
         "buttons": [
           {
+            "type": "view",
+            "name": "我的工单",
+            "key": null,
+            "url": "http://gongdan.xwseries.com/xwkx-web/management/manOrderHome",
+            "value": null,
+            "newsInfo": null
+          },
+          {
             "type": null,
-            "name": "行政服务",
+            "name": "个人中心",
             "key": null,
             "url": null,
             "value": null,
             "subButtons": [
               {
                 "type": "view",
-                "name": "打卡",
+                "name": "审批中心",
                 "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/attend/map",
-                "value": null,
-                "subButtons": null,
-                "newsInfo": null
-              },
-              {
-                "type": "view",
-                "name": "打卡记录",
-                "key": null,
-                "url": "http://gongdan.xwseries.com/xwkx-web/attend/list",
-                "value": null,
+                "url": "http://gongdan.xwseries.com/xwkx-web/expense/approvalList",
                 "subButtons": null,
                 "newsInfo": null
               }
             ],
-            "newsInfo": null
-          },
-          {
-            "type": "view",
-            "name": "开发目录",
-            "key": null,
-            "url": "http://gongdan.xwseries.com/xwkx-web/catalog",
-            "value": null,
             "newsInfo": null
           }
         ]
