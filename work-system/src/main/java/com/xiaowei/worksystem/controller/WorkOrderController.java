@@ -60,6 +60,10 @@ public class WorkOrderController {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
         workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
+        if(workOrder.getEngineer()!=null){
+            //派单提醒通知
+            maintenanceOfDispatching(workOrder);
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
