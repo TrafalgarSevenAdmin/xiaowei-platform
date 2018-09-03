@@ -8,6 +8,8 @@ import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.SysUserDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -26,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @author mocker
- * @Date 2018-03-20 14:49:59
- * @Description 用户接口
- * @Version 1.0
+ * 用户管理
  */
 @Api(tags = "用户接口")
 @RestController
@@ -45,6 +44,7 @@ public class UserController {
     @ApiOperation(value = "添加用户")
     @AutoErrorHandler
     @PostMapping("")
+    @HandleLog(type = "添加用户", contentParams = {@ContentParam(useParamField = true, field = "sysUserDTO", value = "用户信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) SysUserDTO sysUserDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysUser user = BeanCopyUtils.copy(sysUserDTO, SysUser.class);
         user = sysUserService.saveUser(user);
@@ -55,6 +55,8 @@ public class UserController {
     @ApiOperation(value = "修改用户", notes = "只能修改loginName,roles,mobile和email")
     @AutoErrorHandler
     @PutMapping("/{userId}")
+    @HandleLog(type = "修改用户", contentParams = {@ContentParam(useParamField = true, field = "sysUserDTO", value = "用户信息"),
+            @ContentParam(useParamField = false, field = "userId", value = "用户id")})
     public Result update(@PathVariable("userId") String userId, @RequestBody @Validated(V.Update.class) SysUserDTO sysUserDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysUser user = BeanCopyUtils.copy(sysUserDTO, SysUser.class);
         user.setId(userId);
@@ -66,6 +68,7 @@ public class UserController {
     @ApiOperation(value = "启用/禁用")
     @AutoErrorHandler
     @PutMapping("/{userId}/status")
+    @HandleLog(type = "启用/禁用用户", contentParams = {@ContentParam(useParamField = false, field = "userId", value = "用户id")})
     public Result updateStatus(@PathVariable("userId") String userId, @RequestBody @Validated(SysUserDTO.UpdateStatus.class) SysUserDTO sysUserDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysUser user = BeanCopyUtils.copy(sysUserDTO, SysUser.class);
         user.setId(userId);
@@ -76,6 +79,7 @@ public class UserController {
     @ApiOperation(value = "修改自己账户的密码")
     @AutoErrorHandler
     @PutMapping("/password")
+    @HandleLog(type = "修改自己账户的密码", contentParams = {@ContentParam(useParamField = true, field = "sysUserDTO", value = "用户密码详情")})
     public Result updatePassword(@RequestBody @Validated(SysUserDTO.UpdatePassword.class) SysUserDTO sysUserDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysUser user = sysUserService.updatePassword(LoginUserUtils.getLoginUser().getId(),
                 sysUserDTO.getOldPassword(),sysUserDTO.getPassword());
@@ -85,6 +89,7 @@ public class UserController {
     @RequiresPermissions("account:user:delete")
     @ApiOperation("删除用户")
     @DeleteMapping("/{userId}")
+    @HandleLog(type = "删除用户", contentParams = {@ContentParam(useParamField = false, field = "userId", value = "用户id")})
     public Result delete(@PathVariable("userId") String userId) {
         //伪删除
         sysUserService.fakeDeleteUser(userId);

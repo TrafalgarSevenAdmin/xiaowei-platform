@@ -25,7 +25,6 @@ public class CompanyDTO {
     private String address;
 
     @ApiModelProperty(value = "公司logo")
-    @ParamField("公司logo")
     private String logo;
 
     @ApiModelProperty(value = "负责人")

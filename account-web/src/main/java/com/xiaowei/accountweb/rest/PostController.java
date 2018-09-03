@@ -8,6 +8,8 @@ import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.PostDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -42,6 +44,7 @@ public class PostController {
     @ApiOperation(value = "添加岗位")
     @AutoErrorHandler
     @PostMapping("")
+    @HandleLog(type = "添加岗位", contentParams = {@ContentParam(useParamField = true, field = "postDTO", value = "岗位信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) PostDTO postDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Post post = BeanCopyUtils.copy(postDTO, Post.class);
         post = postService.savePost(post);
@@ -53,6 +56,8 @@ public class PostController {
     @ApiOperation(value = "修改岗位")
     @AutoErrorHandler
     @PutMapping("/{postId}")
+    @HandleLog(type = "修改岗位", contentParams = {@ContentParam(useParamField = true, field = "postDTO", value = "岗位信息"),
+            @ContentParam(useParamField = false, field = "postId", value = "岗位id")})
     public Result update(@PathVariable("postId") String postId, @RequestBody @Validated(V.Update.class) PostDTO postDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Post post = BeanCopyUtils.copy(postDTO, Post.class);
         post.setId(postId);
@@ -65,6 +70,7 @@ public class PostController {
     @ApiOperation(value = "启用/禁用岗位")
     @AutoErrorHandler
     @PutMapping("/{postId}/status")
+    @HandleLog(type = "修改岗位", contentParams = {@ContentParam(useParamField = false, field = "postId", value = "岗位id")})
     public Result updateStatus(@PathVariable("postId") String postId, @RequestBody @Validated(PostDTO.UpdateStatus.class) PostDTO postDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Post post = BeanCopyUtils.copy(postDTO, Post.class);
         post.setId(postId);
@@ -102,6 +108,15 @@ public class PostController {
     public Result findById(@PathVariable("postId") String postId, FieldsView fieldsView) {
         Post post = postService.findById(postId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(post, fieldsView));
+    }
+
+    @RequiresPermissions("account:post:delete")
+    @ApiOperation("删除岗位")
+    @DeleteMapping("/{postId}")
+    @HandleLog(type = "删除岗位", contentParams = {@ContentParam(field = "postId", value = "岗位id")})
+    public Result delete(@PathVariable("postId") String postId, FieldsView fieldsView) {
+        postService.delete(postId);
+        return Result.getSuccess();
     }
 
 }

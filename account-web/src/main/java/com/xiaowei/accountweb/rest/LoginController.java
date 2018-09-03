@@ -6,6 +6,8 @@ import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.PermissionBean;
 import com.xiaowei.accountweb.dto.LoginSysUserDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import io.swagger.annotations.Api;
@@ -37,6 +39,7 @@ public class LoginController {
     @ApiOperation("登录")
     @PostMapping("/login")
     @AutoErrorHandler
+    @HandleLog(type = "登录", contentParams = {@ContentParam(useParamField = true, field = "loginSysUserDTO", value = "登录信息")})
     public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult){
         Subject subject = SecurityUtils.getSubject();
         subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
@@ -53,6 +56,7 @@ public class LoginController {
      */
     @ApiOperation("退出登录")
     @GetMapping("/logout")
+    @HandleLog(type = "退出登录")
     public Result logout(){
         SecurityUtils.getSubject().logout();
         return Result.getSuccess();

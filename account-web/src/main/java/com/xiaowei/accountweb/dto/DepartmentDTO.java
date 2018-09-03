@@ -1,6 +1,7 @@
 package com.xiaowei.accountweb.dto;
 
 import com.xiaowei.account.entity.Company;
+import com.xiaowei.commonlog4j.annotation.ParamField;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class DepartmentDTO {
      */
     @ApiModelProperty(value = "部门名称")
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "部门名称必填!")
+    @ParamField("部门名称")
     private String departmentName;
 
     /**
@@ -29,6 +31,7 @@ public class DepartmentDTO {
      * 简介
      */
     @ApiModelProperty(value = "简介")
+    @ParamField("简介")
     private String intro;
 
     @ApiModelProperty(value = "部门状态:0代表正常,1代表禁用")
@@ -41,6 +44,7 @@ public class DepartmentDTO {
      */
     @ApiModelProperty(value = "所属公司")
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "所属公司为空!")
+    @ParamField("所属公司")
     private Company company;
 
 }

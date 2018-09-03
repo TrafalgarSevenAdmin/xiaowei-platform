@@ -9,6 +9,8 @@ import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.RoleBean;
 import com.xiaowei.accountweb.dto.SysPermissionDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -48,6 +50,7 @@ public class PermissionController {
     @ApiOperation(value = "添加权限")
     @AutoErrorHandler
     @PostMapping("")
+    @HandleLog(type = "添加权限", contentParams = {@ContentParam(useParamField = true, field = "sysPermissionDTO", value = "权限信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) SysPermissionDTO sysPermissionDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysPermission permission = BeanCopyUtils.copy(sysPermissionDTO, SysPermission.class);
         permission = sysPermissionService.savePermission(permission);
@@ -59,6 +62,8 @@ public class PermissionController {
     @ApiOperation(value = "修改权限")
     @AutoErrorHandler
     @PutMapping("/{permissionId}")
+    @HandleLog(type = "修改权限", contentParams = {@ContentParam(useParamField = true, field = "sysPermissionDTO", value = "权限信息"),
+            @ContentParam(useParamField = false, field = "permissionId", value = "权限id")})
     public Result update(@PathVariable("permissionId") String permissionId, @RequestBody @Validated(V.Update.class) SysPermissionDTO sysPermissionDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysPermission permission = BeanCopyUtils.copy(sysPermissionDTO, SysPermission.class);
         permission.setId(permissionId);
@@ -70,6 +75,7 @@ public class PermissionController {
     @RequiresPermissions("account:permission:delete")
     @ApiOperation("删除权限")
     @DeleteMapping("/{permissionId}")
+    @HandleLog(type = "删除权限", contentParams = {@ContentParam(useParamField = false, field = "permissionId", value = "权限id")})
     public Result delete(@PathVariable("permissionId") String permissionId, FieldsView fieldsView) {
         sysPermissionService.deletePermission(permissionId);
         AccountUtils.loadUser();
@@ -82,9 +88,9 @@ public class PermissionController {
     public Result tree(String roleId) {
         List<SysPermission> permissions = sysPermissionService.findAll();
         Set<String> checkedIds;       //用于显示权限是否被勾选
-        if(!StringUtils.isEmpty(roleId)){
+        if (!StringUtils.isEmpty(roleId)) {
             checkedIds = sysPermissionService.findByRoleId(roleId).stream().collect(Collectors.toSet());
-        }else{
+        } else {
             checkedIds = new HashSet<>();
         }
         return Result.getSuccess(new JsonTreeCreater<SysPermission>(permissions,
@@ -92,16 +98,16 @@ public class PermissionController {
                 a -> StringUtils.isEmpty(a.getParentCode()) ? "0" : a.getParentCode(),
                 a -> a.getName(),
                 a -> {
-                    if(StringUtils.isEmpty(roleId)){
+                    if (StringUtils.isEmpty(roleId)) {
                         return false;
-                    }else{
+                    } else {
                         return checkedIds.contains(a.getId());
                     }
                 },
                 a -> {
                     Map<String, Object> dataMap = new HashMap<>();
                     dataMap.put("id", a.getId());
-                    dataMap.put("level",a.getLevel());
+                    dataMap.put("level", a.getLevel());
                     return dataMap;
                 },
                 a -> !LoginUserUtils.hasPermissionId(a.getId())
@@ -115,10 +121,10 @@ public class PermissionController {
         //权限查询接口设置默认条件
         setDefaultCondition(permissionQuery);
         if (permissionQuery.isNoPage()) {
-            List<SysPermission> permissions = sysPermissionService.query(permissionQuery,SysPermission.class);
+            List<SysPermission> permissions = sysPermissionService.query(permissionQuery, SysPermission.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(permissions, fieldsView));//以list形式返回,没有层级
         } else {
-            PageResult pageResult = sysPermissionService.queryPage(permissionQuery,SysPermission.class);
+            PageResult pageResult = sysPermissionService.queryPage(permissionQuery, SysPermission.class);
             pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
@@ -127,7 +133,7 @@ public class PermissionController {
     private void setDefaultCondition(PermissionQuery permissionQuery) {
         //默认只能查询当前登录用户所拥有的权限
         LoginUserBean loginUser = LoginUserUtils.getLoginUser();
-        if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
+        if (!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())) {
             permissionQuery.getRoleIds().addAll(loginUser.getRoles().stream().map(RoleBean::getId).collect(Collectors.toSet()));
         }
     }
@@ -137,7 +143,7 @@ public class PermissionController {
     @GetMapping("/{permissionId}")
     public Result findById(@PathVariable("permissionId") String permissionId, FieldsView fieldsView) {
         //根据id获取权限只能获取当前登录用户所拥有的权限
-        if(!LoginUserUtils.hasPermissionId(permissionId)){
+        if (!LoginUserUtils.hasPermissionId(permissionId)) {
             throw new UnauthorizedException("查询失败:没有权限查询该权限");
         }
         SysPermission permission = sysPermissionService.findById(permissionId);

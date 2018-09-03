@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.dto;
 
+import com.xiaowei.commonlog4j.annotation.ParamField;
 import io.swagger.annotations.ApiModelProperty;
 
 public class EvaluateDTO {
@@ -7,32 +8,38 @@ public class EvaluateDTO {
      * 评价等级
      */
     @ApiModelProperty(value = "评价等级")
+    @ParamField("评价等级")
     private String level;
     /**
      * 使用评价
      */
     @ApiModelProperty(value = "使用评价")
+    @ParamField("使用评价")
     private String useEvaluate;
     /**
      * 态度评价
      */
     @ApiModelProperty(value = "态度评价")
+    @ParamField("态度评价")
     private String mannerEvaluate;
     /**
      * 技能评价
      */
     @ApiModelProperty(value = "技能评价")
+    @ParamField("技能评价")
     private String skillEvaluate;
     /**
      * 速度评价
      */
     @ApiModelProperty(value = "速度评价")
+    @ParamField("速度评价")
     private String speedEvaluate;
 
     /**
      * 反馈意见
      */
     @ApiModelProperty(value = "反馈意见")
+    @ParamField("反馈意见")
     private String option;
 
     public String getLevel() {
