@@ -73,6 +73,15 @@ public class UserController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(user, fieldsView));
     }
 
+    @ApiOperation(value = "修改自己账户的密码")
+    @AutoErrorHandler
+    @PutMapping("/password")
+    public Result updatePassword(@RequestBody @Validated(SysUserDTO.UpdatePassword.class) SysUserDTO sysUserDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        SysUser user = sysUserService.updatePassword(LoginUserUtils.getLoginUser().getId(),
+                sysUserDTO.getOldPassword(),sysUserDTO.getPassword());
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(user, fieldsView));
+    }
+
     @RequiresPermissions("account:user:delete")
     @ApiOperation("删除用户")
     @DeleteMapping("/{userId}")

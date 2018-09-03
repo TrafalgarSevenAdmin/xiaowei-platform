@@ -21,16 +21,22 @@ import java.util.List;
 @ApiModel(value = "系统用户")
 public class SysUserDTO {
     public interface UpdateStatus{}
+    public interface UpdatePassword{}
 
     @ApiModelProperty(value = "登录用户名")
     @Size(min = 2,max = 20,groups = {V.Insert.class,V.Update.class},message = "登录名[2-20]位!")
     @NotBlank(groups = {V.Insert.class},message = "登录名必填!")
     private String loginName;
 
-    @Size(min = 5,max = 20,groups = {V.Insert.class},message = "密码[5-20]位!")
-    @NotBlank(groups = {V.Insert.class},message = "密码必填!")
+    @Size(min = 5,max = 20,groups = {V.Insert.class,UpdatePassword.class},message = "密码[5-20]位!")
+    @NotBlank(groups = {V.Insert.class,UpdatePassword.class},message = "密码必填!")
     @ApiModelProperty(value = "用户密码")
     private String password;
+
+    @Size(min = 5,max = 20,groups = {UpdatePassword.class},message = "原密码[5-20]位!")
+    @NotBlank(groups = {UpdatePassword.class},message = "原密码必填!")
+    @ApiModelProperty(value = "原密码")
+    private String oldPassword;
 
     @Pattern(regexp = "\\d{11}",groups = {V.Insert.class,V.Update.class},message = "手机号11位!")
     @ApiModelProperty(value = "手机号码")

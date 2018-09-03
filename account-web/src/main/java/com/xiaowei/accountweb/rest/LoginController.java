@@ -1,10 +1,10 @@
 package com.xiaowei.accountweb.rest;
 
 
-import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
+import com.xiaowei.accountcommon.PermissionBean;
 import com.xiaowei.accountweb.dto.LoginSysUserDTO;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = "登录接口")
 @RestController
@@ -37,7 +40,7 @@ public class LoginController {
     public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult){
         Subject subject = SecurityUtils.getSubject();
         subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
-        SysUser sysUser = sysUserService.findByLoginName(loginSysUserDTO.getLoginName());
+//        SysUser sysUser = sysUserService.findByLoginName(loginSysUserDTO.getLoginName());
         AccountUtils.loadUser();
         return Result.getSuccess(LoginUserUtils.getLoginUser());
     }
@@ -53,6 +56,28 @@ public class LoginController {
     public Result logout(){
         SecurityUtils.getSubject().logout();
         return Result.getSuccess();
+    }
+    /**
+     * 获取当前登录用户的信息
+     * @param
+     * @return
+     */
+    @ApiOperation("获取当前登录用户的信息")
+    @GetMapping("/userInfo")
+    public Result userInfo(){
+        return Result.getSuccess(LoginUserUtils.getLoginUser());
+    }
+
+    /**
+     * 获取当前登录用户的信息
+     * @param
+     * @return
+     */
+    @ApiOperation("获取当前登录用户的信息")
+    @GetMapping("/perCodes")
+    public Result perCodes(){
+        List<PermissionBean> permissions = LoginUserUtils.getLoginUser().getPermissions();
+        return Result.getSuccess(permissions.stream().map(PermissionBean::getSymbol).collect(Collectors.toSet()));
     }
 
 }

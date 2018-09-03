@@ -78,6 +78,22 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    public SysUser updatePassword(String userId, String oldPassword, String newPassword) {
+        SysUser user = sysUserRepository.getOne(userId);
+        //判断密码是否正确
+        String md5Password = DigestUtils.md5Hex(user.getSalt() + oldPassword);
+        if(user.getPassword().equals(md5Password)){
+            user.setPassword(newPassword);
+            //对密码进行加密
+            setPasswordOfUser(user);
+        }else{
+            throw new BusinessException("旧密码输入错误!");
+        }
+
+        return sysUserRepository.save(user);
+    }
+
+    @Override
     public Optional<SysUser> findByMobile(String mobile) {
         return sysUserRepository.findByMobile(mobile);
     }
@@ -130,7 +146,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
             throw new BusinessException("保存失败:没有传入对象id");
         }
         Optional<SysUser> optional = sysUserRepository.findById(userId);
-        EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+        EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         SysUser one = optional.get();
         //admin不允许修改状态
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
@@ -269,6 +285,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
      */
     private void judegeLoginName(String loginName) {
         SysUser user = sysUserRepository.findByLoginName(loginName);
-        EmptyUtils.assertObjectNotNull(user,"用户名重复");
+        EmptyUtils.assertObjectNotNull(user, "用户名重复");
     }
 }
