@@ -1,6 +1,7 @@
 package com.xiaowei.account.query;
 
 import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,6 +22,7 @@ public class RoleQuery extends Query {
     private String name;
     private Set<String> userIds = new HashSet<>();
     private String companyId;
+    private String companyId2;
     private Integer roleType;
 
     @Override
@@ -38,6 +40,10 @@ public class RoleQuery extends Query {
         }
         if (roleType != null) {
             addFilter(new Filter("roleType", Filter.Operator.eq, roleType));
+        }
+        if (StringUtils.isNotEmpty(companyId2)) {
+            addFilter(new Filter("company.id", Filter.Operator.eq, companyId2));
+            addFilter(new Filter("company.id", Filter.Operator.eq, Logic.or, companyId2));
         }
     }
 
