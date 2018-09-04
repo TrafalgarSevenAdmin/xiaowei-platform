@@ -96,5 +96,10 @@ public class SysUser extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Post post;
 
+    /**
+     * 身份证
+     */
+    private String card;
+
 
 }

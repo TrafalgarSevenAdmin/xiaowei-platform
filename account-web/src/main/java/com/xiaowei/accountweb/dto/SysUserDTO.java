@@ -74,5 +74,11 @@ public class SysUserDTO {
     @ApiModelProperty(value = "真实名称")
     @ParamField("真实名称")
     private String nickName;
+    /**
+     * 身份证
+     */
+    @ApiModelProperty(value = "身份证")
+    @ParamField("身份证")
+    private String card;
 
 }
