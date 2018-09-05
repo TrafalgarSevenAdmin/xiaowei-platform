@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
@@ -72,6 +73,10 @@ public class RequestWorkOrder extends BaseEntity {
      * 区县
      */
     private String county;
+
+    @Transient
+    @JsonIgnore
+    private List<Map<String, String>> repairFileStorePath;
 
     public List<Map<String, String>> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);

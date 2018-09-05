@@ -76,11 +76,10 @@ public class CompanyServiceImpl extends BaseServiceImpl<Company> implements ICom
             if (StringUtils.isEmpty(companyId)) {
                 throw new BusinessException("保存失败:没有传入对象id");
             }
-            Company one = companyRepository.getOne(companyId);
-            if (one == null) {
-                throw new BusinessException("保存失败:没有查询到需要修改的对象");
-            }
+            Optional<Company> optional = companyRepository.findById(companyId);
 
+            EmptyUtils.assertOptional(optional,"保存失败:没有查询到需要修改的对象");
+            Company one = optional.get();
 
             //如果名称没有修改,则不发sql验证,否则发送sql验证name唯一性
             if (!one.getCompanyName().equals(companyName)) {

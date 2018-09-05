@@ -8,6 +8,8 @@ import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.DepartmentDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -41,6 +43,7 @@ public class DepartmentController {
     @ApiOperation(value = "添加部门")
     @AutoErrorHandler
     @PostMapping("")
+    @HandleLog(type = "添加部门", contentParams = {@ContentParam(useParamField = true, field = "departmentDTO", value = "部门信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) DepartmentDTO departmentDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Department department = BeanCopyUtils.copy(departmentDTO, Department.class);
         department = departmentService.saveDepartment(department);
@@ -52,6 +55,8 @@ public class DepartmentController {
     @ApiOperation(value = "修改部门")
     @AutoErrorHandler
     @PutMapping("/{departmentId}")
+    @HandleLog(type = "修改部门", contentParams = {@ContentParam(useParamField = true, field = "departmentDTO", value = "部门信息"),
+            @ContentParam(useParamField = false, field = "departmentId", value = "部门id")})
     public Result update(@PathVariable("departmentId") String departmentId, @RequestBody @Validated(V.Update.class) DepartmentDTO departmentDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Department department = BeanCopyUtils.copy(departmentDTO, Department.class);
         department.setId(departmentId);
@@ -64,6 +69,7 @@ public class DepartmentController {
     @ApiOperation(value = "启用/禁用部门")
     @AutoErrorHandler
     @PutMapping("/{departmentId}/status")
+    @HandleLog(type = "启用/禁用部门", contentParams = {@ContentParam(field = "departmentId", value = "部门id")})
     public Result updateStatus(@PathVariable("departmentId") String departmentId, @RequestBody @Validated(DepartmentDTO.UpdateStatus.class) DepartmentDTO departmentDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Department department = BeanCopyUtils.copy(departmentDTO, Department.class);
         department.setId(departmentId);
@@ -101,6 +107,15 @@ public class DepartmentController {
     public Result findById(@PathVariable("departmentId") String departmentId, FieldsView fieldsView) {
         Department department = departmentService.findById(departmentId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(department, fieldsView));
+    }
+
+    @RequiresPermissions("account:department:delete")
+    @ApiOperation("删除部门")
+    @DeleteMapping("/{departmentId}")
+    @HandleLog(type = "删除部门", contentParams = {@ContentParam(field = "departmentId", value = "部门id")})
+    public Result delete(@PathVariable("departmentId") String departmentId, FieldsView fieldsView) {
+        departmentService.delete(departmentId);
+        return Result.getSuccess();
     }
 
 }

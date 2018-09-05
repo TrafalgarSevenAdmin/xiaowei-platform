@@ -22,6 +22,7 @@ import java.util.List;
 @Where(clause = "delete_flag <> true")
 public class SysUser extends BaseEntity {
 
+    @Column(updatable = false,unique = true)
     private String code;
 
     /**
@@ -95,6 +96,11 @@ public class SysUser extends BaseEntity {
     @JoinColumn(name = "post_id")
     @Fetch(FetchMode.JOIN)
     private Post post;
+
+    /**
+     * 身份证
+     */
+    private String card;
 
 
 }

@@ -39,4 +39,5 @@ public interface ISysUserService extends IBaseService<SysUser> {
 
     List<SysUser> findFromCompanys();
 
+    SysUser updatePassword(String userId, String oldPassword, String newPassword);
 }
