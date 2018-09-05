@@ -54,6 +54,7 @@ public class Company extends BaseEntity {
     @ManyToOne(targetEntity = SysUser.class)
     @JoinColumn(name = "principal_id")
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private SysUser principal;
 
     /**

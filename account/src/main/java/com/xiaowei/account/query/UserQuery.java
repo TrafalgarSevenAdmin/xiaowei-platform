@@ -4,6 +4,7 @@ import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
+import com.xiaowei.core.query.rundi.query.Sort;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,12 +19,13 @@ public class UserQuery extends Query {
     private Set<String> roleIds = new HashSet<>();
     private String companyId;
     private String departmentId;
-    private String postCode;
+    private String postId;
     private String roleCode;
     private String mobile;
 
     @Override
     public void generateCondition() {
+        addSort(Sort.Dir.desc, "loginName");
         addFilter(new Filter("loginName", Filter.Operator.neq, SuperUser.ADMINISTRATOR_NAME));
         if (StringUtils.isNotEmpty(loginName)) {
             addFilter(new Filter("loginName", Filter.Operator.like,Logic.or, "%" + loginName + "%"));
@@ -45,9 +47,9 @@ public class UserQuery extends Query {
             setDistinct(true);
             addFilter(new Filter("department.id", Filter.Operator.eq, departmentId));
         }
-        if (StringUtils.isNotEmpty(postCode)) {
+        if (StringUtils.isNotEmpty(postId)) {
             setDistinct(true);
-            addFilter(new Filter("post.code", Filter.Operator.eq, postCode));
+            addFilter(new Filter("post.id", Filter.Operator.eq, postId));
         }
         if (StringUtils.isNotEmpty(mobile)) {
             addFilter(new Filter("mobile", Filter.Operator.eq, mobile));
