@@ -22,6 +22,7 @@ import java.util.List;
 @Where(clause = "delete_flag <> true")
 public class SysUser extends BaseEntity {
 
+    @Column(updatable = false,unique = true)
     private String code;
 
     /**

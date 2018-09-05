@@ -13,6 +13,7 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -23,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +43,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     private SysUserRepository sysUserRepository;
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private ShardedJedisPool shardedJedisPool;
 
     public SysUserServiceImpl(@Qualifier("sysUserRepository") BaseRepository repository) {
         super(repository);
@@ -175,6 +180,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
             if (!CollectionUtils.isEmpty(user.getRoles())) {
                 judgeHaveRoles(LoginUserUtils.getLoginUser().getRoles().stream().map(RoleBean::getId).collect(Collectors.toSet()), user.getRoles().stream().map(SysRole::getId).collect(Collectors.toSet()));
             }
+            user.setCode(getCurrentDayMaxCode());
         } else if (judgeType.equals(JudgeType.UPDATE)) {//修改
             if (loginName.equals(SuperUser.ADMINISTRATOR_NAME)) {
                 throw new BusinessException("保存失败:" + SuperUser.ADMINISTRATOR_NAME + "不允许修改用户名");
@@ -211,6 +217,32 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
                 setPasswordOfUser(user);
             }
         }
+    }
+
+    /**
+     * 获取当天最大的员工编号
+     *
+     * @return
+     */
+    private String getCurrentDayMaxCode() {
+        String code = "EM" + DateUtils.getCurrentDate();
+        String incr;
+        ShardedJedis resource = shardedJedisPool.getResource();
+        if (!resource.exists(code)) {
+            resource.setex(code, 86400, "1");//24小时有效期
+            incr = 1 + "";
+        } else {
+            if (999 == Long.valueOf(resource.get(code))) {
+                throw new BusinessException("编码数量超出范围");
+            } else {
+                incr = resource.incr(code) + "";
+            }
+        }
+        int len = 4 - incr.length();
+        for (int i = 0; i < len; i++) {
+            incr = "0" + incr;
+        }
+        return code + incr;
     }
 
     /**

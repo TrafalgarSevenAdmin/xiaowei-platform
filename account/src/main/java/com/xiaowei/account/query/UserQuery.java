@@ -2,6 +2,7 @@ package com.xiaowei.account.query;
 
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,12 +20,14 @@ public class UserQuery extends Query {
     private String departmentId;
     private String postCode;
     private String roleCode;
+    private String mobile;
 
     @Override
     public void generateCondition() {
         addFilter(new Filter("loginName", Filter.Operator.neq, SuperUser.ADMINISTRATOR_NAME));
         if (StringUtils.isNotEmpty(loginName)) {
-            addFilter(new Filter("loginName", Filter.Operator.like, "%" + loginName + "%"));
+            addFilter(new Filter("loginName", Filter.Operator.like,Logic.or, "%" + loginName + "%"));
+            addFilter(new Filter("nickName", Filter.Operator.like,Logic.or, "%" + loginName + "%"));
         }
         if (StringUtils.isNotEmpty(roleCode)) {
             setDistinct(true);
@@ -45,6 +48,9 @@ public class UserQuery extends Query {
         if (StringUtils.isNotEmpty(postCode)) {
             setDistinct(true);
             addFilter(new Filter("post.code", Filter.Operator.eq, postCode));
+        }
+        if (StringUtils.isNotEmpty(mobile)) {
+            addFilter(new Filter("mobile", Filter.Operator.eq, mobile));
         }
     }
 
