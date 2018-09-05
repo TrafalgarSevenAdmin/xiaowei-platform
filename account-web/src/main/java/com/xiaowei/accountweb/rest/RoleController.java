@@ -9,6 +9,8 @@ import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.SysRoleDTO;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -47,6 +49,7 @@ public class RoleController {
     @ApiOperation(value = "添加角色", notes = "添加字段name,comment,company")
     @AutoErrorHandler
     @PostMapping("")
+    @HandleLog(type = "添加角色", contentParams = {@ContentParam(useParamField = true, field = "sysRoleDTO", value = "角色信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) SysRoleDTO sysRoleDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysRole sysRole = BeanCopyUtils.copy(sysRoleDTO, SysRole.class);
         sysRole = sysRoleService.saveRole(sysRole);
@@ -58,6 +61,8 @@ public class RoleController {
     @ApiOperation(value = "修改角色", notes = "只能修改name,comment,parentId")
     @AutoErrorHandler
     @PutMapping("/{roleId}")
+    @HandleLog(type = "修改岗位", contentParams = {@ContentParam(useParamField = true, field = "sysRoleDTO", value = "角色信息"),
+            @ContentParam(useParamField = false, field = "roleId", value = "角色id")})
     public Result update(@PathVariable("roleId") String roleId, @RequestBody @Validated(V.Update.class) SysRoleDTO sysRoleDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         SysRole sysRole = BeanCopyUtils.copy(sysRoleDTO, SysRole.class);
         sysRole.setId(roleId);
@@ -69,6 +74,7 @@ public class RoleController {
     @RequiresPermissions("account:role:delete")
     @ApiOperation("删除角色")
     @DeleteMapping("/{roleId}")
+    @HandleLog(type = "删除角色", contentParams = {@ContentParam(field = "roleId", value = "角色id")})
     public Result delete(@PathVariable("roleId") String roleId, FieldsView fieldsView) {
         sysRoleService.deleteRole(roleId);
         AccountUtils.loadUser();

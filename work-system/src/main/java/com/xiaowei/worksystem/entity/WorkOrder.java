@@ -6,6 +6,7 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,26 @@ import java.util.Map;
 @SQLDelete(sql = "update w_workorder set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class WorkOrder extends BaseEntity {
+
+    /**
+     * 流程模板
+     */
+    @ManyToOne(targetEntity = Equipment.class)
+    @JoinColumn(name = "workflow_id")
+    @Fetch(FetchMode.JOIN)
+    private WorkFlow workFlow;
+    /**
+     * 终审人
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "pigeonholed_id")
+    @Fetch(FetchMode.JOIN)
+    private SysUser pigeonholedUser;
+
+    /**
+     * 终审时间
+     */
+    private Date pigeonholedTime;
 
     /**
      * 工单编号
@@ -139,6 +161,10 @@ public class WorkOrder extends BaseEntity {
      * 区县
      */
     private String county;
+
+    @Transient
+    @JsonIgnore
+    private List<Map<String, String>> repairFileStorePath;
 
     public List<Map<String, String>> getRepairFileStorePath() {
         return UploadConfigUtils.transIdsToPath(this.repairFileStore);

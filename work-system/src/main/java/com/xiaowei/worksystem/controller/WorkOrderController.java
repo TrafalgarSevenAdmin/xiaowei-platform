@@ -2,6 +2,8 @@ package com.xiaowei.worksystem.controller;
 
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -53,6 +55,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("order:workorder:add")
+    @HandleLog(type = "添加工单", contentParams = {@ContentParam(useParamField = true, field = "workOrderDTO", value = "工单信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
                          String workFlowId,
@@ -60,6 +63,10 @@ public class WorkOrderController {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
         workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
+        if(workOrder.getEngineer()!=null){
+            //派单提醒通知
+            maintenanceOfDispatching(workOrder);
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
@@ -67,6 +74,8 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PostMapping("/{workOrderId}/evaluate")
     @RequiresPermissions("order:workorder:evaluate")
+    @HandleLog(type = "添加评价", contentParams = {@ContentParam(useParamField = true, field = "evaluateDTO", value = "评价信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result insertEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
         evaluate = evaluateService.saveEvaluate(workOrderId, evaluate);
@@ -77,6 +86,8 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/{workOrderId}")
     @RequiresPermissions("order:workorder:update")
+    @HandleLog(type = "修改工单", contentParams = {@ContentParam(useParamField = true, field = "workOrderDTO", value = "工单信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result update(@PathVariable("workOrderId") String workOrderId,
                          @RequestBody @Validated(V.Update.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
@@ -102,6 +113,8 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/distribute/{workOrderId}")
     @RequiresPermissions("order:workorder:distribute")
+    @HandleLog(type = "派单", contentParams = {@ContentParam(useParamField = true, field = "workOrderDTO", value = "工单信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result distributeWorkOrder(@PathVariable("workOrderId") String workOrderId,
                                       @RequestBody @Validated(WorkOrderDTO.DistributeWorkOrder.class) WorkOrderDTO workOrderDTO,
                                       BindingResult bindingResult, FieldsView fieldsView) throws Exception {
@@ -175,6 +188,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/departe/{workOrderId}")
     @RequiresPermissions("order:workorder:departe")
+    @HandleLog(type = "工程师出发", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result departeWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody String wkt, FieldsView fieldsView) throws Exception {
         workOrderService.departeWorkOrder(workOrderId, GeometryUtil.transWKT(wkt));
         return Result.getSuccess();
@@ -184,6 +198,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/inhand/{workOrderId}")
     @RequiresPermissions("order:workorder:inhand")
+    @HandleLog(type = "工程师开始处理", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result inhandWorkOrder(@PathVariable("workOrderId") String workOrderId,
                                   @RequestBody @Validated(V.Insert.class) DepartWorkOrderDTO departWorkOrderDTO,
                                   BindingResult bindingResult,
@@ -198,6 +213,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/finishInhand/{workOrderId}")
     @RequiresPermissions("order:workorder:finishInhand")
+    @HandleLog(type = "工程师处理完成", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result finishInhand(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.finishInhand(workOrderId);
         //处理完成通知
@@ -210,6 +226,8 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/received/{workOrderId}")
     @RequiresPermissions("order:workorder:received")
+    @HandleLog(type = "工程师接单", contentParams = {@ContentParam(useParamField = false, field = "receive", value = "是否接单"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result receivedWorkOrder(@PathVariable("workOrderId") String workOrderId, @RequestBody Boolean receive, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.receivedWorkOrder(workOrderId, receive);
         if (receive) {
@@ -255,6 +273,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/pigeonholed/{workOrderId}")
     @RequiresPermissions("order:workorder:pigeonholed")
+    @HandleLog(type = "工单终审", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result pigeonholed(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.pigeonholed(workOrderId);
         return Result.getSuccess();
@@ -264,6 +283,7 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/appointing/{workOrderId}")
     @RequiresPermissions("order:workorder:appointing")
+    @HandleLog(type = "工程师预约", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result appointingWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
         workOrderService.appointingWorkOrder(workOrderId);
         return Result.getSuccess();
@@ -325,6 +345,7 @@ public class WorkOrderController {
     @ApiOperation("删除工单")
     @DeleteMapping("/{workOrderId}")
     @RequiresPermissions("order:workorder:delete")
+    @HandleLog(type = "删除工单", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result delete(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) {
         workOrderService.delete(workOrderId);
         return Result.getSuccess("删除成功");

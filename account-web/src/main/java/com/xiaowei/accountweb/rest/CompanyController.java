@@ -51,6 +51,8 @@ public class CompanyController {
     @ApiOperation(value = "修改公司")
     @AutoErrorHandler
     @PutMapping("/{companyId}")
+    @HandleLog(type = "修改公司", contentParams = {@ContentParam(useParamField = true, field = "companyDTO", value = "公司信息"),
+            @ContentParam(useParamField = false, field = "companyId", value = "公司id")})
     public Result update(@PathVariable("companyId") String companyId, @RequestBody @Validated(V.Update.class) CompanyDTO companyDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Company company = BeanCopyUtils.copy(companyDTO, Company.class);
         company.setId(companyId);
@@ -63,6 +65,7 @@ public class CompanyController {
     @ApiOperation(value = "启用/禁用公司")
     @AutoErrorHandler
     @PutMapping("/{companyId}/status")
+    @HandleLog(type = "启用/禁用公司", contentParams = {@ContentParam(field = "companyId", value = "公司id")})
     public Result updateStatus(@PathVariable("companyId") String companyId, @RequestBody @Validated(CompanyDTO.UpdateStatus.class) CompanyDTO companyDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Company company = BeanCopyUtils.copy(companyDTO, Company.class);
         company.setId(companyId);
@@ -98,6 +101,15 @@ public class CompanyController {
     public Result findById(@PathVariable("companyId") String companyId, FieldsView fieldsView) {
         Company company = companyService.findById(companyId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(company, fieldsView));
+    }
+
+    @RequiresPermissions("account:company:delete")
+    @ApiOperation("删除公司")
+    @DeleteMapping("/{companyId}")
+    @HandleLog(type = "删除公司", contentParams = {@ContentParam(field = "companyId", value = "公司id")})
+    public Result delete(@PathVariable("companyId") String companyId, FieldsView fieldsView) {
+        companyService.delete(companyId);
+        return Result.getSuccess();
     }
 
 

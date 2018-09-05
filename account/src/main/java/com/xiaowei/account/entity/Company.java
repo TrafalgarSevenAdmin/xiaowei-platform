@@ -1,5 +1,6 @@
 package com.xiaowei.account.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
@@ -59,6 +60,10 @@ public class Company extends BaseEntity {
      * 简介
      */
     private String intro;
+
+    @Transient
+    @JsonIgnore
+    private List<Map<String, String>> logoPath;
 
     public List<Map<String, String>> getLogoPath() {
         return UploadConfigUtils.transIdsToPath(this.logo);

@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.service.impl;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
@@ -14,7 +15,11 @@ import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
-import com.xiaowei.worksystem.entity.*;
+import com.xiaowei.worksystem.entity.EngineerWork;
+import com.xiaowei.worksystem.entity.Equipment;
+import com.xiaowei.worksystem.entity.ServiceItem;
+import com.xiaowei.worksystem.entity.WorkOrder;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import com.xiaowei.worksystem.repository.*;
 import com.xiaowei.worksystem.repository.flow.WorkFlowItemRepository;
 import com.xiaowei.worksystem.service.IWorkOrderService;
@@ -55,6 +60,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private XwOrderRepository orderRepository;
     @Autowired
     private RequestWorkOrderRepository requestWorkOrderRepository;
+    @Autowired
+    private SysUserRepository userRepository;
 
     /**
      * 消息发送服务
@@ -74,6 +81,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         judgeAttribute(workOrder, JudgeType.INSERT);
         workOrderRepository.save(workOrder);
         if (StringUtils.isNotEmpty(workFlowId)) {
+            WorkFlow workFlow = new WorkFlow();
+            workFlow.setId(workFlowId);
+            workOrder.setWorkFlow(workFlow);
             //设置服务项目
             setServiceItems(workOrder, workFlowId);
         }
@@ -159,6 +169,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (StringUtils.isNotEmpty(workFlowId)) {
             //先删除服务项目
             serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
+            WorkFlow workFlow = new WorkFlow();
+            workFlow.setId(workFlowId);
+            workOrder.setWorkFlow(workFlow);
             //再重新保存服务项目
             setServiceItems(workOrder, workFlowId);
         }
@@ -462,6 +475,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.PIGEONHOLED.getStatus());//工单状态变更为归档
+        //终审人,终审时间
+        workOrder.setPigeonholedTime(new Date());
+        workOrder.setPigeonholedUser(userRepository.getOne(LoginUserUtils.getLoginUser().getId()));
         return workOrderRepository.save(workOrder);
     }
 
