@@ -62,8 +62,8 @@ public class SubscribeHandler extends AbstractHandler {
 
         try {
             return new TextBuilder().build("欢迎关注晓维快修！有维修，找晓维快修！\n" +
-                    "电话预约：400000000\n" +
-                    "请先绑定您的手机，以便我们为您提供服务，", wxMessage, weixinService);
+                    "电话预约：400-1121-599\n" +
+                    "请先绑定您的手机，以便我们为您提供服务。", wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
