@@ -33,7 +33,7 @@ public class CustomerController {
 
     @ApiOperation("获取所有区县")
     @GetMapping("/countys")
-    @RequiresPermissions("order:customer:info:countys")
+//    @RequiresPermissions("order:customer:info:countys")
     public Result getCountys() {
         List<String> countys = customerService.getCountys();
         return Result.getSuccess(countys);
@@ -41,7 +41,7 @@ public class CustomerController {
 
     @ApiOperation("获取区县下的服务对象")
     @GetMapping("/customerOfCountys")
-    @RequiresPermissions("order:customer:info:byCounty")
+//    @RequiresPermissions("order:customer:info:byCounty")
     public Result getCustomerOfCountys(String county) {
         List<Customer> customers = customerService.getCustomerByCountys(county);
         return Result.getSuccess(customers);
