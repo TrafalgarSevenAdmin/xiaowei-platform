@@ -54,7 +54,6 @@ public class ExpenseFormQuery extends Query {
         //根据复审通过时间过滤
         if (b_secondAuditTime != null && e_secondAuditTime != null) {
             addFilter(new Filter("secondAuditTime", Filter.Operator.between, b_secondAuditTime, e_secondAuditTime));
-            addFilter(new Filter("status", Filter.Operator.eq, ExpenseFormStatus.SECONDAUDIT.getStatus()));
         }
         //根据员工过滤
         if (StringUtils.isNotEmpty(userId)) {
