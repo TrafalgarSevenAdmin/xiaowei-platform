@@ -48,4 +48,5 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder finishedExpense(String workOrderCode);
 
+    void pigeonholedStatus(String engineerWorkId, Integer pigeonholedStatus);
 }

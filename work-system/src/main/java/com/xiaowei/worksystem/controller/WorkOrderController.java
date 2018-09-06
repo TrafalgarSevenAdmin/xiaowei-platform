@@ -279,6 +279,17 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "签到审核")
+    @AutoErrorHandler
+    @PutMapping("/pigeonholedStatus")
+    @RequiresPermissions("order:workorder:pigeonholed")
+    @HandleLog(type = "工单终审", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
+    public Result pigeonholedStatus(@RequestParam("engineerWorkId") String engineerWorkId,
+                                    @RequestParam("pigeonholedStatus") Integer pigeonholedStatus,FieldsView fieldsView) throws Exception {
+        workOrderService.pigeonholedStatus(engineerWorkId, pigeonholedStatus);
+        return Result.getSuccess();
+    }
+
     @ApiOperation(value = "工程师预约")
     @AutoErrorHandler
     @PutMapping("/appointing/{workOrderId}")

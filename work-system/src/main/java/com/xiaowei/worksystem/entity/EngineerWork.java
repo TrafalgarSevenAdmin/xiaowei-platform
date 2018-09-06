@@ -62,6 +62,10 @@ public class EngineerWork extends BaseEntity {
      */
     private Integer arriveStatus;
     /**
+     * 审核状态
+     */
+    private Integer pigeonholedStatus;
+    /**
      * 到达图片
      */
     private String arriveFileStore;
