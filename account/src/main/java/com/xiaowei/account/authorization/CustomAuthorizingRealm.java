@@ -1,16 +1,19 @@
 package com.xiaowei.account.authorization;
 
+import com.google.common.collect.Lists;
+import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
-import com.xiaowei.accountcommon.LoginUserBean;
-import com.xiaowei.accountcommon.LoginUserUtils;
-import com.xiaowei.accountcommon.PermissionBean;
+import com.xiaowei.accountcommon.*;
+import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -18,7 +21,9 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +86,22 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
         String loginName = (String) authenticationToken.getPrincipal();
         String password = new String((char[])authenticationToken.getCredentials());
 
+        //若是微信登陆且为访客用户，就直接登陆并标识为访客用户
+        if ((authenticationToken instanceof WxUserLoginToken) && AccountConst.GUEST_USER_NAME.equals(loginName)) {
+            return new SimpleAuthenticationInfo(new LoginUserBean(
+                    "guest",
+                    "guest",
+                    null,
+                    null,
+                    "访客",
+                    UserStatus.NORMAL.getStatus(),
+                    Collections.EMPTY_LIST,
+                    Collections.EMPTY_LIST,
+                    null,
+                    null,
+                    null
+            ), password, getName());
+        }
 
         //判断用户是否存在
         SysUser sysUser = ContextUtils.getApplicationContext().getBean(ISysUserService.class).findByLoginName(loginName);

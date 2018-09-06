@@ -1,6 +1,7 @@
 package com.xiaowei.wechat.controller;
 
 import com.xiaowei.account.authorization.WxUserLoginToken;
+import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysRoleService;
@@ -122,7 +123,6 @@ public class WechatAuthController {
             //给个普通用户的标签。
             List<WxUserTag> wxUserTags = wxMpService.getUserTagService().tagGet();
             wxUserService.setUserTag(user.getOpenId(),"普通用户",wxUserTags);
-//            throw new BusinessException("此手机号数据不存在，请联系管理员");
         }
         //登陆
         Subject subject = SecurityUtils.getSubject();
@@ -195,9 +195,14 @@ public class WechatAuthController {
             if (user.getSysUser() == null) {
                 //微信中的这个用户是否绑定了我们的系统用户
                 request.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
+                //如果没有绑定，就以访客身份登陆
                 request.getSession().setAttribute("redirect", getLastCallBack(state));
-                //在绑定后,重新访问路由即可
-                response.sendRedirect(serverInfoProperties.getPreBind());
+                Subject subject = SecurityUtils.getSubject();
+                subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME));
+                AccountUtils.loadUser();
+                String url  = getLastCallBack(state);
+                //在以访客身份登陆后,重新访问路由即可
+                response.sendRedirect(url);
             } else {
                 //在此做登陆，就是向前端写统一的登陆cookies
                 String loginName = wxUserOptional.get().getSysUser().getLoginName();

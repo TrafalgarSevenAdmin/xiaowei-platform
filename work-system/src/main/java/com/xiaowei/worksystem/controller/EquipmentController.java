@@ -42,7 +42,7 @@ public class EquipmentController {
 
     @ApiOperation("根据服务对象id获取其下所有的设备")
     @GetMapping("/{customerId}/equipments")
-    @RequiresPermissions("order:customer:info:equipments")
+//    @RequiresPermissions("order:customer:info:equipments")
     public Result findBycustomerId(@PathVariable("customerId") String customerId, FieldsView fieldsView) {
         List<Equipment> equipments = equipmentService.findBycustomerId(customerId);
         return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));
