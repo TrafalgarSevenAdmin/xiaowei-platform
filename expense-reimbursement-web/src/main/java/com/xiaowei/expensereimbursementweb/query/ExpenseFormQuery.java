@@ -3,7 +3,6 @@ package com.xiaowei.expensereimbursementweb.query;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.query.rundi.query.Sort;
-import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
