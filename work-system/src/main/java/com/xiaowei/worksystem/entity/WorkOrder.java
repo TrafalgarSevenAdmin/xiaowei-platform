@@ -31,7 +31,7 @@ public class WorkOrder extends BaseEntity {
     /**
      * 流程模板
      */
-    @ManyToOne(targetEntity = Equipment.class)
+    @ManyToOne(targetEntity = WorkFlow.class)
     @JoinColumn(name = "workflow_id")
     @Fetch(FetchMode.JOIN)
     private WorkFlow workFlow;

@@ -39,12 +39,13 @@ public class SubscribeHandler extends AbstractHandler {
         if (userWxInfo != null) {
             WxUser user = BeanCopyUtils.copy(userWxInfo, WxUser.class);
             //添加关注用户到本地
-            wxUserService.saveOrUpdate(user);
-            Optional<WxUser> byOpenId = wxUserService.findByOpenId(user.getOpenId());
-            user = byOpenId.get();
+            user = wxUserService.saveOrUpdate(user);
             //如果存在真实名称就设置这个用户的备注
-            if (user.getSysUser() != null && StringUtils.isNotEmpty(user.getSysUser().getNickName())) {
-                weixinService.getUserService().userUpdateRemark(userWxInfo.getOpenId(),user.getSysUser().getNickName());
+            if (user.getSysUser() != null) {
+                if (StringUtils.isNotEmpty(user.getSysUser().getNickName())) {
+                    weixinService.getUserService().userUpdateRemark(userWxInfo.getOpenId(), user.getSysUser().getNickName());
+                }
+                wxUserService.syncUserTag(user.getSysUser(), user.getOpenId());
             }
         }
 
@@ -61,8 +62,8 @@ public class SubscribeHandler extends AbstractHandler {
 
         try {
             return new TextBuilder().build("欢迎关注晓维快修！有维修，找晓维快修！\n" +
-                    "电话预约：400000000\n" +
-                    "请先绑定您的手机，以便我们为您提供服务，", wxMessage, weixinService);
+                    "电话预约：400-1121-599\n" +
+                    "请先绑定您的手机，以便我们为您提供服务。", wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }

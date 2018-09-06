@@ -166,12 +166,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
 //        }
         //判断loginName是否唯一
         String loginName = user.getLoginName();
+        String mobile = user.getMobile();
         if (StringUtils.isEmpty(loginName)) {
             throw new BusinessException("保存失败:用户名为空");
         }
+        if (StringUtils.isEmpty(mobile)) {
+            throw new BusinessException("保存失败:电话号码为空");
+        }
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             //验证loginName唯一性
-            judegeLoginName(loginName);
+            judgeLoginName(loginName);
+            //验证电话号码唯一性
+            judgeMobile(mobile);
             //判断是否超出了当前登录用户的角色
             if (!CollectionUtils.isEmpty(user.getRoles())) {
                 judgeHaveRoles(LoginUserUtils.getLoginUser().getRoles().stream().map(RoleBean::getId).collect(Collectors.toSet()), user.getRoles().stream().map(SysRole::getId).collect(Collectors.toSet()));
@@ -197,7 +203,12 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
                 if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
                     throw new BusinessException("保存失败:" + SuperUser.ADMINISTRATOR_NAME + "不允许修改用户名");
                 }
-                judegeLoginName(loginName);
+                judgeLoginName(loginName);
+            }
+
+            if (!one.getMobile().equals(mobile)) {
+                //验证电话号码唯一性
+                judgeMobile(mobile);
             }
 
             //验证修改用户的角色是否有权限操作
@@ -285,8 +296,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
      *
      * @param loginName
      */
-    private void judegeLoginName(String loginName) {
-        SysUser user = sysUserRepository.findByLoginName(loginName);
-        EmptyUtils.assertObjectNotNull(user, "用户名重复");
+    private void judgeLoginName(String loginName) {
+        SysUser user1 = sysUserRepository.findByLoginName(loginName);
+        EmptyUtils.assertObjectNotNull(user1, "用户名重复");
+    }
+
+    /**
+     * 验证电话号码唯一性
+     *
+     * @param mobile
+     */
+    private void judgeMobile(String mobile) {
+        Optional<SysUser> optional = sysUserRepository.findByMobile(mobile);
+        EmptyUtils.assertOptionalNot(optional, "电话号码重复");
     }
 }

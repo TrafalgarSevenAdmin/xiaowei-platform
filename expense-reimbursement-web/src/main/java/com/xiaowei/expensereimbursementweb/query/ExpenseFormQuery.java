@@ -3,7 +3,6 @@ package com.xiaowei.expensereimbursementweb.query;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.query.rundi.query.Sort;
-import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -54,7 +53,6 @@ public class ExpenseFormQuery extends Query {
         //根据复审通过时间过滤
         if (b_secondAuditTime != null && e_secondAuditTime != null) {
             addFilter(new Filter("secondAuditTime", Filter.Operator.between, b_secondAuditTime, e_secondAuditTime));
-            addFilter(new Filter("status", Filter.Operator.eq, ExpenseFormStatus.SECONDAUDIT.getStatus()));
         }
         //根据员工过滤
         if (StringUtils.isNotEmpty(userId)) {
