@@ -257,6 +257,8 @@ public class WechatAuthController {
         if (StringUtils.isEmpty(serverInfoProperties.getHost())) {
             String url = request.getRequestURL().toString();
             String host = url.substring(0, url.indexOf(request.getRequestURI()));
+            //移除掉端口号
+            host = host.split(":")[0];
             serverInfoProperties.setHost(host);
         }
         String uid = null;
