@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -146,15 +147,14 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         if (StringUtils.isEmpty(roleId)) {
             throw new BusinessException("删除失败:没有传入对象id");
         }
-        SysRole one = sysRoleRepository.getOne(roleId);
-        if (one == null) {
-            throw new BusinessException("删除失败:没有查询到需要删除的对象");
-        }
+        Optional<SysRole> optional = sysRoleRepository.findById(roleId);
+        EmptyUtils.assertOptional(optional,"没有查询到需要删除的角色");
         //删除角色判断当前登录用户是否拥有被删除的角色的权限
         if (!LoginUserUtils.hasRoleId(roleId)) {
             throw new UnauthorizedException("保存失败:没有权限删除该角色");
         }
-
+        //删除角色的权限,用户
+        sysRoleRepository.deleteUserRoleByRoleId(roleId);
         sysRoleRepository.deleteById(roleId);
     }
 

@@ -5,7 +5,6 @@ import com.xiaowei.account.entity.Department;
 import com.xiaowei.account.entity.Post;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.commonlog4j.annotation.ParamField;
-import com.xiaowei.core.constants.PatternConstant;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -47,7 +46,6 @@ public class SysUserDTO {
     @ParamField("手机号码")
     private String mobile;
 
-    @Pattern(regexp = PatternConstant.EMAIL,groups = {V.Insert.class,V.Update.class},message = "邮箱格式不正确")
     @ApiModelProperty(value = "电子邮箱")
     @ParamField("电子邮箱")
     private String email;

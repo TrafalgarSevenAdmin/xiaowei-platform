@@ -30,4 +30,8 @@ public interface SysRoleRepository extends BaseRepository<SysRole> {
 
     @Query("select r from SysRole r where r.code in :codes")
     List<SysRole> findByCodeIn(@Param("codes") Set<String> codes);
+
+    @Modifying
+    @Query(value = "delete from sys_user_role where ROLE_ID = ?1",nativeQuery = true)
+    void deleteUserRoleByRoleId(String roleId);
 }

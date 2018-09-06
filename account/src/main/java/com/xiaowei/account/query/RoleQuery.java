@@ -4,6 +4,7 @@ import com.xiaowei.account.consts.RoleType;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
+import com.xiaowei.core.query.rundi.query.Sort;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,7 @@ public class RoleQuery extends Query {
 
     @Override
     public void generateCondition() {
-
+        addSort(Sort.Dir.desc, "name");
         if (StringUtils.isNotEmpty(name)) {
             addFilter(new Filter("name", Filter.Operator.like, "%" + name + "%"));
         }
