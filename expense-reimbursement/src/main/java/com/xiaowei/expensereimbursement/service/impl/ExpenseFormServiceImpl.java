@@ -128,7 +128,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         for (ExpenseFormItem expenseFormItem : expenseFormItems) {
             total = total + expenseFormItem.getFillFigure();
             if (subjectCodes.contains(expenseFormItem.getSubjectCode())) {
-                throw new BusinessException("报销费用科目重复!");
+//                throw new BusinessException("报销费用科目重复!");
             } else {
                 subjectCodes.add(expenseFormItem.getSubjectCode());
             }

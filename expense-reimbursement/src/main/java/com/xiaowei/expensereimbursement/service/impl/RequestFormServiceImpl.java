@@ -64,7 +64,7 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         for (RequestFormItem requestFormItem : requestFormItems) {
             total = total + requestFormItem.getFillFigure();
             if (subjectCodes.contains(requestFormItem.getSubjectCode())) {
-                throw new BusinessException("报销费用科目重复!");
+//                throw new BusinessException("报销费用科目重复!");
             } else {
                 subjectCodes.add(requestFormItem.getSubjectCode());
             }
