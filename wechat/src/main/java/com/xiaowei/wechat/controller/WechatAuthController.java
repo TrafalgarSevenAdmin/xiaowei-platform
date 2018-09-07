@@ -7,6 +7,7 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.query.rundi.query.Filter;
@@ -199,7 +200,7 @@ public class WechatAuthController {
                 request.getSession().setAttribute("redirect", getLastCallBack(state));
                 Subject subject = SecurityUtils.getSubject();
                 subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME));
-                AccountUtils.loadUser();
+                subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,AccountConst.GUEST_USER_INFO);
                 String url  = getLastCallBack(state);
                 //在以访客身份登陆后,重新访问路由即可
                 response.sendRedirect(url);
