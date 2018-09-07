@@ -1,11 +1,13 @@
 package com.xiaowei.account.service.impl;
 
+import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.SysUserRepository;
+import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.RoleBean;
@@ -13,12 +15,15 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.Account;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,6 +47,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private ISysRoleService sysRoleService;
+
     public SysUserServiceImpl(@Qualifier("sysUserRepository") BaseRepository repository) {
         super(repository);
     }
@@ -55,6 +63,24 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     public SysUser saveUser(SysUser user) {
         //判定参数是否合规
         judgeAttribute(user, JudgeType.INSERT);
+
+        //对密码进行加密
+        setPasswordOfUser(user);
+
+        //默认正常状态
+        user.setStatus(UserStatus.NORMAL.getStatus());
+        //规定id为null
+        user.setId(null);
+        user.setCreatedTime(new Date());
+        sysUserRepository.save(user);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public SysUser registerUser(SysUser user) {
+        //判定参数是否合规
+        judgeAttribute(user, JudgeType.REGISTER);
 
         //对密码进行加密
         setPasswordOfUser(user);
@@ -223,6 +249,21 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
                 //对密码进行加密
                 setPasswordOfUser(user);
             }
+        } else if (judgeType.equals(JudgeType.REGISTER)) {//注册
+            //验证loginName唯一性
+            judgeLoginName(loginName);
+            //验证电话号码唯一性
+            judgeMobile(mobile);
+            //判断是否超出了当前登录用户的角色
+            List<SysRole> registerRoles = sysRoleService.query(new Query().addFilter(Filter.eq("code", AccountConst.REGISTER_ROLE_CODE)));
+            if (!CollectionUtils.isEmpty(user.getRoles())) {
+                //若分配了角色，则判断分配的角色是否超过限制
+                judgeHaveRoles(registerRoles.stream().map(SysRole::getId).collect(Collectors.toSet()), user.getRoles().stream().map(SysRole::getId).collect(Collectors.toSet()));
+            } else {
+                //若未分配角色，则分配默认的注册角色
+                user.setRoles(registerRoles);
+            }
+            user.setCode(StringPYUtils.getSpellCode("EM"));
         }
     }
 

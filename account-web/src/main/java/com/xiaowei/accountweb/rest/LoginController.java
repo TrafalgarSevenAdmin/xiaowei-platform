@@ -5,7 +5,7 @@ import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.PermissionBean;
-import com.xiaowei.accountweb.dto.LoginSysUserDTO;
+import com.xiaowei.account.bean.LoginSysUserDTO;
 import com.xiaowei.commonlog4j.annotation.ContentParam;
 import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.result.Result;

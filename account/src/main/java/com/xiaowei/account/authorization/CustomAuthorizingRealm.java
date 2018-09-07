@@ -88,19 +88,7 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
 
         //若是微信登陆且为访客用户，就直接登陆并标识为访客用户
         if ((authenticationToken instanceof WxUserLoginToken) && AccountConst.GUEST_USER_NAME.equals(loginName)) {
-            return new SimpleAuthenticationInfo(new LoginUserBean(
-                    "guest",
-                    "guest",
-                    null,
-                    null,
-                    "访客",
-                    UserStatus.NORMAL.getStatus(),
-                    Collections.EMPTY_LIST,
-                    Collections.EMPTY_LIST,
-                    null,
-                    null,
-                    null
-            ), password, getName());
+            return new SimpleAuthenticationInfo(AccountConst.GUEST_USER_INFO, password, getName());
         }
 
         //判断用户是否存在

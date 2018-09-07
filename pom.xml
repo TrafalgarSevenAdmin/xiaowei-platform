@@ -78,6 +78,7 @@
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>admin</datasource.password>
                 <redis.url>127.0.0.1</redis.url>
+                <redis.password></redis.password>
                 <fluentd.url>192.168.1.218</fluentd.url>
                 <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>192.168.1.218</rabbitmq.host>
@@ -102,6 +103,7 @@
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>192.168.1.218</redis.url>
+                <redis.password></redis.password>
                 <fluentd.url>192.168.1.218</fluentd.url>
                 <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>192.168.1.218</rabbitmq.host>
@@ -127,6 +129,7 @@
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
                 <redis.url>119.23.224.29</redis.url>
+                <redis.password>xw-redis-123456789</redis.password>
                 <fluentd.url>119.23.224.29</fluentd.url>
                 <fluentd.port>24224</fluentd.port>
                 <rabbitmq.host>119.23.224.29</rabbitmq.host>

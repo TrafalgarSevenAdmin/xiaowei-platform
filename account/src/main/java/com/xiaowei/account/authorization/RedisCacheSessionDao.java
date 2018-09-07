@@ -28,8 +28,8 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisCacheSessionDao.class);
 
-    //12小时的超时时间
-    private int sessionTimeOut = 60*12;
+    //8小时的超时时间
+    private int sessionTimeOut = 60*8;
 
     private final static String PREFIX = "USER_";
 
@@ -38,7 +38,7 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
     protected Serializable doCreate(Session session) {
         String id = DigestUtils.md5Hex(PREFIX + UUID.randomUUID().toString());
         assignSessionId(session,id);
-        redisTemplate.opsForValue().set(id, session,sessionTimeOut, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(id, session,sessionTimeOut, TimeUnit.MINUTES);
 
         //添加当前到活跃用户中
         redisTemplate.opsForSet().add(AccountConst.ON_LINE_USER_KEY,id);

@@ -1,12 +1,12 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
 
+import com.xiaowei.account.bean.LoginSysUserDTO;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
-import com.xiaowei.expensereimbursementweb.dto.LoginSysUserDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;

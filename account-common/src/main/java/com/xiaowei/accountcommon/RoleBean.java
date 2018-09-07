@@ -1,5 +1,6 @@
 package com.xiaowei.accountcommon;
 
+
 import java.io.Serializable;
 
 /**
