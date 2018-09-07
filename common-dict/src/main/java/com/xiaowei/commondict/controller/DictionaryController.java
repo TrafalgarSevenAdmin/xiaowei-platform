@@ -8,17 +8,21 @@ import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.core.tree.JsonTreeCreater;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "字典接口")
 @RestController
@@ -58,6 +62,25 @@ public class DictionaryController {
             pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
         }
+    }
+
+    @ApiOperation("字典树查询")
+    @GetMapping("/tree")
+    public Result tree() {
+        final List<Dictionary> dictionaries = dictionaryService.findAll();
+        return Result.getSuccess(new JsonTreeCreater<Dictionary>(dictionaries,
+                item -> item.getId(),
+                a -> StringUtils.isEmpty(a.getParentId()) ? "0" : a.getParentId(),
+                a -> a.getName(),
+                a -> false,
+                a -> {
+                    Map<String, Object> dataMap = new HashMap<>();
+                    dataMap.put("parentId", a.getParentId());
+                    dataMap.put("ownCode", a.getOwnCode());
+                    return dataMap;
+                },
+                a -> false
+        ).create());//以树形式返回
     }
 
     @ApiOperation("根据id获取字典")
