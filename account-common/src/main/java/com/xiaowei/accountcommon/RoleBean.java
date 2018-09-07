@@ -1,6 +1,5 @@
 package com.xiaowei.accountcommon;
 
-import lombok.Builder;
 
 import java.io.Serializable;
 

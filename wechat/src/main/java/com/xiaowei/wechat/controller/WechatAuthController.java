@@ -124,9 +124,8 @@ public class WechatAuthController {
             sysUser = sysUserService.registerUser(sysUser);
             user.setSysUser(sysUser);
             wxUserService.save(user);
-            //给个普通用户的标签。
-            List<WxUserTag> wxUserTags = wxMpService.getUserTagService().tagGet();
-            wxUserService.setUserTag(user.getOpenId(),"普通用户",wxUserTags);
+            //同步用户标签
+            wxUserService.syncUserTag(sysUser,user.getOpenId());
         }
         //登陆
         Subject subject = SecurityUtils.getSubject();

@@ -122,9 +122,9 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
      */
     @Override
     public void setUserTag(String openId, String tag, List<WxUserTag> wxUserTags) throws WxErrorException {
-        Optional<WxUserTag> first = wxUserTags.stream().filter(wxTag -> !wxTag.getName().equals(tag)).findFirst();
+        Optional<WxUserTag> first = wxUserTags.stream().filter(wxTag -> wxTag.getName().equals(tag)).findFirst();
         WxUserTag wxUserTag = null;
-        if (first.isPresent()) {
+        if (!first.isPresent()) {
             wxUserTag = wxMpService.getUserTagService().tagCreate(tag);
         } else {
             wxUserTag = first.get();
