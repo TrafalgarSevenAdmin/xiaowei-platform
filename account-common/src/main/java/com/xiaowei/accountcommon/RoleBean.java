@@ -1,10 +1,13 @@
 package com.xiaowei.accountcommon;
 
+import lombok.Builder;
+
 import java.io.Serializable;
 
 /**
  * 角色的值对象
  */
+@Builder
 public class RoleBean implements Serializable {
 
     private String id;

@@ -3,6 +3,7 @@ package com.xiaowei.account.service;
 
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.service.IBaseService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,12 @@ public interface ISysUserService extends IBaseService<SysUser> {
     void fakeDeleteUser(String userId);
 
     SysUser updateStatus(SysUser user);
+
+    /**
+     * 注册用户
+     */
+    @Transactional
+    SysUser registerUser(SysUser user);
 
     /**
      * 根据用户名查询用户

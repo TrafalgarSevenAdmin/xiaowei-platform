@@ -117,9 +117,7 @@ public class WechatAuthController {
             sysUser.setMobile(bindMobileDTO.getMobile());
             sysUser.setStatus(0);
             sysUser.setNickName(bindMobileDTO.getName());
-            //设置用户为普通用户角色
-            sysUser.setRoles(sysRoleService.query(new Query().addFilter(Filter.eq("code", "PTYH"))));
-            sysUser = sysUserService.saveUser(sysUser);
+            sysUser = sysUserService.registerUser(sysUser);
             user.setSysUser(sysUser);
             wxUserService.save(user);
             //给个普通用户的标签。
@@ -198,13 +196,13 @@ public class WechatAuthController {
                 //微信中的这个用户是否绑定了我们的系统用户
                 request.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
                 //如果没有绑定，就以访客身份登陆
-                request.getSession().setAttribute("redirect", getLastCallBack(state));
+                String lastCallBack = getLastCallBack(state);
+                request.getSession().setAttribute("redirect", lastCallBack);
                 Subject subject = SecurityUtils.getSubject();
                 subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME));
                 subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,AccountConst.GUEST_USER_INFO);
-                String url  = getLastCallBack(state);
                 //在以访客身份登陆后,重新访问路由即可
-                response.sendRedirect(url);
+                response.sendRedirect(lastCallBack);
             } else {
                 //在此做登陆，就是向前端写统一的登陆cookies
                 String loginName = wxUserOptional.get().getSysUser().getLoginName();
