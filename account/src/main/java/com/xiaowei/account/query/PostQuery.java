@@ -11,6 +11,7 @@ public class PostQuery extends Query {
 
     private String companyId;
     private String postName;
+    private String level;
 
     @Override
     public void generateCondition() {
@@ -20,6 +21,9 @@ public class PostQuery extends Query {
         }
         if (StringUtils.isNotEmpty(postName)) {
             addFilter(new Filter("postName", Filter.Operator.like, "%" + postName + "%"));
+        }
+        if (StringUtils.isNotEmpty(level)) {
+            addFilter(new Filter("level", Filter.Operator.eq, level));
         }
     }
 }
