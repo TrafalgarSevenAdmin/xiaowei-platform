@@ -7,7 +7,6 @@ import java.io.Serializable;
 /**
  * 角色的值对象
  */
-@Builder
 public class RoleBean implements Serializable {
 
     private String id;

@@ -25,8 +25,7 @@ public class AccountConst {
             null,
             "访客",
             UserStatus.NORMAL.getStatus(),
-            // 由于设计用户注册时，其
-            Arrays.asList(RoleBean.builder().id("3").build()),
+            Collections.EMPTY_LIST,
             Collections.EMPTY_LIST,
             null,
             null,
