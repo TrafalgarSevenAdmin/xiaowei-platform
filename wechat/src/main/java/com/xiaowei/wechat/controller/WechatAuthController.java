@@ -1,12 +1,14 @@
 package com.xiaowei.wechat.controller;
 
 import com.xiaowei.account.authorization.WxUserLoginToken;
+import com.xiaowei.account.bean.LoginSysUserDTO;
 import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
@@ -30,9 +32,11 @@ import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -276,4 +280,39 @@ public class WechatAuthController {
         response.sendRedirect(url);
     }
 
+    /**
+     * 用户登录
+     * @param loginSysUserDTO
+     * @return
+     */
+    @ApiOperation("用户名密码登陆并绑定")
+    @PostMapping("/login")
+    @AutoErrorHandler
+    public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult,HttpServletRequest request){
+        //绑定手机号
+        String openId = (String)request.getSession().getAttribute("openId");
+        if (StringUtils.isEmpty(openId)) {
+            throw new BusinessException("来源错误！");
+        }
+        Optional<WxUser> wxUserOptional = wxUserService.findByOpenId(openId);
+        EmptyUtils.assertOptionalNot(wxUserOptional,"未能获取到您的信息!");
+        WxUser wxUser = wxUserOptional.get();
+        EmptyUtils.assertObjectNotNull(wxUser.getSysUser(),"此微信:"+wxUser.getNickname()+"已绑定账号!");
+
+        //用户名密码登陆
+        Subject subject = SecurityUtils.getSubject();
+        subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
+        LoginUserBean loginUser = (LoginUserBean) subject.getPrincipal();
+        SysUser sysUser = sysUserService.findById(loginUser.getId());
+        loginUser = AccountUtils.toLoginBean(sysUser);
+        //覆盖掉session中存储的用户
+        subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,loginUser);
+
+        //默认可以绑定多个微信号，所以在此不做判断
+        // 绑定本微信
+        wxUser.setSysUser(sysUser);
+        wxUserService.saveOrUpdate(wxUser);
+
+        return Result.getSuccess(loginUser);
+    }
 }

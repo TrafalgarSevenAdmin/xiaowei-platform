@@ -1,10 +1,10 @@
 package com.xiaowei.attendancesystem.controller;
 
+import com.xiaowei.account.bean.LoginSysUserDTO;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.PermissionBean;
-import com.xiaowei.attendancesystem.dto.LoginSysUserDTO;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import io.swagger.annotations.Api;
