@@ -18,9 +18,9 @@ public class ExpenseFormQuery extends Query {
     private String workOrderCode;
     private String firstAuditId;
     private String secondAuditId;
-    @DateTimeFormat(pattern = "yyyy-MM-dd Hh:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date b_secondAuditTime;
-    @DateTimeFormat(pattern = "yyyy-MM-dd Hh:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date e_secondAuditTime;
     private String departmentId;
     private String userId;

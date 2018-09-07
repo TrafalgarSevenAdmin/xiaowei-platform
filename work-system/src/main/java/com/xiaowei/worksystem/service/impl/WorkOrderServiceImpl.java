@@ -582,6 +582,21 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
+     *  签到审核
+     * @param engineerWorkId
+     * @param pigeonholedStatus
+     */
+    @Override
+    @Transactional
+    public void pigeonholedStatus(String engineerWorkId, Integer pigeonholedStatus) {
+        Optional<EngineerWork> optional = engineerWorkRepository.findById(engineerWorkId);
+        EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+        EngineerWork engineerWork = optional.get();
+        engineerWork.setPigeonholedStatus(pigeonholedStatus);
+        engineerWorkRepository.save(engineerWork);
+    }
+
+    /**
      * 设置服务项目
      *
      * @param workOrder

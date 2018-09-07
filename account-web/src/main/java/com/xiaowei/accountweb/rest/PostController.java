@@ -70,7 +70,7 @@ public class PostController {
     @ApiOperation(value = "启用/禁用岗位")
     @AutoErrorHandler
     @PutMapping("/{postId}/status")
-    @HandleLog(type = "修改岗位", contentParams = {@ContentParam(useParamField = false, field = "postId", value = "岗位id")})
+    @HandleLog(type = "启用/禁用岗位", contentParams = {@ContentParam(useParamField = false, field = "postId", value = "岗位id")})
     public Result updateStatus(@PathVariable("postId") String postId, @RequestBody @Validated(PostDTO.UpdateStatus.class) PostDTO postDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Post post = BeanCopyUtils.copy(postDTO, Post.class);
         post.setId(postId);

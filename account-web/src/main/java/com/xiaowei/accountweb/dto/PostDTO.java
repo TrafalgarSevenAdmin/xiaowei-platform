@@ -31,7 +31,7 @@ public class PostDTO {
      * 岗位级别
      */
     @ApiModelProperty(value = "岗位级别")
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "岗位级别必填!")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "岗位级别必填!")
     @ParamField("岗位级别")
     private String level;
     /**
