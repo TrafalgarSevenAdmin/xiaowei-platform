@@ -114,6 +114,7 @@ public class WechatAuthController {
             sysUser.setLoginName(bindMobileDTO.getMobile());
             sysUser.setPassword("123456");//默认密码
             sysUser.setCreatedTime(new Date());
+            sysUser.setMobile(bindMobileDTO.getMobile());
             sysUser.setStatus(0);
             sysUser.setNickName(bindMobileDTO.getName());
             //设置用户为普通用户角色
