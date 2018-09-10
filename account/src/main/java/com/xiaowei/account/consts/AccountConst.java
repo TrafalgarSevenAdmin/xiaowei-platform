@@ -9,7 +9,8 @@ import java.util.Collections;
 
 public class AccountConst {
 
-    public final static String ON_LINE_USER_KEY = "ON_LINE_USER_KEY";
+    //在线用户列表，redis键
+    public final static String ON_LINE_USER_KEY = "SYSTEM:USERS:ON_LINE_USER_KEY";
 
     // 注册时默认分配的用户角色
     public final static String REGISTER_ROLE_CODE = "PTYH";

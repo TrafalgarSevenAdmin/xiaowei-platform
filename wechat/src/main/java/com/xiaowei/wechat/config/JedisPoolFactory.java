@@ -17,7 +17,7 @@ public class JedisPoolFactory {
     @Bean
     public JedisPool getJedisPool(){
         JedisPoolConfig config = new JedisPoolConfig();
-        JedisPool pool = new JedisPool(config,properties.getHost(),properties.getPort(),100);
+        JedisPool pool = new JedisPool(config, properties.getHost(), properties.getPort(), 100, properties.getPassword(), false);
         return pool;
     }
 }
