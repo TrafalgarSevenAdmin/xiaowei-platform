@@ -66,6 +66,9 @@ public class BaseUploadController {
     @ApiOperation(value = "根据id数组获取文件")
     @GetMapping("/byid")
     public Result upload(@RequestParam("ids") String[] ids){
+        if(ids.length==0){
+            return null;
+        }
         Set<String> fileIds = new HashSet<>();
         for (String id : ids) {
             fileIds.addAll(Arrays.stream(id.split(";")).collect(Collectors.toSet()));

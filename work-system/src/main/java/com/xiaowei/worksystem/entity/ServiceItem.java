@@ -108,11 +108,4 @@ public class ServiceItem extends BaseEntity{
      */
     private String qualityFileStore;
 
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> qualityFileStorePath;
-
-    public List<Map<String, String>> getQualityFileStorePath() {
-        return UploadConfigUtils.transIdsToPath(this.qualityFileStore);
-    }
 }

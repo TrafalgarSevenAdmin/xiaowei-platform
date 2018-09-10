@@ -1,8 +1,10 @@
 package com.xiaowei.commonupload.entity;
 
 
+import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -45,4 +47,10 @@ public class FileStore extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date checkDate;
 
+    public String getPath() {
+        if (StringUtils.isNotEmpty(this.path)) {
+            return UploadConfigUtils.getAccessUrlRoot() + this.path;
+        }
+        return path;
+    }
 }
