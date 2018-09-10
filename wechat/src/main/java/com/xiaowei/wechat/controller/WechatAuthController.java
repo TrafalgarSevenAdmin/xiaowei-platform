@@ -294,7 +294,7 @@ public class WechatAuthController {
             throw new BusinessException("来源错误！");
         }
         Optional<WxUser> wxUserOptional = wxUserService.findByOpenId(openId);
-        EmptyUtils.assertOptionalNot(wxUserOptional,"未能获取到您的信息!");
+        EmptyUtils.assertOptional(wxUserOptional,"未能获取到您的信息!");
         WxUser wxUser = wxUserOptional.get();
         EmptyUtils.assertObjectNotNull(wxUser.getSysUser(),"此微信:"+wxUser.getNickname()+"已绑定账号!");
 
