@@ -61,9 +61,12 @@ public class SubscribeHandler extends AbstractHandler {
         }
 
         try {
-            return new TextBuilder().build("欢迎关注晓维快修！有维修，找晓维快修！\n" +
-                    "电话预约：400-1121-599\n" +
-                    "请先绑定您的手机，以便我们为您提供服务。", wxMessage, weixinService);
+            return new TextBuilder().build("终于等到你，晓维快修竭诚为您服务！\n" +
+                    "\n" +
+                    "快修服务：晓维快修14年专注于提供商显设备、自助设备、安防等设备的专业维修服务。在【快速报修】--> 【我要报修】一键免付报修，体验极速上门服务。\n" +
+                    "在【快速报修】--> 【我的工单】可查看工单服务进展和详情\n" +
+                    "\n" +
+                    "热线电话：400-1121-599", wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
