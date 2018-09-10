@@ -1,9 +1,12 @@
 package com.xiaowei.accountweb.rest;
 
+import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.query.CompanyQuery;
 import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.account.utils.AccountUtils;
+import com.xiaowei.accountcommon.LoginUserBean;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.CompanyDTO;
 import com.xiaowei.commonlog4j.annotation.ContentParam;
 import com.xiaowei.commonlog4j.annotation.HandleLog;
@@ -92,7 +95,10 @@ public class CompanyController {
     }
 
     private void setDefaultCondition(CompanyQuery companyQuery) {
-
+        LoginUserBean loginUser = LoginUserUtils.getLoginUser();
+        if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
+            companyQuery.setCompanyId(loginUser.getCompanyBean().getId());
+        }
     }
 
     @RequiresPermissions("account:company:get")
