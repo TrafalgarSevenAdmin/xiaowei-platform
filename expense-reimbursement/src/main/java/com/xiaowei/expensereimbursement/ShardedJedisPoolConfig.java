@@ -1,5 +1,6 @@
 package com.xiaowei.expensereimbursement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,7 @@ public class ShardedJedisPoolConfig {
         jedisPoolConfig.setMaxWaitMillis(10000);
         List<JedisShardInfo> jedisShardInfos = new ArrayList<>();
         JedisShardInfo e = new JedisShardInfo(redisHost);
-        e.setPassword(redisPassword);
+        e.setPassword(StringUtils.isNoneBlank(redisPassword)?redisPassword:null);
         jedisShardInfos.add(e);
         return new ShardedJedisPool(jedisPoolConfig, jedisShardInfos);
     }
