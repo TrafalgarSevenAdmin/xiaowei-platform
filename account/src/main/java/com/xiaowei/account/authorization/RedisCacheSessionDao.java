@@ -65,6 +65,6 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
         redisTemplate.opsForValue().getOperations().delete(REDIS_GROUP_PREFIX+session.getId());
 
         //从活跃用户中删除当前退出的用户
-        redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY,REDIS_GROUP_PREFIX+session.getId());
+        redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY,session.getId().toString());
     }
 }
