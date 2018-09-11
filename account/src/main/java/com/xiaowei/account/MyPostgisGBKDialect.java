@@ -13,6 +13,9 @@ public class MyPostgisGBKDialect extends PostgisPG95Dialect {
     }
 
     public String renderOrderByElement(String expression, String collation, String order, NullPrecedence nulls) {
+        System.out.println(expression);
+        System.out.println(collation);
+        System.out.println(nulls);
         expression = (new StringBuilder("convert_to(")).append(expression).append(",'gbk')").toString();
         return super.renderOrderByElement(expression, collation, order, nulls);
     }
