@@ -23,7 +23,6 @@ public class SysRoleDTO {
     private String name;
 
     @ApiModelProperty(value = "角色说明")
-    @Size(min = 1,max = 255,groups = {V.Insert.class,V.Update.class},message = "角色说明[1-200]位!")
     @ParamField("角色说明")
     private String comment;
 

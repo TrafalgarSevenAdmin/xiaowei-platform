@@ -2,6 +2,7 @@ package com.xiaowei.account.query;
 
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
+import com.xiaowei.core.query.rundi.query.Sort;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,6 +18,7 @@ public class CompanyQuery extends Query {
 
     @Override
     public void generateCondition() {
+        addSort(Sort.Dir.asc, "companyName");
         if (StringUtils.isNotEmpty(companyId)) {
             addFilter(new Filter("id", Filter.Operator.eq, companyId));
         }

@@ -22,7 +22,7 @@ spring:
       ddl-auto: update
     show-sql: true
     database: postgresql
-    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+    database-platform: com.xiaowei.account.MyPostgisGBKDialect
   thymeleaf:
     cache: false
     cache-period: 0
