@@ -59,13 +59,13 @@ public class BaseUploadController {
         FileStore fileStore = uploadService.upload(fileModel);
         Map<String, Object> map = new HashMap<>();
         map.put("id", fileStore.getId());
-        map.put("path", uploadConfigBean.getAccessUrlRoot() + fileStore.getPath());
+        map.put("path", fileStore.getPath());
 
         return Result.getSuccess(map);
     }
     @ApiOperation(value = "根据id数组获取文件")
     @GetMapping("/byid")
-    public Result upload(@RequestParam("ids") String[] ids){
+    public Result byid(@RequestParam("ids") String[] ids){
         if(ids.length==0){
             return null;
         }
