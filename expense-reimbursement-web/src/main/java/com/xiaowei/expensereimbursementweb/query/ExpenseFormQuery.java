@@ -63,6 +63,7 @@ public class ExpenseFormQuery extends Query {
         }
         //根据科目编码过滤
         if (StringUtils.isNotEmpty(subjectCodeLike)) {
+            setDistinct(true);
             addFilter(new Filter("expenseFormItems.subjectCode", Filter.Operator.like, subjectCodeLike + "%"));
         }
 
