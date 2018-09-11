@@ -1,5 +1,7 @@
 package com.xiaowei.worksystem.controller;
 
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -48,6 +50,8 @@ public class ServiceItemController {
     @AutoErrorHandler
     @PostMapping("/{workOrderId}/engineer")
     @RequiresPermissions("order:serviceitem:add")
+    @HandleLog(type = "工程师添加收费项目", contentParams = {@ContentParam(useParamField = true, field = "serviceItemDTOs", value = "项目信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result insertByEngineer(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) List<ServiceItemDTO> serviceItemDTOs, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         List<ServiceItem> serviceItems = BeanCopyUtils.copyList(serviceItemDTOs, ServiceItem.class);
         serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
@@ -88,6 +92,8 @@ public class ServiceItemController {
     @ApiOperation(value = "工程师执行服务项目")
     @PutMapping("/{serviceItemId}/execute")
     @RequiresPermissions("order:serviceitem:execute")
+    @HandleLog(type = "工程师添加收费项目", contentParams = {@ContentParam(useParamField = true, field = "executeServiceItemDTO", value = "执行信息"),
+            @ContentParam(useParamField = false, field = "serviceItemId", value = "项目id")})
     public Result executeServiceItem(@PathVariable("serviceItemId") String serviceItemId, ExecuteServiceItemDTO executeServiceItemDTO, FieldsView fieldsView) throws Exception {
         ServiceItem serviceItem = serviceItemService.executeServiceItem(serviceItemId,
                 executeServiceItemDTO.getQualityFileStore(),
@@ -98,6 +104,8 @@ public class ServiceItemController {
     @ApiOperation(value = "质检服务项目")
     @PutMapping("/{serviceItemId}/quality")
     @RequiresPermissions("order:serviceitem:quality")
+    @HandleLog(type = "工程师添加收费项目", contentParams = {@ContentParam(useParamField = false, field = "audit", value = "是否通过"),
+            @ContentParam(useParamField = false, field = "serviceItemId", value = "项目id")})
     public Result qualityServiceItem(@PathVariable("serviceItemId") String serviceItemId, @RequestBody Boolean audit, FieldsView fieldsView) throws Exception {
         ServiceItem serviceItem = serviceItemService.qualityServiceItem(serviceItemId, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(serviceItem, fieldsView));
