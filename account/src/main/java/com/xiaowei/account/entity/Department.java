@@ -51,11 +51,4 @@ public class Department extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Company company;
 
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> logoPath;
-
-    public List<Map<String, String>> getLogoPath() {
-        return UploadConfigUtils.transIdsToPath(this.logo);
-    }
 }

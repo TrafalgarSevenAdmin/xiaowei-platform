@@ -4,6 +4,8 @@ import com.xiaowei.commondict.dto.DictionaryDTO;
 import com.xiaowei.commondict.entity.Dictionary;
 import com.xiaowei.commondict.query.DictionaryQuery;
 import com.xiaowei.commondict.service.IDictionaryService;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -14,6 +16,7 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -34,6 +37,8 @@ public class DictionaryController {
     @ApiOperation(value = "添加字典")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("account:dict:add")
+    @HandleLog(type = "添加字典", contentParams = {@ContentParam(useParamField = true, field = "dictionaryDTO", value = "字典信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) DictionaryDTO dictionaryDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Dictionary dictionary = BeanCopyUtils.copy(dictionaryDTO, Dictionary.class);
         dictionary = dictionaryService.saveDictionary(dictionary);
@@ -44,6 +49,9 @@ public class DictionaryController {
     @ApiOperation(value = "修改字典")
     @AutoErrorHandler
     @PutMapping("/{dictionaryId}")
+    @RequiresPermissions("account:dict:update")
+    @HandleLog(type = "修改字典", contentParams = {@ContentParam(useParamField = true, field = "dictionaryDTO", value = "字典信息"),
+            @ContentParam(useParamField = false, field = "dictionaryId", value = "字典id")})
     public Result update(@PathVariable("dictionaryId") String dictionaryId, @RequestBody @Validated(V.Update.class) DictionaryDTO dictionaryDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Dictionary dictionary = BeanCopyUtils.copy(dictionaryDTO, Dictionary.class);
         dictionary.setId(dictionaryId);
@@ -66,6 +74,7 @@ public class DictionaryController {
 
     @ApiOperation("字典树查询")
     @GetMapping("/tree")
+    @RequiresPermissions("account:dict:tree")
     public Result tree() {
         final List<Dictionary> dictionaries = dictionaryService.findAll();
         return Result.getSuccess(new JsonTreeCreater<Dictionary>(dictionaries,
@@ -92,6 +101,8 @@ public class DictionaryController {
 
     @ApiOperation("根据id删除字典")
     @DeleteMapping("/{dictionaryId}")
+    @RequiresPermissions("account:dict:delete")
+    @HandleLog(type = "删除字典", contentParams = {@ContentParam(useParamField = false, field = "dictionaryId", value = "字典id")})
     public Result deleteById(@PathVariable("dictionaryId") String dictionaryId, FieldsView fieldsView) {
         dictionaryService.deleteDictionary(dictionaryId);
         return Result.getSuccess();

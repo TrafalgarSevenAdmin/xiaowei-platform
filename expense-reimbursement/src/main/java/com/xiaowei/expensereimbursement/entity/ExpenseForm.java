@@ -128,11 +128,4 @@ public class ExpenseForm extends BaseEntity {
      */
     private Date secondAuditTime;
 
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> formFileStorePath;
-
-    public List<Map<String, String>> getFormFileStorePath() {
-        return UploadConfigUtils.transIdsToPath(this.formFileStore);
-    }
 }

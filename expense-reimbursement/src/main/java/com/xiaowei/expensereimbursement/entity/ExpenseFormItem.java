@@ -70,19 +70,5 @@ public class ExpenseFormItem extends BaseEntity {
      * 数量
      */
     private Integer count;
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> voucherFileStorePath;
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> invoiceFileStorePath;
-
-    public List<Map<String, String>> getInvoiceFileStorePath() {
-        return UploadConfigUtils.transIdsToPath(this.invoiceFileStore);
-    }
-
-    public List<Map<String, String>> getVoucherFileStorePath() {
-        return UploadConfigUtils.transIdsToPath(this.voucherFileStore);
-    }
 
 }

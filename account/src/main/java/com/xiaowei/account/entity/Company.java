@@ -1,7 +1,6 @@
 package com.xiaowei.account.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -10,8 +9,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 系统公司表
@@ -62,11 +59,4 @@ public class Company extends BaseEntity {
      */
     private String intro;
 
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> logoPath;
-
-    public List<Map<String, String>> getLogoPath() {
-        return UploadConfigUtils.transIdsToPath(this.logo);
-    }
 }

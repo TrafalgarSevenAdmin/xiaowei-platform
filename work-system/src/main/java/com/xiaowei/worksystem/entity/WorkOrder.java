@@ -162,14 +162,6 @@ public class WorkOrder extends BaseEntity {
      */
     private String county;
 
-    @Transient
-    @JsonIgnore
-    private List<Map<String, String>> repairFileStorePath;
-
-    public List<Map<String, String>> getRepairFileStorePath() {
-        return UploadConfigUtils.transIdsToPath(this.repairFileStore);
-    }
-
     public String getWkt() {
         if (this.shape != null) {
             return this.shape.toText();

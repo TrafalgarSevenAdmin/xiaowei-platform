@@ -3,6 +3,7 @@ package com.xiaowei.commonupload;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.model.FileModel;
+import com.xiaowei.commonupload.service.IFileStoreService;
 import com.xiaowei.commonupload.service.IUploadService;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
@@ -16,9 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(tags = "通用上传")
 @RequestMapping("/api/upload")
@@ -26,6 +26,8 @@ import java.util.UUID;
 public class BaseUploadController {
     @Autowired
     private IUploadService uploadService;
+    @Autowired
+    private IFileStoreService fileStoreService;
 
     @Autowired
     private UploadConfigBean uploadConfigBean;
@@ -57,8 +59,28 @@ public class BaseUploadController {
         FileStore fileStore = uploadService.upload(fileModel);
         Map<String, Object> map = new HashMap<>();
         map.put("id", fileStore.getId());
-        map.put("path", uploadConfigBean.getAccessUrlRoot() + fileStore.getPath());
+        map.put("path", fileStore.getPath());
 
         return Result.getSuccess(map);
     }
+    @ApiOperation(value = "根据id数组获取文件")
+    @GetMapping("/byid")
+    public Result byid(@RequestParam("ids") String[] ids){
+        if(ids.length==0){
+            return null;
+        }
+        Set<String> fileIds = new HashSet<>();
+        for (String id : ids) {
+            fileIds.addAll(Arrays.stream(id.split(";")).collect(Collectors.toSet()));
+        }
+        final List<FileStore> files = fileStoreService.findByIdIn(fileIds);
+        Map<String,List> stringListMap = new HashMap<>();
+        for (String id : ids) {
+            String[] split = id.split(";");
+            List fileList = files.stream().filter(fileStore -> ArrayUtils.contains(split,fileStore.getId())).collect(Collectors.toList());
+            stringListMap.put(id,fileList);
+        }
+        return Result.getSuccess(stringListMap);
+    }
+
 }
