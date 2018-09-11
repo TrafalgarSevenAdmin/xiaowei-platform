@@ -4,15 +4,10 @@ image: xw-ci:alpine
 
 variables:
  ACCOUNT_PACKAGE_NAME: 'account-web'
- ACCOUNT_PORT: 9002
  WORK_PACKAGE_NAME: 'work-system'
- WORK_PORT: 9003
  WECHAT_PACKAGE_NAME: 'wechat'
- WECHAT_PORT: 9004
  ATTENDANCE_PACKAGE_NAME: 'attendance'
- ATTENDANCE_PORT: 9005
  EXPENSE_PACKAGE_NAME: 'expense-reimbursement-web'
- EXPENSE_PORT: 9006
 
 # 执行工作流定义
 
@@ -45,7 +40,7 @@ run_work:
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
    - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - dev
 
@@ -58,7 +53,7 @@ run_account:
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro --net=host --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
  tags:
    - dev
 
@@ -71,7 +66,7 @@ run_wechat:
    - cd $WECHAT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
  tags:
    - dev
 
@@ -84,7 +79,7 @@ run_wechat:
 #   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
 #   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
 #   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
 # tags:
 #   - dev
 
@@ -97,7 +92,7 @@ run_expense:
    - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
    - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - dev
 
@@ -113,7 +108,7 @@ release_work:
    - cd $WORK_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WORK_PACKAGE_NAME && docker kill $WORK_PACKAGE_NAME
    - docker ps -a |grep $WORK_PACKAGE_NAME && docker rm $WORK_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WORK_PORT:$WORK_PORT --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $WORK_PACKAGE_NAME $WORK_PACKAGE_NAME
  tags:
    - aliyun
 
@@ -126,7 +121,7 @@ release_account:
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ACCOUNT_PORT:$ACCOUNT_PORT --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
  tags:
    - aliyun
 
@@ -139,7 +134,7 @@ release_wechat:
    - cd $WECHAT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $WECHAT_PACKAGE_NAME && docker kill $WECHAT_PACKAGE_NAME
    - docker ps -a|grep $WECHAT_PACKAGE_NAME && docker rm $WECHAT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $WECHAT_PORT:$WECHAT_PORT --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $WECHAT_PACKAGE_NAME $WECHAT_PACKAGE_NAME
  tags:
    - aliyun
 
@@ -152,7 +147,7 @@ release_wechat:
 #   - cd attendance-system && mvn -Dmaven.test.skip=true docker:build
 #   - docker ps |grep $ATTENDANCE_PACKAGE_NAME && docker kill $ATTENDANCE_PACKAGE_NAME
 #   - docker ps -a|grep $ATTENDANCE_PACKAGE_NAME && docker rm $ATTENDANCE_PACKAGE_NAME
-#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $ATTENDANCE_PORT:$ATTENDANCE_PORT --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
+#   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $ATTENDANCE_PACKAGE_NAME $ATTENDANCE_PACKAGE_NAME
 # tags:
 #   - aliyun
 
@@ -165,7 +160,7 @@ release_expense:
    - cd expense-reimbursement-web && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $EXPENSE_PACKAGE_NAME && docker kill $EXPENSE_PACKAGE_NAME
    - docker ps -a|grep $EXPENSE_PACKAGE_NAME && docker rm $EXPENSE_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload -p $EXPENSE_PORT:$EXPENSE_PORT --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $EXPENSE_PACKAGE_NAME $EXPENSE_PACKAGE_NAME
  tags:
    - aliyun
 
