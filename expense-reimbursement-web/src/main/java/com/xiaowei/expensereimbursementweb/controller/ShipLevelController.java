@@ -42,6 +42,17 @@ public class ShipLevelController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(shipLevel, fieldsView));
     }
 
+    @ApiOperation(value = "修改舱位级别")
+    @AutoErrorHandler
+    @PutMapping("/{shipLevelId}")
+    @RequiresPermissions("expense:shipLevel:update")
+    public Result update(@PathVariable("shipLevelId") String shipLevelId,@RequestBody @Validated(V.Update.class) ShipLevelDTO shipLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        ShipLevel shipLevel = BeanCopyUtils.copy(shipLevelDTO, ShipLevel.class);
+        shipLevel.setId(shipLevelId);
+        shipLevel = shipLevelService.update(shipLevel);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(shipLevel, fieldsView));
+    }
+
     @ApiOperation(value = "删除舱位级别")
     @DeleteMapping("/{shipLevelId}")
     @RequiresPermissions("expense:shipLevel:delete")

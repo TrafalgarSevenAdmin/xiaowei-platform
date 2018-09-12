@@ -25,7 +25,7 @@ public class UserQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addSort(Sort.Dir.desc, "loginName");
+        addSort(Sort.Dir.asc, "loginName");
         addFilter(new Filter("loginName", Filter.Operator.neq, SuperUser.ADMINISTRATOR_NAME));
         if (StringUtils.isNotEmpty(loginName)) {
             addFilter(new Filter("loginName", Filter.Operator.like,Logic.or, "%" + loginName + "%"));

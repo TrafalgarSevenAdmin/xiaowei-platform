@@ -15,7 +15,7 @@ public class PostQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addSort(Sort.Dir.desc, "postName");
+        addSort(Sort.Dir.asc, "postName");
         if (StringUtils.isNotEmpty(companyId)) {
             addFilter(new Filter("company.id", Filter.Operator.eq, companyId));
         }

@@ -29,7 +29,7 @@ public class RoleQuery extends Query {
 
     @Override
     public void generateCondition() {
-        addSort(Sort.Dir.desc, "name");
+        addSort(Sort.Dir.asc, "name");
         if (StringUtils.isNotEmpty(name)) {
             addFilter(new Filter("name", Filter.Operator.like, "%" + name + "%"));
         }
