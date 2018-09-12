@@ -65,4 +65,15 @@ public class SysRole extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Company company;
 
+    @Override
+    public String toString() {
+        return "SysRole{" +
+                "name='" + name + '\'' +
+                ", comment='" + comment + '\'' +
+                ", permissions=" + permissions +
+                ", code='" + code + '\'' +
+                ", roleType=" + roleType +
+                ", company=" + company +
+                '}';
+    }
 }

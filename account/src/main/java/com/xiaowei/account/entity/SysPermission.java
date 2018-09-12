@@ -124,4 +124,16 @@ public class SysPermission extends BaseEntity {
         this.level = level;
     }
 
+    @Override
+    public String toString() {
+        return "SysPermission{" +
+                "name='" + name + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", code='" + code + '\'' +
+                ", parentCode='" + parentCode + '\'' +
+                ", ownCode=" + ownCode +
+                ", precondition='" + precondition + '\'' +
+                ", level=" + level +
+                '}';
+    }
 }
