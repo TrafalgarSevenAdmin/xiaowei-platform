@@ -57,7 +57,7 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
 
     @Override
     protected void doUpdate(Session session) {
-        redisTemplate.opsForValue().set(REDIS_GROUP_PREFIX+session.getId(), session,sessionTimeOut, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(REDIS_GROUP_PREFIX + session.getId(), session, sessionTimeOut, TimeUnit.MINUTES);
     }
 
     @Override
