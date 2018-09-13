@@ -12,6 +12,9 @@ public class AccountConst {
     //在线用户列表，redis键
     public final static String ON_LINE_USER_KEY = "SYSTEM:USERS:ON_LINE_USER_KEY";
 
+    //用户cookie分组前缀
+    public final static String USER_REDIS_GROUP_PREFIX = "SYSTEM:USERS:LOGINED:";
+
     // 注册时默认分配的用户角色
     public final static String REGISTER_ROLE_CODE = "PTYH";
 

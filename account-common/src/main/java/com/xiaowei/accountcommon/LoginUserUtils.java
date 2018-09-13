@@ -10,6 +10,8 @@ public class LoginUserUtils {
 
     public static final String SESSION_USER_KEY = "LOGIN_USER";
 
+    public static final String LOGIN_USER_BROWSER = "LOGIN_USER_BROWSER";
+
     /**
      * 获取当前登录的用户
      * @return
