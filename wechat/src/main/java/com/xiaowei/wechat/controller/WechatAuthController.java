@@ -3,7 +3,6 @@ package com.xiaowei.wechat.controller;
 import com.xiaowei.account.authorization.WxUserLoginToken;
 import com.xiaowei.account.bean.LoginSysUserDTO;
 import com.xiaowei.account.consts.AccountConst;
-import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.service.ISysUserService;
@@ -12,10 +11,9 @@ import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
-import com.xiaowei.core.query.rundi.query.Filter;
-import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.utils.RequestUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.consts.ServerInfoProperties;
@@ -28,7 +26,6 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
-import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
@@ -45,7 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -204,6 +200,7 @@ public class WechatAuthController {
                 Subject subject = SecurityUtils.getSubject();
                 subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME));
                 subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,AccountConst.GUEST_USER_INFO);
+                subject.getSession().setAttribute(LoginUserUtils.LOGIN_USER_BROWSER, RequestUtils.getOsAndBrowserInfo());
                 //在以访客身份登陆后,重新访问路由即可
                 response.sendRedirect(lastCallBack);
             } else {
@@ -306,7 +303,7 @@ public class WechatAuthController {
         loginUser = AccountUtils.toLoginBean(sysUser);
         //覆盖掉session中存储的用户
         subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,loginUser);
-
+        subject.getSession().setAttribute(LoginUserUtils.LOGIN_USER_BROWSER,RequestUtils.getOsAndBrowserInfo());
         //默认可以绑定多个微信号，所以在此不做判断
         // 绑定本微信
         wxUser.setSysUser(sysUser);
