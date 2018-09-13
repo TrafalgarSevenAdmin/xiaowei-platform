@@ -9,6 +9,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 系统角色表
@@ -70,7 +71,8 @@ public class SysRole extends BaseEntity {
         return "SysRole{" +
                 "name='" + name + '\'' +
                 ", comment='" + comment + '\'' +
-                ", permissions=" + permissions +
+                ", permissions=" + permissions.stream().map(SysPermission::getSymbol).collect(Collectors.toList()) +
+                ", users=" + users.stream().map(SysUser::getNickName).collect(Collectors.toList()) +
                 ", code='" + code + '\'' +
                 ", roleType=" + roleType +
                 ", company=" + company +
