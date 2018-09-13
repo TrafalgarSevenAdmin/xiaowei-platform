@@ -2,6 +2,8 @@ package com.xiaowei.expensereimbursementweb.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -43,6 +45,7 @@ public class ReimbursementStandardController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("expense:standard:add")
+    @HandleLog(type = "添加费用报销标准", contentParams = {@ContentParam(useParamField = true, field = "reimbursementStandardDTO", value = "费用报销标准信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) ReimbursementStandardDTO reimbursementStandardDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ReimbursementStandard reimbursementStandard = BeanCopyUtils.copy(reimbursementStandardDTO, ReimbursementStandard.class);
         reimbursementStandard = reimbursementStandardService.saveReimbursementStandard(reimbursementStandard);
@@ -53,6 +56,7 @@ public class ReimbursementStandardController {
     @AutoErrorHandler
     @PostMapping("/all")
     @RequiresPermissions("expense:standard:add")
+    @HandleLog(type = "添加多条费用报销标准", contentParams = {@ContentParam(useParamField = true, field = "allReimbursementStandardDTO", value = "费用报销标准信息")})
     public Result insertAll(@RequestBody @Validated(V.Insert.class) AllReimbursementStandardDTO allReimbursementStandardDTO, BindingResult bindingResult) throws Exception {
         ReimbursementStandard reimbursementStandard = new ReimbursementStandard();
         reimbursementStandard.setUnitCost(allReimbursementStandardDTO.getUnitCost());
@@ -62,10 +66,10 @@ public class ReimbursementStandardController {
         JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(reimbursementStandard));
         List<JSONObject> jsonObjects = new ArrayList<>();
         jsonObjects.add(jsonObject);
-        List<JSONObject> jsonObjects2 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getPostLevels(),"postLevel",jsonObjects);
-        List<JSONObject> jsonObjects3 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getShipLevels(),"shipLevel",jsonObjects2);
-        List<JSONObject> jsonObjects4 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getCityLevels(),"cityLevel",jsonObjects3);
-        List<ReimbursementStandard> reimbursementStandards = FastJsonUtils.listJsonObjectToListObject(jsonObjects4, ReimbursementStandard.class);
+        jsonObjects = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getPostLevels(),"postLevel",jsonObjects);
+        jsonObjects = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getShipLevels(),"shipLevel",jsonObjects);
+        jsonObjects = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getCityLevels(),"cityLevel",jsonObjects);
+        List<ReimbursementStandard> reimbursementStandards = FastJsonUtils.listJsonObjectToListObject(jsonObjects, ReimbursementStandard.class);
         reimbursementStandardService.save(reimbursementStandards);
         return Result.getSuccess();
     }
@@ -74,6 +78,8 @@ public class ReimbursementStandardController {
     @AutoErrorHandler
     @PutMapping("/{standardId}")
     @RequiresPermissions("expense:standard:update")
+    @HandleLog(type = "修改费用报销标准", contentParams = {@ContentParam(useParamField = true, field = "allReimbursementStandardDTO", value = "费用报销标准信息"),
+            @ContentParam(useParamField = false, field = "standardId", value = "费用报销标准id")})
     public Result update(@PathVariable("standardId") String standardId, @RequestBody @Validated(V.Update.class) ReimbursementStandardDTO reimbursementStandardDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ReimbursementStandard reimbursementStandard = BeanCopyUtils.copy(reimbursementStandardDTO, ReimbursementStandard.class);
         reimbursementStandard.setId(standardId);
@@ -84,6 +90,7 @@ public class ReimbursementStandardController {
     @ApiOperation(value = "删除费用报销标准")
     @DeleteMapping("/{standardId}")
     @RequiresPermissions("expense:standard:delete")
+    @HandleLog(type = "修改费用报销标准", contentParams = {@ContentParam(useParamField = false, field = "standardId", value = "费用报销标准id")})
     public Result delete(@PathVariable("standardId") String standardId) throws Exception {
         reimbursementStandardService.deleteReimbursementStandard(standardId);
         return Result.getSuccess();

@@ -46,12 +46,6 @@ public class RequestWorkOrderController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestWorkOrder, fieldsView));
     }
 
-
-
-
-
-
-
     @ApiOperation("工单请求查询接口")
     @GetMapping("")
     @RequiresPermissions("order:request:query")

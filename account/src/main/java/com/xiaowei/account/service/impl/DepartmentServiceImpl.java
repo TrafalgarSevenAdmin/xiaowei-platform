@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -89,5 +90,10 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         one.setStatus(department.getStatus());
         departmentRepository.save(one);
         return one;
+    }
+
+    @Override
+    public List<String> findIdsByCompanyId(String companyId) {
+        return departmentRepository.findIdsByCompanyId(companyId);
     }
 }

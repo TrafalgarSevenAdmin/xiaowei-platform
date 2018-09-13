@@ -1,5 +1,7 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -36,6 +38,7 @@ public class ShipLevelController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("expense:shipLevel:add")
+    @HandleLog(type = "添加舱位级别", contentParams = {@ContentParam(useParamField = true, field = "shipLevelDTO", value = "舱位级别信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) ShipLevelDTO shipLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ShipLevel shipLevel = BeanCopyUtils.copy(shipLevelDTO, ShipLevel.class);
         shipLevel = shipLevelService.save(shipLevel);
@@ -46,6 +49,8 @@ public class ShipLevelController {
     @AutoErrorHandler
     @PutMapping("/{shipLevelId}")
     @RequiresPermissions("expense:shipLevel:update")
+    @HandleLog(type = "修改舱位级别", contentParams = {@ContentParam(useParamField = true, field = "shipLevelDTO", value = "舱位级别信息"),
+            @ContentParam(useParamField = false, field = "shipLevelId", value = "舱位级别id")})
     public Result update(@PathVariable("shipLevelId") String shipLevelId,@RequestBody @Validated(V.Update.class) ShipLevelDTO shipLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ShipLevel shipLevel = BeanCopyUtils.copy(shipLevelDTO, ShipLevel.class);
         shipLevel.setId(shipLevelId);
@@ -56,6 +61,7 @@ public class ShipLevelController {
     @ApiOperation(value = "删除舱位级别")
     @DeleteMapping("/{shipLevelId}")
     @RequiresPermissions("expense:shipLevel:delete")
+    @HandleLog(type = "删除舱位级别", contentParams = {@ContentParam(useParamField = false, field = "shipLevelId", value = "舱位级别id")})
     public Result delete(@PathVariable("shipLevelId") String shipLevelId) throws Exception {
         shipLevelService.delete(shipLevelId);
         return Result.getSuccess();
