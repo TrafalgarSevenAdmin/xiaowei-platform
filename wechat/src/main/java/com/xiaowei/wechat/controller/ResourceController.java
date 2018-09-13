@@ -66,7 +66,7 @@ public class ResourceController {
         FileStore fileStore = uploadService.upload(fileModel);
         Map<String, Object> map = new HashMap<>();
         map.put("id", fileStore.getId());
-        map.put("path", uploadConfigBean.getAccessUrlRoot() + fileStore.getPath());
+        map.put("path", fileStore.getPath());
         //删除临时文件
         file.delete();
         return Result.getSuccess(map);
