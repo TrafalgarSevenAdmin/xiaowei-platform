@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -48,5 +49,21 @@ public class AuditConfigurationServiceImpl extends BaseServiceImpl<AuditConfigur
         Optional<AuditConfiguration> optional = auditConfigurationRepository.findById(auditConfigurationId);
         EmptyUtils.assertOptional(optional, "没有查询到需要删除的对象");
         auditConfigurationRepository.delete(optional.get());
+    }
+
+    @Override
+    @Transactional
+    public void saveAllAuditConfiguration(List<AuditConfiguration> auditConfigurations) {
+        auditConfigurations.stream().forEach(auditConfiguration -> {
+            auditConfiguration.setId(null);
+            auditConfiguration.setCreatedTime(new Date());
+            //判断是否已经存在该审核配置
+            AuditConfiguration one = auditConfigurationRepository.findByUserIdAndDepartmentIdAndTypeStatus(auditConfiguration.getUserId(), auditConfiguration.getDepartmentId(), auditConfiguration.getTypeStatus());
+            if (one != null) {
+                throw new BusinessException("审核配置重复");
+            }
+        });
+        auditConfigurationRepository.saveAll(auditConfigurations);
+
     }
 }

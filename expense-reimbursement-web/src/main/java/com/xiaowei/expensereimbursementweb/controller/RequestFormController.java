@@ -1,5 +1,7 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -46,6 +48,7 @@ public class RequestFormController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("expense:requestForm:add")
+    @HandleLog(type = "添加费用申请", contentParams = {@ContentParam(useParamField = true, field = "requestFormDTO", value = "申请单信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) RequestFormDTO requestFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         RequestForm requestForm = BeanCopyUtils.copy(requestFormDTO, RequestForm.class);
         requestForm = requestFormService.saveRequestForm(requestForm);
@@ -60,6 +63,8 @@ public class RequestFormController {
     @AutoErrorHandler
     @PutMapping("/{requestFormId}")
     @RequiresPermissions("expense:requestForm:update")
+    @HandleLog(type = "修改费用申请", contentParams = {@ContentParam(useParamField = true, field = "requestFormDTO", value = "申请单信息"),
+            @ContentParam(useParamField = false, field = "requestFormId", value = "申请单id")})
     public Result update(@PathVariable("requestFormId") String requestFormId, @RequestBody @Validated(V.Update.class) RequestFormDTO requestFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         RequestForm requestForm = BeanCopyUtils.copy(requestFormDTO, RequestForm.class);
         requestForm.setId(requestFormId);
@@ -138,6 +143,8 @@ public class RequestFormController {
     @AutoErrorHandler
     @PutMapping("/{requestFormId}/audit")
     @RequiresPermissions("expense:requestForm:audit")
+    @HandleLog(type = "费用申请审核", contentParams = {@ContentParam(useParamField = true, field = "requestFormDTO", value = "申请单信息"),
+            @ContentParam(useParamField = false, field = "requestFormId", value = "申请单id")})
     public Result audit(@PathVariable("requestFormId") String requestFormId,
                              @RequestBody @Validated(RequestFormDTO.Audit.class) RequestFormDTO requestFormDTO,
                              BindingResult bindingResult,
@@ -182,6 +189,7 @@ public class RequestFormController {
     @ApiOperation("删除费用申请")
     @DeleteMapping("/{requestFormId}")
     @RequiresPermissions("expense:requestForm:delete")
+    @HandleLog(type = "删除费用申请", contentParams = {@ContentParam(useParamField = false, field = "requestFormId", value = "申请单id")})
     public Result delete(@PathVariable("requestFormId") String requestFormId) {
         requestFormService.delete(requestFormId);
         return Result.getSuccess();

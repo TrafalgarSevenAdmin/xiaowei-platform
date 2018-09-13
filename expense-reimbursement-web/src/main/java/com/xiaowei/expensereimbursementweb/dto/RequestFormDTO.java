@@ -1,6 +1,7 @@
 package com.xiaowei.expensereimbursementweb.dto;
 
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.commonlog4j.annotation.ParamField;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.expensereimbursement.entity.RequestFormItem;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,6 +21,7 @@ public class RequestFormDTO {
      */
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "所属工单编号必填!")
     @ApiModelProperty(value = "所属工单编号")
+    @ParamField("所属工单编号")
     private String workOrderCode;
 
     /**
@@ -27,12 +29,14 @@ public class RequestFormDTO {
      */
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "填报总计金额必填!")
     @ApiModelProperty(value = "填报总计金额")
+    @ParamField("填报总计金额")
     private Double fillAmount;
     /**
      * 审核总计金额
      */
     @NotNull(groups = {Audit.class},message = "审核总计金额!")
     @ApiModelProperty(value = "审核总计金额")
+    @ParamField("审核总计金额")
     private Double trialAmount;
 
     /**
@@ -40,13 +44,15 @@ public class RequestFormDTO {
      */
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "审核人必填!")
     @ApiModelProperty(value = "审核人")
+    @ParamField("审核人")
     private List<SysUser> trials;
 
     /**
      * 最终审核人
      */
     @NotNull(groups = {Audit.class},message = "最终审核人必填!")
-    @ApiModelProperty(value = "审核人")
+    @ApiModelProperty(value = "最终审核人")
+    @ParamField("最终审核人")
     private SysUser audit;
 
     /**
@@ -54,12 +60,14 @@ public class RequestFormDTO {
      */
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "状态必填!")
     @ApiModelProperty(value = "状态")
+    @ParamField("状态")
     private Integer status;
 
     /**
      * 审批意见
      */
     @ApiModelProperty(value = "审批意见")
+    @ParamField("审批意见")
     private String option;
 
     /**
@@ -67,10 +75,12 @@ public class RequestFormDTO {
      */
     @ApiModelProperty(value = "费用申请人")
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "费用申请人必填!")
+    @ParamField("费用申请人")
     private SysUser requestUser;
 
     @ApiModelProperty(value = "申请单明细")
     @NotNull(groups = {V.Insert.class,V.Update.class,Audit.class},message = "申请单明细必填!")
+    @ParamField("申请单明细")
     private List<RequestFormItem> requestFormItems;
 
     /**

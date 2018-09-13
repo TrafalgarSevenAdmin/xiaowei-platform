@@ -1,6 +1,8 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
 import com.xiaowei.accountcommon.LoginUserUtils;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -47,6 +49,7 @@ public class ExpenseFormController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("expense:expenseForm:add")
+    @HandleLog(type = "添加报销单", contentParams = {@ContentParam(useParamField = true, field = "expenseFormDTO", value = "报销单信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm = expenseFormService.saveExpenseForm(expenseForm);
@@ -60,6 +63,8 @@ public class ExpenseFormController {
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}")
     @RequiresPermissions("expense:expenseForm:update")
+    @HandleLog(type = "修改报销单", contentParams = {@ContentParam(useParamField = true, field = "expenseFormDTO", value = "报销单信息"),
+            @ContentParam(useParamField = false, field = "expenseFormId", value = "报销单id")})
     public Result update(@PathVariable("expenseFormId") String expenseFormId, @RequestBody @Validated(V.Update.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
@@ -74,6 +79,8 @@ public class ExpenseFormController {
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}/first")
     @RequiresPermissions("expense:expenseForm:first")
+    @HandleLog(type = "报销单初审", contentParams = {@ContentParam(useParamField = true, field = "expenseFormDTO", value = "报销单信息"),
+            @ContentParam(useParamField = false, field = "expenseFormId", value = "报销单id")})
     public Result firstAudit(@PathVariable("expenseFormId") String expenseFormId,
                              @RequestBody @Validated(ExpenseFormDTO.FirstAudit.class) ExpenseFormDTO expenseFormDTO,
                              BindingResult bindingResult,
@@ -221,6 +228,8 @@ public class ExpenseFormController {
     @AutoErrorHandler
     @PutMapping("/{expenseFormId}/second")
     @RequiresPermissions("expense:expenseForm:second")
+    @HandleLog(type = "报销单复审", contentParams = {@ContentParam(useParamField = true, field = "expenseFormDTO", value = "报销单信息"),
+            @ContentParam(useParamField = false, field = "expenseFormId", value = "报销单id")})
     public Result secondAudit(@PathVariable("expenseFormId") String expenseFormId,
                               @RequestBody @Validated(ExpenseFormDTO.SecondAudit.class) ExpenseFormDTO expenseFormDTO,
                               BindingResult bindingResult,
@@ -282,6 +291,7 @@ public class ExpenseFormController {
     @ApiOperation("删除报销单")
     @DeleteMapping("/{expenseFormId}")
     @RequiresPermissions("expense:expenseForm:delete")
+    @HandleLog(type = "删除报销单", contentParams = {@ContentParam(useParamField = false, field = "expenseFormId", value = "报销单id")})
     public Result delete(@PathVariable("expenseFormId") String expenseFormId) {
         expenseFormService.delete(expenseFormId);
         return Result.getSuccess();
