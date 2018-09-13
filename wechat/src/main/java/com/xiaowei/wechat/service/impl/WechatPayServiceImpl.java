@@ -31,6 +31,7 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.shiro.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,7 @@ public class WechatPayServiceImpl implements IWechatPayService {
     @Override
     public Result createPayOrder(String order) {
         XwOrder xwOrder = orderService.findById(order);
+        Assert.notNull(xwOrder, "找不到此订单");
         //若此订单尚未提交给微信
         if (xwOrder.getStatus() == PayStatus.created) {
             return commitOrderToWechat(order, xwOrder);

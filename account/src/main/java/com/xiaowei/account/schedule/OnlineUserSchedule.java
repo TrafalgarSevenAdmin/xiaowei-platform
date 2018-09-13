@@ -40,7 +40,7 @@ public class OnlineUserSchedule {
             }
         }
         if(!CollectionUtils.isEmpty(removeKeys)){
-            Long removeInt = redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY, removeKeys.toArray());
+            Long removeInt = redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY, removeKeys.stream().map(v->AccountConst.ON_LINE_USER_KEY+v).toArray());
             logger.info("移除不在线用户:" + removeInt + "个");
         }
 

@@ -12,6 +12,7 @@ import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import com.xiaowei.pay.consts.PayStatus;
 import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
@@ -494,7 +495,15 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         //先从订单表查询,如果有工单的支付订单,则返回该支付订单,否则新建返回
         List<XwOrder> xwOrders = orderRepository.findByBusinessIdAndType(workOrderId, XwType.WORKORDER.getStatus());
         XwOrder xwOrder;
-        if (CollectionUtils.isEmpty(xwOrders)) {
+        //如果之前的订单不存在或者订单已经超时了，就重新创建一个订单。之前的订单让他超时
+        if (CollectionUtils.isEmpty(xwOrders) || xwOrders.get(0).getTimeExpire().getTime() >new Date().getTime()) {
+            if (CollectionUtils.isNotEmpty(xwOrders)) {
+                for (XwOrder oldXwOrder : xwOrders) {
+                    oldXwOrder.setStatus(PayStatus.close);
+                    oldXwOrder.setMessage("订单超时");
+                    orderRepository.save(oldXwOrder);
+                }
+            }
             SysUser user = new SysUser();
             user.setId(LoginUserUtils.getLoginUser().getId());
             //省略根据工单计算订单金额,开发阶段默认1分钱

@@ -8,6 +8,7 @@ import com.xiaowei.wechat.config.WechatProperties;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.repository.WxUserRepository;
 import com.xiaowei.wechat.service.IWxUserService;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.tag.WxUserTag;
@@ -20,7 +21,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUserService {
 
@@ -80,6 +81,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     @Override
     public void syncUserTag(SysUser user, String openId) throws WxErrorException {
         //获取这个用户的角色，并将角色名作为标签
+        log.debug("正在同步用户:{}的角色:{}",user.getNickName(),user.getRoles().stream().map(SysRole::getName).collect(Collectors.toList()).toString());
         Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role));
         //获得所有的标签
         List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();

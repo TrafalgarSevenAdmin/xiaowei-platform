@@ -123,5 +123,4 @@ public class SysPermission extends BaseEntity {
     public void setLevel(Integer level) {
         this.level = level;
     }
-
 }
