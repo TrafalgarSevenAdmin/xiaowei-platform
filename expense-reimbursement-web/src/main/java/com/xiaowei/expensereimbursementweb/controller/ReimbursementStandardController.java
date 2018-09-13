@@ -1,15 +1,18 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.core.utils.FastJsonUtils;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.expensereimbursement.entity.ReimbursementStandard;
 import com.xiaowei.expensereimbursement.service.IReimbursementStandardService;
+import com.xiaowei.expensereimbursementweb.dto.AllReimbursementStandardDTO;
 import com.xiaowei.expensereimbursementweb.dto.ReimbursementStandardDTO;
 import com.xiaowei.expensereimbursementweb.query.ReimbursementStandardQuery;
 import io.swagger.annotations.Api;
@@ -20,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +47,27 @@ public class ReimbursementStandardController {
         ReimbursementStandard reimbursementStandard = BeanCopyUtils.copy(reimbursementStandardDTO, ReimbursementStandard.class);
         reimbursementStandard = reimbursementStandardService.saveReimbursementStandard(reimbursementStandard);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(reimbursementStandard, fieldsView));
+    }
+
+    @ApiOperation(value = "添加多条费用报销标准")
+    @AutoErrorHandler
+    @PostMapping("/all")
+    @RequiresPermissions("expense:standard:add")
+    public Result insertAll(@RequestBody @Validated(V.Insert.class) AllReimbursementStandardDTO allReimbursementStandardDTO, BindingResult bindingResult) throws Exception {
+        ReimbursementStandard reimbursementStandard = new ReimbursementStandard();
+        reimbursementStandard.setUnitCost(allReimbursementStandardDTO.getUnitCost());
+        reimbursementStandard.setStartCity(allReimbursementStandardDTO.getStartCity());
+        reimbursementStandard.setEndCity(allReimbursementStandardDTO.getEndCity());
+        reimbursementStandard.setSubjectCode(allReimbursementStandardDTO.getSubjectCode());
+        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(reimbursementStandard));
+        List<JSONObject> jsonObjects = new ArrayList<>();
+        jsonObjects.add(jsonObject);
+        List<JSONObject> jsonObjects2 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getPostLevels(),"postLevel",jsonObjects);
+        List<JSONObject> jsonObjects3 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getShipLevels(),"shipLevel",jsonObjects2);
+        List<JSONObject> jsonObjects4 = FastJsonUtils.transArrToArrMap(allReimbursementStandardDTO.getCityLevels(),"cityLevel",jsonObjects3);
+        List<ReimbursementStandard> reimbursementStandards = FastJsonUtils.listJsonObjectToListObject(jsonObjects4, ReimbursementStandard.class);
+        reimbursementStandardService.save(reimbursementStandards);
+        return Result.getSuccess();
     }
 
     @ApiOperation(value = "修改费用报销标准")

@@ -10,17 +10,25 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.service.IExpenseFormService;
+import com.xiaowei.expensereimbursement.status.ExpenseFormStatus;
 import com.xiaowei.expensereimbursementweb.dto.ExpenseFormDTO;
 import com.xiaowei.expensereimbursementweb.query.ExpenseFormQuery;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 报销单管理
@@ -32,6 +40,8 @@ public class ExpenseFormController {
 
     @Autowired
     private IExpenseFormService expenseFormService;
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     @ApiOperation(value = "添加报销单")
     @AutoErrorHandler
@@ -40,6 +50,9 @@ public class ExpenseFormController {
     public Result insert(@RequestBody @Validated(V.Insert.class) ExpenseFormDTO expenseFormDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm = expenseFormService.saveExpenseForm(expenseForm);
+        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+            preliminaryNotification(expenseForm);
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 
@@ -51,6 +64,9 @@ public class ExpenseFormController {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
         expenseForm = expenseFormService.updateExpenseForm(expenseForm);
+        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
+            preliminaryNotification(expenseForm);
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 
@@ -66,8 +82,140 @@ public class ExpenseFormController {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
         expenseForm = expenseFormService.firstAudit(expenseForm, audit);
+        if (audit) {
+            reviewNotification(expenseForm);
+        }
+        noticeOfPreliminaryExaminationResult(expenseForm, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
+
+    /**
+     * 初审通知
+     *
+     * @param expenseForm
+     */
+    private void preliminaryNotification(ExpenseForm expenseForm) {
+        try {
+            expenseForm.getFirstTrials().stream().forEach(sysUser -> {
+                UserMessageBean userMessageBean = new UserMessageBean();
+                userMessageBean.setUserId(sysUser.getId());
+                userMessageBean.setMessageType(MessageType.EXPENSEAUDITNOTICE);
+                Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+                messageMap.put("first", new UserMessageBean.Payload("费用报销单待初审", null));
+                //待审核单号：
+                messageMap.put("keyword1", new UserMessageBean.Payload(expenseForm.getCode(), null));
+                //填报人：
+                messageMap.put("keyword2", new UserMessageBean.Payload(StringUtils.isNotEmpty(expenseForm.getExpenseUser().getNickName()) ? expenseForm.getExpenseUser().getNickName() : expenseForm.getExpenseUser().getLoginName(), null));
+                //填报时间：
+                messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expenseForm.getCreatedTime()), null));
+                //填报总金额：
+                messageMap.put("keyword4", new UserMessageBean.Payload(expenseForm.getFillAmount() + "", null));
+                //remark：
+                messageMap.put("remark", new UserMessageBean.Payload("请尽快完成初审任务!", null));
+                userMessageBean.setData(messageMap);
+                messagePushSender.sendWxMessage(userMessageBean);
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 初审结果通知
+     *
+     * @param expenseForm
+     */
+    private void noticeOfPreliminaryExaminationResult(ExpenseForm expenseForm, Boolean audit) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(expenseForm.getExpenseUser().getId());
+            userMessageBean.setMessageType(MessageType.NOTIFICATIONOFAUDITRESULTS);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("费用报销单初审结果", null));
+            //审核单号：
+            messageMap.put("keyword1", new UserMessageBean.Payload(expenseForm.getCode(), null));
+            //审核人：
+            messageMap.put("keyword2", new UserMessageBean.Payload(StringUtils.isNotEmpty(expenseForm.getFirstAudit().getNickName()) ? expenseForm.getFirstAudit().getNickName() : expenseForm.getFirstAudit().getLoginName(), null));
+            //审核结果：
+            messageMap.put("keyword3", new UserMessageBean.Payload(audit ? "已通过" : "未通过", null));
+            //审核时间：
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expenseForm.getFirstAuditTime()), null));
+            //审核意见：
+            messageMap.put("keyword5", new UserMessageBean.Payload(expenseForm.getFirstOption(), null));
+            //remark：
+            messageMap.put("remark", new UserMessageBean.Payload("请修改并重新发起审核请求!", null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 复审结果通知
+     *
+     * @param expenseForm
+     */
+    private void notificationOfReviewResult(ExpenseForm expenseForm, Boolean audit) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(expenseForm.getExpenseUser().getId());
+            userMessageBean.setMessageType(MessageType.NOTIFICATIONOFAUDITRESULTS);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("费用报销单复审结果", null));
+            //审核单号：
+            messageMap.put("keyword1", new UserMessageBean.Payload(expenseForm.getCode(), null));
+            //审核人：
+            messageMap.put("keyword2", new UserMessageBean.Payload(StringUtils.isNotEmpty(expenseForm.getSecondAudit().getNickName()) ? expenseForm.getSecondAudit().getNickName() : expenseForm.getSecondAudit().getLoginName(), null));
+            //审核结果：
+            messageMap.put("keyword3", new UserMessageBean.Payload(audit ? "已通过" : "未通过", null));
+            //审核时间：
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expenseForm.getSecondAuditTime()), null));
+            //审核意见：
+            messageMap.put("keyword5", new UserMessageBean.Payload(expenseForm.getSecondOption(), null));
+            //remark：
+            messageMap.put("remark", new UserMessageBean.Payload("请修改并重新发起审核请求!", null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 复审通知
+     *
+     * @param expenseForm
+     */
+    private void reviewNotification(ExpenseForm expenseForm) {
+        try {
+            expenseForm.getSecondTrials().stream().forEach(sysUser -> {
+                UserMessageBean userMessageBean = new UserMessageBean();
+                userMessageBean.setUserId(sysUser.getId());
+                userMessageBean.setMessageType(MessageType.EXPENSEAUDITNOTICE);
+                Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+                messageMap.put("first", new UserMessageBean.Payload("费用报销单待复审", null));
+                //待审核单号：
+                messageMap.put("keyword1", new UserMessageBean.Payload(expenseForm.getCode(), null));
+                //填报人：
+                messageMap.put("keyword2", new UserMessageBean.Payload(StringUtils.isNotEmpty(expenseForm.getExpenseUser().getNickName()) ? expenseForm.getExpenseUser().getNickName() : expenseForm.getExpenseUser().getLoginName(), null));
+                //填报时间：
+                messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expenseForm.getCreatedTime()), null));
+                //填报总金额：
+                messageMap.put("keyword4", new UserMessageBean.Payload(expenseForm.getFillAmount() + "", null));
+                //remark：
+                messageMap.put("remark", new UserMessageBean.Payload("请尽快完成复审任务!", null));
+                userMessageBean.setData(messageMap);
+                messagePushSender.sendWxMessage(userMessageBean);
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @ApiOperation(value = "报销单复审")
     @AutoErrorHandler
@@ -81,6 +229,7 @@ public class ExpenseFormController {
         ExpenseForm expenseForm = BeanCopyUtils.copy(expenseFormDTO, ExpenseForm.class);
         expenseForm.setId(expenseFormId);
         expenseForm = expenseFormService.secondAudit(expenseForm, audit);
+        notificationOfReviewResult(expenseForm, audit);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(expenseForm, fieldsView));
     }
 

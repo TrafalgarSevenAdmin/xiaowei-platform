@@ -6,9 +6,10 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
-public class ReimbursementStandardDTO {
+public class AllReimbursementStandardDTO {
     /**
      * 费用科目编号
      */
@@ -19,17 +20,17 @@ public class ReimbursementStandardDTO {
      * 舱位级别
      */
     @ApiModelProperty(value = "舱位级别")
-    private String shipLevel;
+    private List<String> shipLevels;
     /**
      * 城市级别
      */
     @ApiModelProperty(value = "城市级别")
-    private String cityLevel;
+    private List<String> cityLevels;
     /**
      * 岗位级别
      */
     @ApiModelProperty(value = "岗位级别")
-    private String postLevel;
+    private List<String> postLevels;
     /**
      * 出发城市
      */
