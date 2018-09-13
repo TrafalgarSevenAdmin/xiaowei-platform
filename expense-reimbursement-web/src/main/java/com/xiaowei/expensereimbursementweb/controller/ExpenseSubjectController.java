@@ -1,6 +1,8 @@
 package com.xiaowei.expensereimbursementweb.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -40,6 +42,7 @@ public class ExpenseSubjectController {
     @AutoErrorHandler
     @PostMapping("")
     @RequiresPermissions("expense:subject:add")
+    @HandleLog(type = "添加费用科目", contentParams = {@ContentParam(useParamField = true, field = "expenseSubjectDTO", value = "费用科目信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) ExpenseSubjectDTO expenseSubjectDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseSubject expenseSubject = BeanCopyUtils.copy(expenseSubjectDTO, ExpenseSubject.class);
         expenseSubject.setAccountContent(JSONArray.toJSONString(expenseSubjectDTO.getAccountContentBeans()));
@@ -52,6 +55,8 @@ public class ExpenseSubjectController {
     @AutoErrorHandler
     @PutMapping("/{subjectId}")
     @RequiresPermissions("expense:subject:update")
+    @HandleLog(type = "添加费用科目", contentParams = {@ContentParam(useParamField = true, field = "expenseSubjectDTO", value = "费用科目信息"),
+            @ContentParam(useParamField = false, field = "subjectId", value = "费用科目id")})
     public Result update(@PathVariable("subjectId") String subjectId, @RequestBody @Validated(V.Update.class) ExpenseSubjectDTO expenseSubjectDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         ExpenseSubject expenseSubject = BeanCopyUtils.copy(expenseSubjectDTO, ExpenseSubject.class);
         expenseSubject.setAccountContent(JSONArray.toJSONString(expenseSubjectDTO.getAccountContentBeans()));
