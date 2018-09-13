@@ -1,5 +1,7 @@
 package com.xiaowei.accountweb.rest;
 
+import com.xiaowei.account.bean.OnlineUser;
+import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.query.UserQuery;
@@ -20,12 +22,21 @@ import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.session.Session;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 用户管理
@@ -39,6 +50,9 @@ public class UserController {
     private ISysUserService sysUserService;
     @Autowired
     private ISysRoleService sysRoleService;
+
+    @Resource(name = "redisTemplate")
+    private RedisTemplate redisTemplate;
 
     @RequiresPermissions("account:user:add")
     @ApiOperation(value = "添加用户")
@@ -129,5 +143,28 @@ public class UserController {
         }
     }
 
+    @RequiresPermissions("account:user:get:online")
+    @ApiOperation("获取当前在线用户")
+    @GetMapping("/online")
+    public Result online(FieldsView fieldsView) {
+        Set<String> onlineUserKeys = redisTemplate.opsForSet().members(AccountConst.ON_LINE_USER_KEY);
+        List<OnlineUser> onlineUsers = new ArrayList<>();
+        for (String id : onlineUserKeys) {
+            Session session = (Session) redisTemplate.opsForValue().get(AccountConst.USER_REDIS_GROUP_PREFIX + id);
+            if (session != null) {
+                onlineUsers.add(new OnlineUser(session));
+            }
+        }
+        return Result.getSuccess(ObjectToMapUtils.anyToHandleField(onlineUsers, fieldsView));
+    }
+
+    @RequiresPermissions("account:user:delete:online")
+    @ApiOperation("移除掉在线用户")
+    @DeleteMapping("/online/{id}")
+    public Result logout(@PathVariable("id") String sessionId) {
+        redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY, Arrays.asList(sessionId));
+        redisTemplate.opsForValue().getOperations().delete(AccountConst.USER_REDIS_GROUP_PREFIX + sessionId);
+        return Result.getSuccess();
+    }
 
 }

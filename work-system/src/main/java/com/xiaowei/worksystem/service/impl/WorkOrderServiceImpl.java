@@ -496,7 +496,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         List<XwOrder> xwOrders = orderRepository.findByBusinessIdAndType(workOrderId, XwType.WORKORDER.getStatus());
         XwOrder xwOrder;
         //如果之前的订单不存在或者订单已经超时了，就重新创建一个订单。之前的订单让他超时
-        if (CollectionUtils.isEmpty(xwOrders) || xwOrders.get(0).getTimeExpire().getTime() >new Date().getTime()) {
+        if (CollectionUtils.isEmpty(xwOrders) || xwOrders.get(0).getTimeExpire().getTime() < new Date().getTime()) {
             if (CollectionUtils.isNotEmpty(xwOrders)) {
                 for (XwOrder oldXwOrder : xwOrders) {
                     oldXwOrder.setStatus(PayStatus.close);

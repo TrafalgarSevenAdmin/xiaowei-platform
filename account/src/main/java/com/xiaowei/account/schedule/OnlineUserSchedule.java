@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author 在线用户定时器
@@ -33,15 +34,14 @@ public class OnlineUserSchedule {
     public void run(){
         Set<String> onlineUserKeys = redisTemplate.opsForSet().members(AccountConst.ON_LINE_USER_KEY);
         List<String> removeKeys = new ArrayList<>();
-        long startTime = System.currentTimeMillis();
         for (String key : onlineUserKeys) {
-            if(redisTemplate.getExpire(key) <= 0){
+            if (redisTemplate.getExpire(AccountConst.USER_REDIS_GROUP_PREFIX + key) <= 0) {
                 removeKeys.add(key);
             }
         }
         if(!CollectionUtils.isEmpty(removeKeys)){
-            Long removeInt = redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY, removeKeys.stream().map(v->AccountConst.ON_LINE_USER_KEY+v).toArray());
-            logger.info("移除不在线用户:" + removeInt + "个");
+            Long removeInt = redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY, removeKeys.toArray());
+            logger.debug("移除不在线用户:" + removeInt + "个");
         }
 
     }

@@ -33,15 +33,12 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
 
     private final static String PREFIX = "USER_";
 
-    //分组前缀
-    private final static String REDIS_GROUP_PREFIX = "SYSTEM:USERS:LOGINED:";
-
 
     @Override
     protected Serializable doCreate(Session session) {
         String id = DigestUtils.md5Hex(PREFIX + UUID.randomUUID().toString());
         assignSessionId(session,id);
-        redisTemplate.opsForValue().set(REDIS_GROUP_PREFIX+id, session,sessionTimeOut, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(AccountConst.USER_REDIS_GROUP_PREFIX +id, session,sessionTimeOut, TimeUnit.MINUTES);
 
         //添加当前到活跃用户中
         redisTemplate.opsForSet().add(AccountConst.ON_LINE_USER_KEY,id);
@@ -51,18 +48,18 @@ public class RedisCacheSessionDao extends CachingSessionDAO {
     @Override
     protected Session doReadSession(Serializable sessionId) {
         String id = sessionId.toString();
-        Session session = (Session) redisTemplate.opsForValue().get(REDIS_GROUP_PREFIX+id);
+        Session session = (Session) redisTemplate.opsForValue().get(AccountConst.USER_REDIS_GROUP_PREFIX +id);
         return session;
     }
 
     @Override
     protected void doUpdate(Session session) {
-        redisTemplate.opsForValue().set(REDIS_GROUP_PREFIX + session.getId(), session, sessionTimeOut, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(AccountConst.USER_REDIS_GROUP_PREFIX + session.getId(), session, sessionTimeOut, TimeUnit.MINUTES);
     }
 
     @Override
     protected void doDelete(Session session) {
-        redisTemplate.opsForValue().getOperations().delete(REDIS_GROUP_PREFIX+session.getId());
+        redisTemplate.opsForValue().getOperations().delete(AccountConst.USER_REDIS_GROUP_PREFIX +session.getId());
 
         //从活跃用户中删除当前退出的用户
         redisTemplate.opsForSet().remove(AccountConst.ON_LINE_USER_KEY,session.getId().toString());

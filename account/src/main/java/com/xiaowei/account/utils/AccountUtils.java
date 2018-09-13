@@ -6,6 +6,7 @@ import com.xiaowei.account.service.*;
 import com.xiaowei.accountcommon.*;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
+import com.xiaowei.core.utils.RequestUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
@@ -28,6 +29,7 @@ public class AccountUtils {
             loginUserBean = toLoginBean(sysUser);
             //覆盖掉session中存储的用户
             subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,loginUserBean);
+            subject.getSession().setAttribute(LoginUserUtils.LOGIN_USER_BROWSER,RequestUtils.getOsAndBrowserInfo());
         }
     }
 
