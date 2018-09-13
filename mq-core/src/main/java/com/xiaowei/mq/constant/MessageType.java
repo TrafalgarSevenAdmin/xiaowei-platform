@@ -13,6 +13,14 @@ public enum  MessageType {
      */
     MAINTENANCEOFDISPATCHING("yGkZz0WqHlSL1BjmPwISqfTG7pJPGS23cotuNEGA0vM"),
     /**
+     * 费用审核通知
+     */
+    EXPENSEAUDITNOTICE("nNMulWT7-2sku-CBiHbtz_cX8IxcpQ6QRVlmQAxRyiU"),
+    /**
+     * 费用审核结果通知
+     */
+    NOTIFICATIONOFAUDITRESULTS("VLm12QocXIWtoowNxC6_9KZr9-uSOeU_OhbsyFZjmgs"),
+    /**
      * 工单处理通知
      */
     PROCESSINGNOTIFICATION("kheEs_KCgIc9veQvxl_YcjLcwUk2Zd9J4qYs0GJcyqw");
