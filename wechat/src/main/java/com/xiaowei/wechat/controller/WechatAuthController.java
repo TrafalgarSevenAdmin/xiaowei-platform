@@ -284,7 +284,7 @@ public class WechatAuthController {
     @ApiOperation("用户名密码登陆并绑定")
     @PostMapping("/login")
     @AutoErrorHandler
-    public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult,HttpServletRequest request){
+    public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult,HttpServletRequest request) throws WxErrorException {
         //绑定手机号
         String openId = (String)request.getSession().getAttribute("openId");
         if (StringUtils.isEmpty(openId)) {
@@ -308,6 +308,8 @@ public class WechatAuthController {
         // 绑定本微信
         wxUser.setSysUser(sysUser);
         wxUserService.saveOrUpdate(wxUser);
+        //同步用户标签
+        wxUserService.syncUserTag(sysUser,wxUser.getOpenId());
 
         return Result.getSuccess(loginUser);
     }

@@ -82,7 +82,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     public void syncUserTag(SysUser user, String openId) throws WxErrorException {
         //获取这个用户的角色，并将角色名作为标签
         log.debug("正在同步用户:{}的角色:{}",user.getNickName(),user.getRoles().stream().map(SysRole::getName).collect(Collectors.toList()).toString());
-        Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role));
+        Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue,newValue) -> newValue));
         //获得所有的标签
         List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();
         Set<String> allTagsName = allTags.stream().map(WxUserTag::getName).collect(Collectors.toSet());
@@ -92,8 +92,8 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             //创建标签
             wxMpService.getUserTagService().tagCreate(tag);
         }
-        Map<Long, WxUserTag> idMapTag = allTags.stream().collect(Collectors.toMap(v -> v.getId(), v -> v));
-        Map<String, Long> tagMapId = allTags.stream().collect(Collectors.toMap(WxUserTag::getName,WxUserTag::getId));
+        Map<Long, WxUserTag> idMapTag = allTags.stream().collect(Collectors.toMap(v -> v.getId(), v -> v,(oldValue,newValue) -> newValue));
+        Map<String, Long> tagMapId = allTags.stream().collect(Collectors.toMap(WxUserTag::getName,WxUserTag::getId,(oldValue,newValue) -> newValue));
         //获取这个用户含有的标签
         List<Long> tagIds = wxMpService.getUserTagService().userTagList(openId);
         Set<WxUserTag> haveTag = tagIds.stream().map(idMapTag::get).collect(Collectors.toSet());
