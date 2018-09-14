@@ -61,7 +61,12 @@ public class WxMenuController {
     return this.wxService.getMenuService().menuTryMatch(userid);
   }
 
-  @GetMapping("/menuGet}")
+  /**
+   * 获取自定义菜单
+   * @return
+   * @throws WxErrorException
+   */
+  @GetMapping("/menuGet")
   public WxMpMenu menuGet() throws WxErrorException {
     return this.wxService.getMenuService().menuGet();
   }
