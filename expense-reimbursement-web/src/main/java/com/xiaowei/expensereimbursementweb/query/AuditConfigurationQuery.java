@@ -32,7 +32,7 @@ public class AuditConfigurationQuery extends Query {
             addFilter(new Filter("typeStatus", Filter.Operator.eq, typeStatus));
         }
         if (CollectionUtils.isNotEmpty(departmentIds)) {
-            addFilter(new Filter("departmentId", Filter.Operator.eq, Logic.or, Filter.Operator.in, departmentIds));
+            addFilter(new Filter("departmentId", Filter.Operator.in, Logic.or, departmentIds));
         }
     }
 }
