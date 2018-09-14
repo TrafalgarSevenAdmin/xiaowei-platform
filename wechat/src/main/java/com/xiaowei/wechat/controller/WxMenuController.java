@@ -61,6 +61,11 @@ public class WxMenuController {
     return this.wxService.getMenuService().menuTryMatch(userid);
   }
 
+  @GetMapping("/menuGet}")
+  public WxMpMenu menuGet() throws WxErrorException {
+    return this.wxService.getMenuService().menuGet();
+  }
+
   /**
    * <pre>
    * 获取自定义菜单配置接口
