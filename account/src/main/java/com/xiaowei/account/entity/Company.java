@@ -59,4 +59,5 @@ public class Company extends BaseEntity {
      */
     private String intro;
 
+
 }
