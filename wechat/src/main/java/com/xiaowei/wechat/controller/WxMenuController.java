@@ -4,24 +4,18 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.wechat.dto.MeunDTO;
 import com.xiaowei.wechat.service.IMeunService;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
-import me.chanjar.weixin.common.bean.menu.WxMenuButton;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpMenuService;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.menu.WxMpGetSelfMenuInfoResult;
 import me.chanjar.weixin.mp.bean.menu.WxMpMenu;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType;
-
 /**
- * <pre>
- *  注意：此contorller 实现WxMpMenuService接口，仅是为了演示如何调用所有菜单相关操作接口，
- *      实际项目中无需这样，根据自己需要添加对应接口即可
- * </pre>
+ * 微信菜单管理
  */
 @RestController
 @RequestMapping("/menu")
@@ -42,6 +36,7 @@ public class WxMenuController {
    * </pre>
    */
   @PostMapping("/create")
+  @RequiresPermissions("wechat:menu:create")
   public Result menuCreate(@RequestBody MeunDTO menus) throws WxErrorException {
     menuCreate.individuationMeun(menus);
     return Result.getSuccess();
@@ -57,8 +52,15 @@ public class WxMenuController {
    *
    **/
   @GetMapping("/menuTryMatch/{userid}")
+  @RequiresPermissions("wechat:menu:match")
   public WxMenu menuTryMatch(@PathVariable String userid) throws WxErrorException {
     return this.wxService.getMenuService().menuTryMatch(userid);
+  }
+
+  @GetMapping("/tag/{userid}")
+  @RequiresPermissions("wechat:tag:user")
+  public List<Long> tag(@PathVariable String userid) throws WxErrorException {
+    return this.wxService.getUserTagService().userTagList(userid);
   }
 
   /**
@@ -67,6 +69,7 @@ public class WxMenuController {
    * @throws WxErrorException
    */
   @GetMapping("/menuGet")
+  @RequiresPermissions("wechat:menu:get")
   public WxMpMenu menuGet() throws WxErrorException {
     return this.wxService.getMenuService().menuGet();
   }
@@ -87,6 +90,7 @@ public class WxMenuController {
    * </pre>
    */
   @GetMapping("/getSelfMenuInfo")
+  @RequiresPermissions("wechat:menu:self:get")
   public WxMpGetSelfMenuInfoResult getSelfMenuInfo() throws WxErrorException {
     return this.wxService.getMenuService().getSelfMenuInfo();
   }
