@@ -9,11 +9,29 @@ import javax.persistence.Table;
 /**
  * 系统配置表
  */
-@Table(name = "sys_permission")
+@Table(name = "sys_config")
 @Entity
 @Data
 public class SysConfig extends BaseEntity {
+
+    /**
+     * 配置名称
+     */
     private String name;
+
+    /**
+     * 配置代码
+     */
+    private String code;
+
+    /**
+     * 配置的值
+     */
     private String value;
-    private String systemId;
+
+    /**
+     * 配置描述
+     */
+    private String note;
+
 }

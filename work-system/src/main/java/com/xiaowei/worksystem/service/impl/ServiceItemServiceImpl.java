@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.service.impl;
 
+import com.xiaowei.account.utils.ConfigUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
@@ -257,8 +258,8 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
             WorkOrder workOrder = serviceItem.getWorkOrder();
             workOrder.setSystemStatus(WorkOrderSystemStatus.QUALITY.getStatus());//工单状态设置为质检中
             workOrderRepository.save(workOrder);
-            //设置为1分钟后自动质检通过
-            messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * 60);
+            //设置自动质检通过,值使用系统配置中的值
+            messagePushSender.sendDelayTask(new TaskMessage(serviceItem.getId(), TaskType.AUTO_PASS_QUALITY_CHACK), 1000 * Integer.valueOf(ConfigUtils.getConfigValue("Quality.Audit.PassTime")));
             //有新的服务项目需要审核得到消息推送
             webSocketCore.sendMessageToOne(new SocketCoreBean(null, null, serviceItem.getId(), SocketType.TOAUDIT.getType(), new Date()), serviceItem.getWorkOrder().getBackgrounder().getId());
             return true;
