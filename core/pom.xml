@@ -121,7 +121,13 @@
             <artifactId>easypoi-annotation</artifactId>
             <version>3.1.0</version>
         </dependency>
-	</dependencies>
+        <!--通过请求头判断用户浏览器信息-->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+    </dependencies>
 
 
 
