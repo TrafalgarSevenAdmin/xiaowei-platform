@@ -118,7 +118,8 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
         }
-        if (workOrderSelect.getSystemStatus() != 7) {
+        if (workOrderSelect.getSystemStatus() == 8 ||
+                workOrderSelect.getSystemStatus() == 9) {
             throw new BusinessException("该工单状态无法创建申请单!");
         }
         //查询是否有其他申请单
