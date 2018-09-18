@@ -15,7 +15,6 @@ import com.xiaowei.worksystem.query.WorkOrderTypeQuery;
 import com.xiaowei.worksystem.service.IWorkOrderTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
