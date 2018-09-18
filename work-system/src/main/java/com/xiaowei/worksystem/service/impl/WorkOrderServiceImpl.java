@@ -10,6 +10,7 @@ import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
+import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.pay.consts.PayStatus;
@@ -78,15 +79,24 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     @Transactional
     public WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId) {
-        //判定参数是否合规
-        judgeAttribute(workOrder, JudgeType.INSERT);
-        workOrderRepository.save(workOrder);
-        if (StringUtils.isNotEmpty(workFlowId)) {
-            WorkFlow workFlow = new WorkFlow();
-            workFlow.setId(workFlowId);
-            workOrder.setWorkFlow(workFlow);
-            //设置服务项目
-            setServiceItems(workOrder, workFlowId);
+        switch (workOrder.getWorkOrderType().getServiceType()){
+            case IN://内部工单
+                workOrder.setCode(getCurrentDayMaxCode(StringPYUtils.cn2FirstSpell(workOrder.getWorkOrderType().getName())));
+                workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());
+                workOrderRepository.save(workOrder);
+                ;break;
+            case OUT:
+                //判定参数是否合规
+                judgeAttribute(workOrder, JudgeType.INSERT);
+                workOrderRepository.save(workOrder);
+                if (StringUtils.isNotEmpty(workFlowId)) {
+                    WorkFlow workFlow = new WorkFlow();
+                    workFlow.setId(workFlowId);
+                    workOrder.setWorkFlow(workFlow);
+                    //设置服务项目
+                    setServiceItems(workOrder, workFlowId);
+                }
+                ;break;
         }
         return workOrder;
     }
@@ -94,7 +104,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             workOrder.setId(null);
-            workOrder.setCode(getCurrentDayMaxCode());
+            workOrder.setCode(getCurrentDayMaxCode(StringPYUtils.cn2FirstSpell(workOrder.getWorkOrderType().getName())));
             workOrder.setEvaluate(null);
             workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());
@@ -120,8 +130,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      *
      * @return
      */
-    private String getCurrentDayMaxCode() {
-        String code = "FWGD" + DateUtils.getCurrentDate();
+    private String getCurrentDayMaxCode(String spatial) {
+        String code = spatial + DateUtils.getCurrentDate();
         String incr;
         ShardedJedis resource = shardedJedisPool.getResource();
         if (!resource.exists(code)) {

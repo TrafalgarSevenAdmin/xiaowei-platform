@@ -55,7 +55,6 @@ public class BaseUploadController {
         fileModel.setRelativePath(tag);
         fileModel.setUserId(LoginUserUtils.getLoginUser().getId());
 
-
         FileStore fileStore = uploadService.upload(fileModel);
         Map<String, Object> map = new HashMap<>();
         map.put("id", fileStore.getId());

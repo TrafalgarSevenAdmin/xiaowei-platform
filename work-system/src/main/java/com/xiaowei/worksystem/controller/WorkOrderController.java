@@ -24,6 +24,7 @@ import com.xiaowei.worksystem.service.IEvaluateService;
 import com.xiaowei.worksystem.service.IWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,9 @@ public class WorkOrderController {
     @PutMapping("/confirmed/{workOrderId}")
     @RequiresPermissions("order:workorder:confirmed")
     public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId, @RequestBody List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
-        workOrderService.confirmed(workOrderId, serviceItemIds);
+        WorkOrder workOrder = workOrderService.confirmed(workOrderId, serviceItemIds);
+
+        affirmedServiceItem(workOrder,"用户已确认");
         return Result.getSuccess();
     }
 
@@ -148,7 +151,7 @@ public class WorkOrderController {
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
             messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
-            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment()==null?workOrder.getEquipment().getAddress():"暂无", null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment()!=null?workOrder.getEquipment().getAddress():"暂无", null));
             userMessageBean.setData(messageMap);
             userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enReceiveOrder?orderId="+workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
@@ -174,7 +177,7 @@ public class WorkOrderController {
     }
 
 
-    private void affirmedServiceItem(WorkOrder workOrder, String status) {
+    private void affirmedServiceItem(WorkOrder workOrder,String status) {
         try {
             UserMessageBean userMessageBean = new UserMessageBean();
             userMessageBean.setUserId(workOrder.getEngineer().getId());
@@ -182,10 +185,11 @@ public class WorkOrderController {
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
             messageMap.put("first", new UserMessageBean.Payload("用户已确认收费项目,请尽快完成", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
-            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getWorkOrderType().getName(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
-            messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(StringUtils.isNotEmpty(workOrder.getEngineer().getNickName())?workOrder.getEngineer().getNickName():workOrder.getEngineer().getLoginName(), null));
             userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enReceiveOrder?orderId="+workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,7 +263,7 @@ public class WorkOrderController {
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
             messageMap.put("first", new UserMessageBean.Payload("您的工单有新的进度,请尽快查看", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
-            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getWorkOrderType().getName(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
             messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
             userMessageBean.setData(messageMap);

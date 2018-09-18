@@ -4,6 +4,7 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.commonlog4j.annotation.ParamField;
 import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.Equipment;
+import com.xiaowei.worksystem.entity.WorkOrderType;
 import com.xiaowei.worksystem.entity.customer.Customer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -49,7 +50,7 @@ public class WorkOrderDTO {
     @ApiModelProperty(value = "服务类型")
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "服务类型必填!")
     @ParamField("服务类型")
-    private String serviceType;
+    private WorkOrderType workOrderType;
 
     /**
      * 针对后台处理人员状态

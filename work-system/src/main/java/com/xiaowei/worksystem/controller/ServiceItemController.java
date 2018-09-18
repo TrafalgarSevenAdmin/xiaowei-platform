@@ -79,7 +79,7 @@ public class ServiceItemController {
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
             messageMap.put("first", new UserMessageBean.Payload("您的工单新增收费项目,请尽快确认", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
-            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getServiceType(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getWorkOrderType().getName(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
             messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
             userMessageBean.setData(messageMap);

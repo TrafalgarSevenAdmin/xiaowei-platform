@@ -3,7 +3,6 @@ package com.xiaowei.worksystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.entity.customer.Customer;
 import com.xiaowei.worksystem.entity.flow.WorkFlow;
@@ -15,8 +14,6 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 工单实体
@@ -75,12 +72,10 @@ public class WorkOrder extends BaseEntity {
     /**
      * 服务类型
      */
-    private String serviceType;
-
-    /**
-     * 工单类型
-     */
-    private String workOrderType;
+    @ManyToOne(targetEntity = WorkOrderType.class)
+    @JoinColumn(name = "type_id")
+    @Fetch(FetchMode.JOIN)
+    private WorkOrderType workOrderType;
 
     /**
      * 针对后台处理人员状态
