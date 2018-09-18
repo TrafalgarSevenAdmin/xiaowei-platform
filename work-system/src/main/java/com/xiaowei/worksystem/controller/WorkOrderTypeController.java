@@ -76,7 +76,6 @@ public class WorkOrderTypeController {
 
     }
 
-    @RequiresPermissions("account:company:get")
     @ApiOperation("根据id获取工单服务类型")
     @GetMapping("/{WorkOrderTypeId}")
     public Result findById(@PathVariable("WorkOrderTypeId") String WorkOrderTypeId, FieldsView fieldsView) {
@@ -84,7 +83,6 @@ public class WorkOrderTypeController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrderType, fieldsView));
     }
 
-    @RequiresPermissions("account:company:delete")
     @ApiOperation("删除工单服务类型")
     @DeleteMapping("/{WorkOrderTypeId}")
     @HandleLog(type = "删除工单服务类型", contentParams = {@ContentParam(field = "WorkOrderTypeId", value = "工单服务类型id")})
