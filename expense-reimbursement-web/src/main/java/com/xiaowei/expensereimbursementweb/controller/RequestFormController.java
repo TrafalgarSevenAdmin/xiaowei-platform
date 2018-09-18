@@ -21,6 +21,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -39,6 +41,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/RequestForm")
 public class RequestFormController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private IRequestFormService requestFormService;

@@ -25,6 +25,8 @@ import com.xiaowei.worksystem.service.IWorkOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -43,6 +45,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/workorder")
 public class WorkOrderController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private IWorkOrderService workOrderService;
@@ -150,6 +153,7 @@ public class WorkOrderController {
             userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enReceiveOrder?orderId="+workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
 
