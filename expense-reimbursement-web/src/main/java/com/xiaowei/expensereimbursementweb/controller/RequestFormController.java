@@ -107,7 +107,7 @@ public class RequestFormController {
                 //remark：
                 messageMap.put("remark", new UserMessageBean.Payload("请尽快完成审核任务!", null));
                 userMessageBean.setData(messageMap);
-                userMessageBean.setUrl(serverHost+"/xwkx-web/expense/CostApplyTrial?id="+requestForm.getId());
+                userMessageBean.setUrl(serverHost + "/xwkx-web/expense/approvalList");
                 messagePushSender.sendWxMessage(userMessageBean);
             });
 
@@ -141,6 +141,7 @@ public class RequestFormController {
             //remark：
             messageMap.put("remark", new UserMessageBean.Payload("请修改并重新发起审核请求!", null));
             userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/expense/requestList");
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();

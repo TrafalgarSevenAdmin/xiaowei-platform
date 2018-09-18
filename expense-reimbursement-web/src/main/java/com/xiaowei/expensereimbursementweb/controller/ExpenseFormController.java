@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,8 @@ public class ExpenseFormController {
     private IExpenseFormService expenseFormService;
     @Autowired
     private MessagePushSender messagePushSender;
+    @Value("${server.host}")
+    private String serverHost;
 
     @ApiOperation(value = "添加报销单")
     @AutoErrorHandler
@@ -120,6 +123,7 @@ public class ExpenseFormController {
                 //remark：
                 messageMap.put("remark", new UserMessageBean.Payload("请尽快完成初审任务!", null));
                 userMessageBean.setData(messageMap);
+                userMessageBean.setUrl(serverHost + "/xwkx-web/expense/approvalList");
                 messagePushSender.sendWxMessage(userMessageBean);
             });
 
@@ -153,6 +157,7 @@ public class ExpenseFormController {
             //remark：
             messageMap.put("remark", new UserMessageBean.Payload("请修改并重新发起审核请求!", null));
             userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/expense/expenseList");
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,6 +189,7 @@ public class ExpenseFormController {
             //remark：
             messageMap.put("remark", new UserMessageBean.Payload("请修改并重新发起审核请求!", null));
             userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/expense/expenseList");
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();
@@ -214,6 +220,7 @@ public class ExpenseFormController {
                 //remark：
                 messageMap.put("remark", new UserMessageBean.Payload("请尽快完成复审任务!", null));
                 userMessageBean.setData(messageMap);
+                userMessageBean.setUrl(serverHost + "/xwkx-web/expense/approvalList");
                 messagePushSender.sendWxMessage(userMessageBean);
             });
 

@@ -189,7 +189,7 @@ public class WorkOrderController {
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
             messageMap.put("keyword4", new UserMessageBean.Payload(StringUtils.isNotEmpty(workOrder.getEngineer().getNickName())?workOrder.getEngineer().getNickName():workOrder.getEngineer().getLoginName(), null));
             userMessageBean.setData(messageMap);
-            userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enReceiveOrder?orderId="+workOrder.getId());
+            userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enWorkingOrder?orderId="+workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();

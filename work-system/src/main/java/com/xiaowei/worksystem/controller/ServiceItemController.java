@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,8 @@ public class ServiceItemController {
     private IServiceItemService serviceItemService;
     @Autowired
     private MessagePushSender messagePushSender;
+    @Value("${server.host}")
+    private String serverHost;
 
     @ApiOperation(value = "工程师添加收费项目")
     @AutoErrorHandler
@@ -57,8 +60,8 @@ public class ServiceItemController {
         serviceItems = serviceItemService.saveByEngineer(workOrderId, serviceItems);
         for (int i = 0; i < serviceItems.size(); i++) {
             ServiceItem serviceItem = serviceItems.get(i);
-            if(serviceItem.getCharge()){
-                processingNotification(serviceItem.getWorkOrder(),"待确认");
+            if (serviceItem.getCharge()) {
+                processingNotification(serviceItem.getWorkOrder(), "待确认");
                 break;
             }
         }
@@ -83,6 +86,7 @@ public class ServiceItemController {
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
             messageMap.put("keyword4", new UserMessageBean.Payload(workOrder.getEngineer().getNickName(), null));
             userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/user/orderConfirm?orderId=" + workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();
