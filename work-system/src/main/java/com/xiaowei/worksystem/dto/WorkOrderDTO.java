@@ -48,7 +48,7 @@ public class WorkOrderDTO {
      * 服务类型
      */
     @ApiModelProperty(value = "服务类型")
-    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "服务类型必填!")
+    @NotNull(groups = {V.Insert.class,V.Update.class},message = "服务类型必填!")
     @ParamField("服务类型")
     private WorkOrderType workOrderType;
 
