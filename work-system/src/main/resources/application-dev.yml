@@ -1,5 +1,6 @@
 profiles:  dev_environment
 server:
+  host: @server.host@
   port: 9003
   servlet:
     context-path: /work

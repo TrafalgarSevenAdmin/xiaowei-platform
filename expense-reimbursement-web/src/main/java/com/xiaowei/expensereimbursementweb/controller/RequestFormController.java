@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,9 @@ public class RequestFormController {
     private IRequestFormService requestFormService;
     @Autowired
     private MessagePushSender messagePushSender;
+
+    @Value("${server.host}")
+    private String serverHost;
 
     @ApiOperation(value = "添加费用申请")
     @AutoErrorHandler
@@ -100,6 +104,7 @@ public class RequestFormController {
                 //remark：
                 messageMap.put("remark", new UserMessageBean.Payload("请尽快完成审核任务!", null));
                 userMessageBean.setData(messageMap);
+                userMessageBean.setUrl(serverHost+"/xwkx-web/expense/CostApplyTrial?id="+requestForm.getId());
                 messagePushSender.sendWxMessage(userMessageBean);
             });
 
