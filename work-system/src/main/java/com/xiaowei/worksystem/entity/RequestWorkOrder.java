@@ -38,7 +38,10 @@ public class RequestWorkOrder extends BaseEntity {
     /**
      * 服务类型
      */
-    private String serviceType;
+    @ManyToOne(targetEntity = WorkOrderType.class)
+    @JoinColumn(name = "type_id")
+    @Fetch(FetchMode.JOIN)
+    private WorkOrderType workOrderType;
     /**
      * 申请处理人
      */
