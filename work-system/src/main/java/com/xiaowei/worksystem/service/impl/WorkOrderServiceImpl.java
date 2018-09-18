@@ -108,7 +108,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             workOrder.setEvaluate(null);
             workOrder.setEngineerWork(null);
             workOrder.setCreatedTime(new Date());
-            //检查设备,如果没有设备,则新增设备
+            //检查设备
             judgeEquipment(workOrder);
             //设置工单状态
             setSaveWorkOrderStatus(workOrder);
