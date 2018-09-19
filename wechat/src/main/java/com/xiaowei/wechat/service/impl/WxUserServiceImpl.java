@@ -13,6 +13,7 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -82,6 +83,10 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     public void syncUserTag(SysUser user, String openId) throws WxErrorException {
         //获取这个用户的角色，并将角色名作为标签
         log.debug("正在同步用户:{}的角色:{}",user.getNickName(),user.getRoles().stream().map(SysRole::getName).collect(Collectors.toList()).toString());
+        //添加备注
+        if (StringUtils.isNotEmpty(user.getNickName())) {
+            wxMpService.getUserService().userUpdateRemark(openId, user.getNickName());
+        }
         Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue,newValue) -> newValue));
         //获得所有的标签
         List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();

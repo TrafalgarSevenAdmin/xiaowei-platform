@@ -10,6 +10,7 @@ import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.EmptyUtils;
@@ -125,7 +126,7 @@ public class WechatAuthController {
         }
         //登陆
         Subject subject = SecurityUtils.getSubject();
-        subject.login(new WxUserLoginToken(sysUser.getLoginName()));
+        subject.login(new WxUserLoginToken(sysUser.getLoginName(),ContextUtils.getIpAddr()));
         AccountUtils.loadUser();
         //绑定成功后，交给前端做路由
         return Result.getSuccess(request.getSession().getAttribute("redirect"));
@@ -198,7 +199,7 @@ public class WechatAuthController {
                 String lastCallBack = getLastCallBack(state);
                 request.getSession().setAttribute("redirect", lastCallBack);
                 Subject subject = SecurityUtils.getSubject();
-                subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME));
+                subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME,ContextUtils.getIpAddr()));
                 subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,AccountConst.GUEST_USER_INFO);
                 subject.getSession().setAttribute(LoginUserUtils.LOGIN_USER_BROWSER, RequestUtils.getOsAndBrowserInfo());
                 //在以访客身份登陆后,重新访问路由即可
@@ -207,7 +208,7 @@ public class WechatAuthController {
                 //在此做登陆，就是向前端写统一的登陆cookies
                 String loginName = wxUserOptional.get().getSysUser().getLoginName();
                 Subject subject = SecurityUtils.getSubject();
-                subject.login(new WxUserLoginToken(loginName));
+                subject.login(new WxUserLoginToken(loginName,ContextUtils.getIpAddr()));
                 AccountUtils.loadUser();
                 String url  = getLastCallBack(state);
                 response.sendRedirect(url);
@@ -297,7 +298,7 @@ public class WechatAuthController {
 
         //用户名密码登陆
         Subject subject = SecurityUtils.getSubject();
-        subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
+        subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword(),ContextUtils.getIpAddr()));
         LoginUserBean loginUser = (LoginUserBean) subject.getPrincipal();
         SysUser sysUser = sysUserService.findById(loginUser.getId());
         loginUser = AccountUtils.toLoginBean(sysUser);

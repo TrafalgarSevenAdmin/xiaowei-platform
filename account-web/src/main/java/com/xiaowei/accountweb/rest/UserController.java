@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.xiaowei.accountcommon.LoginUserUtils.SESSION_USER_KEY;
+
 /**
  * 用户管理
  */
@@ -151,10 +153,13 @@ public class UserController {
         List<OnlineUser> onlineUsers = new ArrayList<>();
         for (String id : onlineUserKeys) {
             Session session = (Session) redisTemplate.opsForValue().get(AccountConst.USER_REDIS_GROUP_PREFIX + id);
-            if (session != null) {
-                onlineUsers.add(new OnlineUser(session));
+            LoginUserBean user;
+            if (session != null && (user = (LoginUserBean) session.getAttribute(SESSION_USER_KEY)) != null) {
+                onlineUsers.add(new OnlineUser(session,user));
             }
         }
+        //根据最后一次请求排序
+        onlineUsers = onlineUsers.stream().sorted((a, b) -> (int)(b.getLastAccessTime().getTime() - a.getLastAccessTime().getTime())).collect(Collectors.toList());
         return Result.getSuccess(ObjectToMapUtils.anyToHandleField(onlineUsers, fieldsView));
     }
 

@@ -8,10 +8,17 @@ import org.apache.shiro.authc.UsernamePasswordToken;
  */
 public class WxUserLoginToken extends UsernamePasswordToken {
 
+    private String host;
     private String loginName;
 
-    public WxUserLoginToken(String loginName) {
+    public WxUserLoginToken(String loginName,String host) {
         this.loginName = loginName;
+        this.host = host;
+    }
+
+    @Override
+    public String getHost() {
+        return host;
     }
 
     @Override
