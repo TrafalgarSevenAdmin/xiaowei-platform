@@ -8,6 +8,7 @@ import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.repository.EvaluateRepository;
 import com.xiaowei.worksystem.repository.WorkOrderRepository;
 import com.xiaowei.worksystem.service.IEvaluateService;
+import com.xiaowei.worksystem.status.ServiceType;
 import com.xiaowei.worksystem.status.WorkOrderUserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +37,9 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         WorkOrder workOrder = workOrderRepository.getOne(workOrderId);
         if(!workOrder.getUserStatus().equals(WorkOrderUserStatus.EVALUATED.getStatus())){
             throw new BusinessException("工单不是待评价状态!");
+        }
+        if(ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())){
+            throw new BusinessException("该工单类型非外部工单!");
         }
         evaluate.setCreatedTime(new Date());
         workOrder.setEvaluate(evaluateRepository.save(evaluate));
