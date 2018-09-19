@@ -14,7 +14,6 @@ public class AccountWebApplication {
 		SpringApplication.run(AccountWebApplication.class, args);
 	}
 
-
 	/**
 	 * 配置文件上传通用服务
 	 * @return
