@@ -70,6 +70,14 @@ public class WorkOrder extends BaseEntity {
      */
     private String errorDescription;
     /**
+     * 要求
+     */
+    private String demand;
+    /**
+     * 工单标题
+     */
+    private String workOrderTitle;
+    /**
      * 服务类型
      */
     @ManyToOne(targetEntity = WorkOrderType.class)

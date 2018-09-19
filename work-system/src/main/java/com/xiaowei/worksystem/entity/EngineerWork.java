@@ -2,7 +2,6 @@ package com.xiaowei.worksystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
@@ -13,8 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 工程师处理工单附表实体
@@ -69,6 +66,10 @@ public class EngineerWork extends BaseEntity {
      * 到达图片
      */
     private String arriveFileStore;
+    /**
+     * 完成情况
+     */
+    private String state;
 
     @Transient
     private String startWkt;

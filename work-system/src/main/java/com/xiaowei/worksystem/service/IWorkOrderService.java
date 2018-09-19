@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.service;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.core.basic.service.IBaseService;
+import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.WorkOrder;
 
 import java.util.List;
@@ -49,4 +50,8 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder finishedExpense(String workOrderCode);
 
     void pigeonholedStatus(String engineerWorkId, Integer pigeonholedStatus);
+
+    WorkOrder saveInWorkOrder(WorkOrder workOrder);
+
+    WorkOrder inFinishInhand(EngineerWork engineerWork, String workOrderId);
 }
