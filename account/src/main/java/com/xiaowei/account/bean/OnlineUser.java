@@ -15,12 +15,11 @@ import static com.xiaowei.accountcommon.LoginUserUtils.SESSION_USER_KEY;
 @Data
 public class OnlineUser {
 
-    public OnlineUser(Session session) {
+    public OnlineUser(Session session,LoginUserBean user) {
         this.id = (String) session.getId();
         this.loginTime = session.getStartTimestamp();
         this.lastAccessTime = session.getLastAccessTime();
         this.host = session.getHost();
-        LoginUserBean user = (LoginUserBean) session.getAttribute(SESSION_USER_KEY);
         this.userId = user.getId();
         this.loginName = user.getLoginName();
         this.mobile = user.getMobile();

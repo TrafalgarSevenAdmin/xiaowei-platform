@@ -5,6 +5,7 @@ import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountcommon.PermissionBean;
+import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import io.swagger.annotations.Api;
@@ -38,7 +39,7 @@ public class LoginController {
     @AutoErrorHandler
     public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult){
         Subject subject = SecurityUtils.getSubject();
-        subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword()));
+        subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword(),ContextUtils.getIpAddr()));
         AccountUtils.loadUser();
         return Result.getSuccess(LoginUserUtils.getLoginUser());
     }
