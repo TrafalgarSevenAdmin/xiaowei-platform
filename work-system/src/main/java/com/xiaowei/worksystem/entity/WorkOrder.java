@@ -135,6 +135,11 @@ public class WorkOrder extends BaseEntity {
     private String repairFileStore;
 
     /**
+     * 用户付费项目金额(元)
+     */
+    private Double itemAmount;
+
+    /**
      * 地图定位
      */
     @Column(columnDefinition = "geometry(POINT,4326)")
