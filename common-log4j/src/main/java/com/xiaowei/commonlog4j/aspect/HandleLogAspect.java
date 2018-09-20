@@ -107,7 +107,7 @@ public class HandleLogAspect {
         logBaseData.setHandleTime(new Date());
         logBaseData.setSuccess(true);
         logBaseData.setUrl(targetName + "." + methodName);
-        logBaseData.setIp(ContextUtils.judgeAddress(ContextUtils.getRequest().getRemoteAddr()));
+        logBaseData.setIp(ContextUtils.judgeAddress(ContextUtils.getIpAddr()));
         logBaseData.setEmployeeId(LoginUserUtils.getLoginUser().getId());
 
         //设置日志内容
@@ -141,7 +141,7 @@ public class HandleLogAspect {
         logBaseData.setHandleTime(new Date());
         logBaseData.setSuccess(false);
         logBaseData.setUrl(targetName + "." + methodName);
-        logBaseData.setIp(ContextUtils.judgeAddress(ContextUtils.getRequest().getRemoteAddr()));
+        logBaseData.setIp(ContextUtils.judgeAddress(ContextUtils.getIpAddr()));
         logBaseData.setEmployeeId(LoginUserUtils.getLoginUser().getId());
 
         //设置日志内容
