@@ -17,10 +17,7 @@ import com.xiaowei.pay.consts.PayStatus;
 import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
-import com.xiaowei.worksystem.entity.EngineerWork;
-import com.xiaowei.worksystem.entity.Equipment;
-import com.xiaowei.worksystem.entity.ServiceItem;
-import com.xiaowei.worksystem.entity.WorkOrder;
+import com.xiaowei.worksystem.entity.*;
 import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import com.xiaowei.worksystem.repository.*;
 import com.xiaowei.worksystem.repository.flow.WorkFlowItemRepository;
@@ -65,6 +62,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private RequestWorkOrderRepository requestWorkOrderRepository;
     @Autowired
     private SysUserRepository userRepository;
+    @Autowired
+    private WorkOrderTypeRepository workOrderTypeRepository;
 
     /**
      * 消息发送服务
@@ -111,6 +110,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
+        //判断服务类型
+        EmptyUtils.assertObject(workOrder.getWorkOrderType(),"服务类型为空!");
+        EmptyUtils.assertObject(workOrder.getWorkOrderType().getId(),"服务类型id为空!");
+        Optional<WorkOrderType> optionalOrderType = workOrderTypeRepository.findById(workOrder.getWorkOrderType().getId());
+        EmptyUtils.assertOptional(optionalOrderType,"没有查询到所选服务类型!");
+        workOrder.setWorkOrderType(optionalOrderType.get());
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             judgeServiceTypeIsOut(workOrder);
             workOrder.setId(null);
