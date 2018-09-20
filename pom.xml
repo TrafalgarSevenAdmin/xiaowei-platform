@@ -125,14 +125,14 @@
             <properties>
                 <label>release</label>
                 <server.host>http://gongdan.xwseries.com</server.host>
-                <datasource.url>jdbc:postgresql://127.0.0.1:5432/xiaowei?characterEncoding=utf-8</datasource.url>
+                <datasource.url>jdbc:postgresql://gongdan.xwseries.com:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
-                <redis.url>127.0.0.1</redis.url>
+                <redis.url>gongdan.xwseries.com</redis.url>
                 <redis.password>xw-redis-123456789</redis.password>
-                <fluentd.url>119.23.224.29</fluentd.url>
+                <fluentd.url>gongdan.xwseries.com</fluentd.url>
                 <fluentd.port>24224</fluentd.port>
-                <rabbitmq.host>119.23.224.29</rabbitmq.host>
+                <rabbitmq.host>gongdan.xwseries.com</rabbitmq.host>
                 <rabbitmq.port>5672</rabbitmq.port>
                 <rabbitmq.username>xw</rabbitmq.username>
                 <rabbitmq.password>xw123456789</rabbitmq.password>
