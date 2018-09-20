@@ -104,7 +104,7 @@ public class WorkOrderController {
 
     @ApiOperation(value = "内部工单添加评价")
     @AutoErrorHandler
-    @PostMapping("/{workOrderId}/evaluate")
+    @PostMapping("/in/{workOrderId}/evaluate")
     @RequiresPermissions("order:workorder:evaluate")
     @HandleLog(type = "内部工单添加评价", contentParams = {@ContentParam(useParamField = true, field = "evaluateDTO", value = "评价信息"),
             @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})

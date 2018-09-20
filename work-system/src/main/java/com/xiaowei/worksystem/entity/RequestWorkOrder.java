@@ -53,6 +53,7 @@ public class RequestWorkOrder extends BaseEntity {
     /**
      * 报修文件id(多文件以分号隔开)
      */
+    @Lob
     private String repairFileStore;
 
     /**
