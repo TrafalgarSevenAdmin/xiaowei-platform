@@ -43,6 +43,7 @@ public class Company extends BaseEntity {
     /**
      * 公司logo
      */
+    @Lob
     private String logo;
 
     /**

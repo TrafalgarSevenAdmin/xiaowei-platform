@@ -1,13 +1,10 @@
 package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 报销单明细
@@ -53,10 +50,12 @@ public class ExpenseFormItem extends BaseEntity {
     /**
      * 发票照片
      */
+    @Lob
     private String invoiceFileStore;
     /**
      * 支付凭证
      */
+    @Lob
     private String voucherFileStore;
     /**
      * 所属报销单

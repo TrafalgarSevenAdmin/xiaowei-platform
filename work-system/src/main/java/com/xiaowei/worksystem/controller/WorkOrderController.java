@@ -102,6 +102,18 @@ public class WorkOrderController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
     }
 
+    @ApiOperation(value = "内部工单添加评价")
+    @AutoErrorHandler
+    @PostMapping("/in/{workOrderId}/evaluate")
+    @RequiresPermissions("order:workorder:evaluate")
+    @HandleLog(type = "内部工单添加评价", contentParams = {@ContentParam(useParamField = true, field = "evaluateDTO", value = "评价信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
+    public Result insertInEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
+        evaluate = evaluateService.saveInEvaluate(workOrderId, evaluate);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
+    }
+
     @ApiOperation(value = "修改工单")
     @AutoErrorHandler
     @PutMapping("/{workOrderId}")
@@ -234,11 +246,11 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
-    @ApiOperation(value = "保内工单处理完成")
+    @ApiOperation(value = "内部工单处理完成")
     @AutoErrorHandler
     @PutMapping("/in/finishInhand/{workOrderId}")
     @RequiresPermissions("order:workorder:finishInhand")
-    @HandleLog(type = "保内工单处理完成", contentParams = {@ContentParam(useParamField = true, field = "finishInhandWorkOrderDTO", value = "处理完成情况")})
+    @HandleLog(type = "内部工单处理完成", contentParams = {@ContentParam(useParamField = true, field = "finishInhandWorkOrderDTO", value = "处理完成情况")})
     public Result inFinishInhand(@RequestBody @Validated(V.Insert.class) FinishInhandWorkOrderDTO finishInhandWorkOrderDTO,
                                BindingResult bindingResult,
                                 @PathVariable("workOrderId") String workOrderId,
