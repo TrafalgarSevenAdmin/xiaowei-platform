@@ -44,7 +44,14 @@ public class WorkFlowItem extends BaseEntity{
      * 是否需要审核
      */
     private Boolean audit;
-
+    /**
+     * 内部价格
+     */
+    private Double insidePrice;
+    /**
+     * 外部价格
+     */
+    private Double outsidePrice;
     /**
      * 预计时长
      */

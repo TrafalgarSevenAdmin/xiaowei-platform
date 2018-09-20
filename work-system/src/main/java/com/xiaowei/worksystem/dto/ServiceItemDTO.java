@@ -69,6 +69,17 @@ public class ServiceItemDTO implements Serializable{
     private Boolean audit;
 
     /**
+     * 内部价格
+     */
+    @ApiModelProperty(value = "内部价格")
+    private Double insidePrice;
+    /**
+     * 外部价格
+     */
+    @ApiModelProperty(value = "外部价格")
+    private Double outsidePrice;
+
+    /**
      * 预计时长
      */
     @ApiModelProperty(value = "预计时长")

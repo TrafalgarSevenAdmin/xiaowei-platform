@@ -730,6 +730,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         List<ServiceItem> serviceItems = BeanCopyUtils.copyList(workFlowItems, ServiceItem.class);
         serviceItems.stream().forEach(serviceItem -> {
+            serviceItem.setId(null);
             serviceItem.setWorkOrder(workOrder);
             serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());//状态正常
             serviceItem.setSource(ServiceItemSource.BACKGROUNDER.getStatus());//后台创建来源

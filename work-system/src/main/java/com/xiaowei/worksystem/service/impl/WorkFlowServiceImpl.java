@@ -68,6 +68,8 @@ public class WorkFlowServiceImpl extends BaseServiceImpl<WorkFlow> implements IW
         }
         for (int i = 0; i < workFlowItems.size(); i++) {
             WorkFlowItem workFlowItem = workFlowItems.get(i);
+            workFlowItem.setId(null);
+            workFlowItem.setCreatedTime(null);//创建时间
             workFlowItem.setOrderNumber(i + 1);//设置排序号
             workFlowItem.setWorkFlowId(workFlow.getId());//设置所属流程模板id
             workFlowItemRepository.save(workFlowItem);

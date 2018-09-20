@@ -66,11 +66,18 @@ public class ServiceItem extends BaseEntity{
      * 保外收费
      */
     private Double outToll;
-
     /**
      * 是否需要审核
      */
     private Boolean audit;
+    /**
+     * 内部价格
+     */
+    private Double insidePrice;
+    /**
+     * 外部价格
+     */
+    private Double outsidePrice;
     /**
      * 审核次数
      */
