@@ -85,7 +85,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
     }
 
     private void judgeServiceTypeIsOut(WorkOrder workOrder) {
-        if(ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())){
+        if(!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())){
             throw new BusinessException("该工单类型非外部工单!");
         }
     }

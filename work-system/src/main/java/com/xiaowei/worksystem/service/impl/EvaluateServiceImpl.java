@@ -39,7 +39,7 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.EVALUATED.getStatus())) {
             throw new BusinessException("工单不是待评价状态!");
         }
-        if (ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非外部工单!");
         }
         evaluate.setCreatedTime(new Date());
@@ -63,7 +63,7 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         if (!workOrder.getUserStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
             throw new BusinessException("工单不是完成状态!");
         }
-        if (ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非内部工单!");
         }
         evaluate.setCreatedTime(new Date());

@@ -479,13 +479,13 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     private void judgeServiceTypeIsOut(WorkOrder workOrder) {
-        if (ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非外部工单!");
         }
     }
 
     private void judgeServiceTypeIsIn(WorkOrder workOrder) {
-        if (ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非内部工单!");
         }
     }

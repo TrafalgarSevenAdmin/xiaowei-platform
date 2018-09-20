@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.query;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.query.rundi.query.Sort;
+import com.xiaowei.worksystem.status.ServiceType;
 import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ public class WorkOrderQuery extends Query {
     private String[] userStatus;
     private String[] systemStatus;
     private String code;
+    private ServiceType serviceType;
 
     @Override
     public void generateCondition() {
@@ -41,6 +43,9 @@ public class WorkOrderQuery extends Query {
         }
         if(StringUtils.isNotEmpty(code)){
             addFilter(new Filter("code", Filter.Operator.eq,code));
+        }
+        if (serviceType != null) {
+            addFilter(new Filter("workOrderType.serviceType", Filter.Operator.eq, serviceType));
         }
     }
 
