@@ -39,6 +39,12 @@ public class WorkFlowNodeDTO {
      */
     @ApiModelProperty(value = "保内收费")
     private Double toll;
+
+    /**
+     * 节点类型
+     */
+    @ApiModelProperty(value = "保内收费")
+    private String nodeType;
     /**
      * 保外收费
      */

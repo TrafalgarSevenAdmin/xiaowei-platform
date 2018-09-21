@@ -11,6 +11,7 @@ public class WorkFlowNodeQuery extends Query {
     private String code;
     private String serviceTypeLike;
     private Boolean audit;
+    private String nodeType;
 
     @Override
     public void generateCondition() {
@@ -25,6 +26,9 @@ public class WorkFlowNodeQuery extends Query {
         }
         if (audit != null) {
             addFilter(new Filter("audit", Filter.Operator.eq, audit));
+        }
+        if (StringUtils.isNotEmpty(nodeType)) {
+            addFilter(new Filter("nodeType", Filter.Operator.eq, nodeType));
         }
     }
 }
