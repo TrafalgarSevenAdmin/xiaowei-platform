@@ -6,6 +6,7 @@ package com.xiaowei.core.validate;
 public enum JudgeType {
     INSERT,
     UPDATE,
+    DOUBLEINSERT,
     REGISTER;
     JudgeType() {
     }

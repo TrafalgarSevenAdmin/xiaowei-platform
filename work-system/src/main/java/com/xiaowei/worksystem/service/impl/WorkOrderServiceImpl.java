@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.service.impl;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.repository.SysUserRepository;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
@@ -17,10 +18,7 @@ import com.xiaowei.pay.consts.PayStatus;
 import com.xiaowei.pay.entity.XwOrder;
 import com.xiaowei.pay.repository.XwOrderRepository;
 import com.xiaowei.pay.status.XwType;
-import com.xiaowei.worksystem.entity.EngineerWork;
-import com.xiaowei.worksystem.entity.Equipment;
-import com.xiaowei.worksystem.entity.ServiceItem;
-import com.xiaowei.worksystem.entity.WorkOrder;
+import com.xiaowei.worksystem.entity.*;
 import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import com.xiaowei.worksystem.repository.*;
 import com.xiaowei.worksystem.repository.flow.WorkFlowItemRepository;
@@ -41,6 +39,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,6 +63,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private RequestWorkOrderRepository requestWorkOrderRepository;
     @Autowired
     private SysUserRepository userRepository;
+    @Autowired
+    private WorkOrderTypeRepository workOrderTypeRepository;
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 消息发送服务
@@ -79,30 +82,63 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     @Transactional
     public WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId) {
-        switch (workOrder.getWorkOrderType().getServiceType()){
-            case IN://内部工单
-                workOrder.setCode(getCurrentDayMaxCode(StringPYUtils.cn2FirstSpell(workOrder.getWorkOrderType().getName())));
-                workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());
-                workOrderRepository.save(workOrder);
-                ;break;
-            case OUT:
-                //判定参数是否合规
-                judgeAttribute(workOrder, JudgeType.INSERT);
-                workOrderRepository.save(workOrder);
-                if (StringUtils.isNotEmpty(workFlowId)) {
-                    WorkFlow workFlow = new WorkFlow();
-                    workFlow.setId(workFlowId);
-                    workOrder.setWorkFlow(workFlow);
-                    //设置服务项目
-                    setServiceItems(workOrder, workFlowId);
-                }
-                ;break;
+        //判断工单申请人
+        judgeProposer(workOrder);
+        //判定参数是否合规
+        judgeAttribute(workOrder, JudgeType.INSERT);
+        workOrderRepository.save(workOrder);
+        if (StringUtils.isNotEmpty(workFlowId)) {
+            WorkFlow workFlow = new WorkFlow();
+            workFlow.setId(workFlowId);
+            workOrder.setWorkFlow(workFlow);
+            //设置服务项目
+            setServiceItems(workOrder, workFlowId);
+
         }
         return workOrder;
     }
 
+    /**
+     * 判断工单申请人,如果没有工单申请人,则根据联系人电话以及联系人创建一个虚拟用户
+     *
+     * @param workOrder
+     */
+    private void judgeProposer(WorkOrder workOrder) {
+        if (workOrder.getProposer() != null) {
+            return;
+        } else {
+            SysUser sysUser = new SysUser();
+            sysUser.setMobile(workOrder.getLinkPhone());
+            sysUser.setLoginName(workOrder.getLinkMan());
+            sysUser.setNickName(workOrder.getLinkMan());
+            workOrder.setProposer(userService.registerUser(sysUser));
+        }
+    }
+
+    /**
+     * 添加内部工单
+     *
+     * @param workOrder
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder saveInWorkOrder(WorkOrder workOrder) {
+        //判定参数是否合规
+        judgeAttribute(workOrder, JudgeType.DOUBLEINSERT);
+        workOrderRepository.save(workOrder);
+        return workOrder;
+    }
+
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
+        //判断服务类型
+        EmptyUtils.assertObject(workOrder.getWorkOrderType(), "服务类型为空!");
+        EmptyUtils.assertObject(workOrder.getWorkOrderType().getId(), "服务类型id为空!");
+        Optional<WorkOrderType> optionalOrderType = workOrderTypeRepository.findById(workOrder.getWorkOrderType().getId());
+        EmptyUtils.assertOptional(optionalOrderType, "没有查询到所选服务类型!");
+        workOrder.setWorkOrderType(optionalOrderType.get());
         if (judgeType.equals(JudgeType.INSERT)) {//保存
+            judgeServiceTypeIsOut(workOrder);
             workOrder.setId(null);
             workOrder.setCode(getCurrentDayMaxCode(StringPYUtils.cn2FirstSpell(workOrder.getWorkOrderType().getName())));
             workOrder.setEvaluate(null);
@@ -122,6 +158,17 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             //设置无法修改的字段
 //            workOrder.setRepairFileStore(one.getRepairFileStore());//报修图片id无法修改
 
+        } else if (judgeType.equals(JudgeType.DOUBLEINSERT)) {//内部工单
+            judgeServiceTypeIsIn(workOrder);
+            workOrder.setId(null);
+            Date date = new Date();
+            workOrder.setCreatedTime(date);
+            workOrder.setCode(getCurrentDayMaxCode(StringPYUtils.cn2FirstSpell(workOrder.getWorkOrderType().getName())));
+            workOrder.setSystemStatus(WorkOrderSystemStatus.INHAND.getStatus());//处理中
+            EngineerWork engineerWork = new EngineerWork();//新建工程师处理工单附表
+            engineerWork.setBeginInhandTime(date);//开始处理时间
+            engineerWorkRepository.save(engineerWork);
+            workOrder.setEngineerWork(engineerWork);
         }
     }
 
@@ -202,7 +249,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
-
+        judgeServiceTypeIsOut(workOrder);
         //待确认
         if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.AFFIRM.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -249,6 +296,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
         if (receive) {//同意接单
             //待接单
             if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
@@ -281,6 +329,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
         //预约中
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.APPOINTING.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -306,6 +355,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
         //预约中
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.DEPART.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -333,6 +383,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
         //行程中
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.TRIPING.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -403,6 +454,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
         //处理中
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.INHAND.getStatus())) {
             throw new BusinessException("状态错误!");
@@ -415,10 +467,84 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setEndInhandTime(new Date());//处理完成时间
         engineerWorkRepository.save(engineerWork);
+        setWorkOrderItemAmount(workOrder);//设置项目金额
         WorkOrder save = workOrderRepository.save(workOrder);
 //        //设置为24小时后自动完成此工单
 //        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE), 1000 * 60 * 60 * 24);
         return save;
+    }
+
+    /**
+     * 内部工单处理完成
+     *
+     * @param engineerWork
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder inFinishInhand(EngineerWork engineerWork, String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        judgeServiceTypeIsIn(workOrder);
+        //处理中
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.INHAND.getStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
+
+        EngineerWork oneEngineerWork = workOrder.getEngineerWork();
+        EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
+        engineerWork.setEndInhandTime(new Date());//处理完成时间
+        engineerWork.setArriveFileStore(engineerWork.getArriveFileStore());
+        engineerWork.setState(engineerWork.getState());
+        engineerWorkRepository.save(oneEngineerWork);
+        WorkOrder save = workOrderRepository.save(workOrder);
+        return save;
+    }
+
+    private void judgeServiceTypeIsOut(WorkOrder workOrder) {
+        if (!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
+            throw new BusinessException("该工单类型非外部工单!");
+        }
+    }
+
+    private void judgeServiceTypeIsIn(WorkOrder workOrder) {
+        if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
+            throw new BusinessException("该工单类型非内部工单!");
+        }
+    }
+
+    /**
+     * 设置工单付费金额
+     *
+     * @param workOrder
+     * @return
+     */
+    private void setWorkOrderItemAmount(WorkOrder workOrder) {
+        List<ServiceItem> serviceItems = serviceItemRepository.findByWorkOrderId(workOrder.getId());
+        List<ServiceItem> collect = serviceItems.stream().filter(serviceItem -> serviceItem.getCharge())
+                .filter(serviceItem -> serviceItem.getStatus().equals(ServiceItemStatus.PAIED.getStatus())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)) {
+            workOrder.setItemAmount(0.00);
+        } else {
+            boolean isIn = false;
+            Equipment equipment = workOrder.getEquipment();
+            if (equipment != null && "保内".equals(equipment.getWarrantyStatus())) {
+                isIn = true;
+            }
+            double sum;
+            if (isIn) {
+                //根据保内价格计算
+                sum = collect.stream().map(serviceItem -> serviceItem.getToll()).mapToDouble(value -> value != null ? value : 0.00).sum();
+            } else {
+                //根据保外价格计算
+                sum = collect.stream().map(serviceItem -> serviceItem.getOutToll()).mapToDouble(value -> value != null ? value : 0.00).sum();
+            }
+            workOrder.setItemAmount(sum);
+//            Double aDouble1 = collect.stream().map(serviceItem -> serviceItem.getOutToll()).reduce((aDouble, aDouble2) -> aDouble + aDouble2).get();
+        }
     }
 
     /**
@@ -436,6 +562,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Optional<WorkOrder> optional = workOrderRepository.findById(workOrder.getId());
         EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         WorkOrder one = optional.get();
+        judgeServiceTypeIsOut(one);
         //待派发待接单都可以派发
         if (!one.getSystemStatus().equals(WorkOrderSystemStatus.DISTRIBUTE.getStatus()) &&
                 !one.getSystemStatus().equals(WorkOrderSystemStatus.RECEIVE.getStatus())) {
@@ -573,7 +700,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
         //工单处理完成或者报销中
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())&&
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus()) &&
                 !workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
@@ -601,7 +728,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     }
 
     /**
-     *  签到审核
+     * 签到审核
+     *
      * @param engineerWorkId
      * @param pigeonholedStatus
      */
@@ -609,7 +737,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Transactional
     public void pigeonholedStatus(String engineerWorkId, Integer pigeonholedStatus) {
         Optional<EngineerWork> optional = engineerWorkRepository.findById(engineerWorkId);
-        EmptyUtils.assertOptional(optional,"没有查询到需要修改的对象");
+        EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
         EngineerWork engineerWork = optional.get();
         engineerWork.setPigeonholedStatus(pigeonholedStatus);
         engineerWorkRepository.save(engineerWork);
@@ -628,6 +756,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         List<ServiceItem> serviceItems = BeanCopyUtils.copyList(workFlowItems, ServiceItem.class);
         serviceItems.stream().forEach(serviceItem -> {
+            serviceItem.setId(null);
             serviceItem.setWorkOrder(workOrder);
             serviceItem.setStatus(ServiceItemStatus.NORMAL.getStatus());//状态正常
             serviceItem.setSource(ServiceItemSource.BACKGROUNDER.getStatus());//后台创建来源

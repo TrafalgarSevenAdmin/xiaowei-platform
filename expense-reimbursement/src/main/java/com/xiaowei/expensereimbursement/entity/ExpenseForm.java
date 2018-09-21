@@ -2,7 +2,6 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -13,7 +12,6 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 报销单
@@ -36,6 +34,7 @@ public class ExpenseForm extends BaseEntity {
     /**
      * 报销单照片
      */
+    @Lob
     private String formFileStore;
     /**
      * 填报总计金额

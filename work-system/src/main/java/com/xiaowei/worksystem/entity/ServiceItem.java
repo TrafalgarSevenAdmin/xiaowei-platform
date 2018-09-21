@@ -1,7 +1,5 @@
 package com.xiaowei.worksystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -12,8 +10,6 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.sql.Time;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 维修项目实体
@@ -70,11 +66,18 @@ public class ServiceItem extends BaseEntity{
      * 保外收费
      */
     private Double outToll;
-
     /**
      * 是否需要审核
      */
     private Boolean audit;
+    /**
+     * 内部价格
+     */
+    private Double insidePrice;
+    /**
+     * 外部价格
+     */
+    private Double outsidePrice;
     /**
      * 审核次数
      */
@@ -106,6 +109,7 @@ public class ServiceItem extends BaseEntity{
     /**
      * 质检文件id(多文件以分号隔开)
      */
+    @Lob
     private String qualityFileStore;
 
 }

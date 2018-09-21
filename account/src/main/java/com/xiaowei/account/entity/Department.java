@@ -1,7 +1,5 @@
 package com.xiaowei.account.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.commonupload.utils.UploadConfigUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -10,8 +8,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 系统部门表
@@ -38,6 +34,7 @@ public class Department extends BaseEntity {
     /**
      * 部门logo
      */
+    @Lob
     private String logo;
     /**
      * 简介

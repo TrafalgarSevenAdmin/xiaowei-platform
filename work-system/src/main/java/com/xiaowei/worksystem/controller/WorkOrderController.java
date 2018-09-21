@@ -14,9 +14,8 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MessageType;
 import com.xiaowei.mq.sender.MessagePushSender;
-import com.xiaowei.worksystem.dto.DepartWorkOrderDTO;
-import com.xiaowei.worksystem.dto.EvaluateDTO;
-import com.xiaowei.worksystem.dto.WorkOrderDTO;
+import com.xiaowei.worksystem.dto.*;
+import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.Evaluate;
 import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.query.WorkOrderQuery;
@@ -70,12 +69,26 @@ public class WorkOrderController {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
         workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
-        if(workOrder.getEngineer()!=null){
+        if (workOrder.getEngineer() != null) {
             //派单提醒通知
             maintenanceOfDispatching(workOrder);
         }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
+
+    @ApiOperation(value = "添加内部工单")
+    @AutoErrorHandler
+    @PostMapping("/in")
+    @RequiresPermissions("order:workorder:add")
+    @HandleLog(type = "添加内部工单", contentParams = {@ContentParam(useParamField = true, field = "inWorkOrderDTO", value = "工单信息")})
+    public Result insertIn(@RequestBody @Validated(V.Insert.class) InWorkOrderDTO inWorkOrderDTO,
+                           BindingResult bindingResult,
+                           FieldsView fieldsView) throws Exception {
+        WorkOrder workOrder = BeanCopyUtils.copy(inWorkOrderDTO, WorkOrder.class);
+        workOrder = workOrderService.saveInWorkOrder(workOrder);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
+    }
+
 
     @ApiOperation(value = "添加评价")
     @AutoErrorHandler
@@ -86,6 +99,18 @@ public class WorkOrderController {
     public Result insertEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
         evaluate = evaluateService.saveEvaluate(workOrderId, evaluate);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
+    }
+
+    @ApiOperation(value = "内部工单添加评价")
+    @AutoErrorHandler
+    @PostMapping("/in/{workOrderId}/evaluate")
+    @RequiresPermissions("order:workorder:evaluate")
+    @HandleLog(type = "内部工单添加评价", contentParams = {@ContentParam(useParamField = true, field = "evaluateDTO", value = "评价信息"),
+            @ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
+    public Result insertInEvaluate(@PathVariable("workOrderId") String workOrderId, @RequestBody @Validated(V.Insert.class) EvaluateDTO evaluateDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        Evaluate evaluate = BeanCopyUtils.copy(evaluateDTO, Evaluate.class);
+        evaluate = evaluateService.saveInEvaluate(workOrderId, evaluate);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(evaluate, fieldsView));
     }
 
@@ -113,8 +138,7 @@ public class WorkOrderController {
     @RequiresPermissions("order:workorder:confirmed")
     public Result confirmedServiceItem(@PathVariable("workOrderId") String workOrderId, @RequestBody List<String> serviceItemIds, FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = workOrderService.confirmed(workOrderId, serviceItemIds);
-
-        affirmedServiceItem(workOrder,"用户已确认");
+        affirmedServiceItem(workOrder, "用户已确认");
         return Result.getSuccess();
     }
 
@@ -151,9 +175,9 @@ public class WorkOrderController {
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
             messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
-            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment()!=null?workOrder.getEquipment().getAddress():"暂无", null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment() != null ? workOrder.getEquipment().getAddress() : "暂无", null));
             userMessageBean.setData(messageMap);
-            userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enReceiveOrder?orderId="+workOrder.getId());
+            userMessageBean.setUrl(serverHost + "/xwkx-web/engineer/enReceiveOrder?orderId=" + workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -165,6 +189,7 @@ public class WorkOrderController {
 
     /**
      * 创建一个假的订单。订单金额1分钱
+     *
      * @return
      * @throws Exception
      */
@@ -177,7 +202,7 @@ public class WorkOrderController {
     }
 
 
-    private void affirmedServiceItem(WorkOrder workOrder,String status) {
+    private void affirmedServiceItem(WorkOrder workOrder, String status) {
         try {
             UserMessageBean userMessageBean = new UserMessageBean();
             userMessageBean.setUserId(workOrder.getEngineer().getId());
@@ -187,9 +212,9 @@ public class WorkOrderController {
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getWorkOrderType().getName(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(status, null));
-            messageMap.put("keyword4", new UserMessageBean.Payload(StringUtils.isNotEmpty(workOrder.getEngineer().getNickName())?workOrder.getEngineer().getNickName():workOrder.getEngineer().getLoginName(), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(StringUtils.isNotEmpty(workOrder.getEngineer().getNickName()) ? workOrder.getEngineer().getNickName() : workOrder.getEngineer().getLoginName(), null));
             userMessageBean.setData(messageMap);
-            userMessageBean.setUrl(serverHost+"/xwkx-web/engineer/enWorkingOrder?orderId="+workOrder.getId());
+            userMessageBean.setUrl(serverHost + "/xwkx-web/engineer/enWorkingOrder?orderId=" + workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,9 +240,25 @@ public class WorkOrderController {
                                   @RequestBody @Validated(V.Insert.class) DepartWorkOrderDTO departWorkOrderDTO,
                                   BindingResult bindingResult,
                                   FieldsView fieldsView) throws Exception {
-        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(departWorkOrderDTO.getWkt()),departWorkOrderDTO.getArriveFileStore(),departWorkOrderDTO.getArriveStatus());
+        WorkOrder workOrder = workOrderService.inhandWorkOrder(workOrderId, GeometryUtil.transWKT(departWorkOrderDTO.getWkt()), departWorkOrderDTO.getArriveFileStore(), departWorkOrderDTO.getArriveStatus());
         //到达通知
         processingNotification(workOrder, "工程师已到达");
+        return Result.getSuccess();
+    }
+
+    @ApiOperation(value = "内部工单处理完成")
+    @AutoErrorHandler
+    @PutMapping("/in/finishInhand/{workOrderId}")
+    @RequiresPermissions("order:workorder:finishInhand")
+    @HandleLog(type = "内部工单处理完成", contentParams = {@ContentParam(useParamField = true, field = "finishInhandWorkOrderDTO", value = "处理完成情况")})
+    public Result inFinishInhand(@RequestBody @Validated(V.Insert.class) FinishInhandWorkOrderDTO finishInhandWorkOrderDTO,
+                               BindingResult bindingResult,
+                                @PathVariable("workOrderId") String workOrderId,
+                               FieldsView fieldsView) throws Exception {
+        EngineerWork engineerWork = BeanCopyUtils.copy(finishInhandWorkOrderDTO, EngineerWork.class);
+        WorkOrder workOrder = workOrderService.inFinishInhand(engineerWork,workOrderId);
+        //处理完成通知
+        processingNotification(workOrder, "工程师已处理完成");
         return Result.getSuccess();
     }
 
@@ -297,7 +338,7 @@ public class WorkOrderController {
     @RequiresPermissions("order:workorder:pigeonholed")
     @HandleLog(type = "工单终审", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
     public Result pigeonholedStatus(@RequestParam("engineerWorkId") String engineerWorkId,
-                                    @RequestParam("pigeonholedStatus") Integer pigeonholedStatus,FieldsView fieldsView) throws Exception {
+                                    @RequestParam("pigeonholedStatus") Integer pigeonholedStatus, FieldsView fieldsView) throws Exception {
         workOrderService.pigeonholedStatus(engineerWorkId, pigeonholedStatus);
         return Result.getSuccess();
     }

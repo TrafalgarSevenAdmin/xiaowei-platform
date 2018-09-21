@@ -2,9 +2,7 @@ package com.xiaowei.account.consts;
 
 
 import com.xiaowei.accountcommon.LoginUserBean;
-import com.xiaowei.accountcommon.RoleBean;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class AccountConst {
@@ -14,6 +12,7 @@ public class AccountConst {
 
     //用户cookie分组前缀
     public final static String USER_REDIS_GROUP_PREFIX = "SYSTEM:USERS:LOGINED:";
+    public final static String USER_DEFAULT_PASSWORD = "123456";
 
     // 注册时默认分配的用户角色
     public final static String REGISTER_ROLE_CODE = "PTYH";

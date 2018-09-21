@@ -16,10 +16,7 @@ import com.xiaowei.worksystem.entity.WorkOrder;
 import com.xiaowei.worksystem.repository.ServiceItemRepository;
 import com.xiaowei.worksystem.repository.WorkOrderRepository;
 import com.xiaowei.worksystem.service.IServiceItemService;
-import com.xiaowei.worksystem.status.ServiceItemSource;
-import com.xiaowei.worksystem.status.ServiceItemStatus;
-import com.xiaowei.worksystem.status.WorkOrderSystemStatus;
-import com.xiaowei.worksystem.status.WorkOrderUserStatus;
+import com.xiaowei.worksystem.status.*;
 import com.xiaowei.worksystem.utils.ServiceItemUtils;
 import lombok.val;
 import org.apache.commons.lang3.ArrayUtils;
@@ -62,6 +59,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
     @Transactional
     public List<ServiceItem> saveByEngineer(String workOrderId, List<ServiceItem> serviceItems) {
         WorkOrder workOrder = workOrderRepository.getOne(workOrderId);
+        judgeServiceTypeIsOut(workOrder);
         Integer maxOrderNumber = serviceItemRepository.findMaxOrderNumberByWorkOrderId(workOrderId);
         if (maxOrderNumber == null) {
             maxOrderNumber = 0;
@@ -84,6 +82,12 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
 
         workOrderRepository.save(workOrder);
         return serviceItems;
+    }
+
+    private void judgeServiceTypeIsOut(WorkOrder workOrder) {
+        if(!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())){
+            throw new BusinessException("该工单类型非外部工单!");
+        }
     }
 
     /**

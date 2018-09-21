@@ -23,7 +23,6 @@ import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authc.Account;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -250,6 +249,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
                 setPasswordOfUser(user);
             }
         } else if (judgeType.equals(JudgeType.REGISTER)) {//注册
+            //设置默认密码
+            user.setPassword(AccountConst.USER_DEFAULT_PASSWORD);
             //验证loginName唯一性
             judgeLoginName(loginName);
             //验证电话号码唯一性
