@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.service.impl;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.repository.SysUserRepository;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
@@ -64,6 +65,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     private SysUserRepository userRepository;
     @Autowired
     private WorkOrderTypeRepository workOrderTypeRepository;
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 消息发送服务
@@ -79,7 +82,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
     @Override
     @Transactional
     public WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId) {
-
+        //判断工单申请人
+        judgeProposer(workOrder);
         //判定参数是否合规
         judgeAttribute(workOrder, JudgeType.INSERT);
         workOrderRepository.save(workOrder);
@@ -92,6 +96,23 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
         }
         return workOrder;
+    }
+
+    /**
+     * 判断工单申请人,如果没有工单申请人,则根据联系人电话以及联系人创建一个虚拟用户
+     *
+     * @param workOrder
+     */
+    private void judgeProposer(WorkOrder workOrder) {
+        if (workOrder.getProposer() != null) {
+            return;
+        } else {
+            SysUser sysUser = new SysUser();
+            sysUser.setMobile(workOrder.getLinkPhone());
+            sysUser.setLoginName(workOrder.getLinkMan());
+            sysUser.setNickName(workOrder.getLinkMan());
+            workOrder.setProposer(userService.registerUser(sysUser));
+        }
     }
 
     /**
@@ -111,10 +132,10 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     private void judgeAttribute(WorkOrder workOrder, JudgeType judgeType) {
         //判断服务类型
-        EmptyUtils.assertObject(workOrder.getWorkOrderType(),"服务类型为空!");
-        EmptyUtils.assertObject(workOrder.getWorkOrderType().getId(),"服务类型id为空!");
+        EmptyUtils.assertObject(workOrder.getWorkOrderType(), "服务类型为空!");
+        EmptyUtils.assertObject(workOrder.getWorkOrderType().getId(), "服务类型id为空!");
         Optional<WorkOrderType> optionalOrderType = workOrderTypeRepository.findById(workOrder.getWorkOrderType().getId());
-        EmptyUtils.assertOptional(optionalOrderType,"没有查询到所选服务类型!");
+        EmptyUtils.assertOptional(optionalOrderType, "没有查询到所选服务类型!");
         workOrder.setWorkOrderType(optionalOrderType.get());
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             judgeServiceTypeIsOut(workOrder);
