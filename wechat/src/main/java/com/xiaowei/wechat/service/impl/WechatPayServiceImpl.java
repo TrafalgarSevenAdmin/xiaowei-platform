@@ -22,6 +22,7 @@ import com.xiaowei.pay.entity.XwOrderResult;
 import com.xiaowei.pay.service.IOrderService;
 import com.xiaowei.wechat.config.WechatProperties;
 import com.xiaowei.wechat.consts.MagicValueStore;
+import com.xiaowei.wechat.dto.PayType;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWechatPayService;
 import com.xiaowei.wechat.service.IWxUserService;
@@ -38,10 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -74,12 +72,12 @@ public class WechatPayServiceImpl implements IWechatPayService {
     private WechatProperties wechatProperties;
 
     @Override
-    public Result createPayOrder(String order) {
+    public Result createPayOrder(String order, PayType type) {
         XwOrder xwOrder = orderService.findById(order);
         Assert.notNull(xwOrder, "找不到此订单");
         //若此订单尚未提交给微信
         if (xwOrder.getStatus() == PayStatus.created) {
-            return commitOrderToWechat(order, xwOrder);
+            return commitOrderToWechat(order,type, xwOrder);
         } else if (xwOrder.getStatus() == PayStatus.unpaid) {
             //如果没有生成PrepayId，代码逻辑上不会出现
             if (StringUtils.isBlank(xwOrder.getPrepayId())) {
@@ -88,7 +86,7 @@ public class WechatPayServiceImpl implements IWechatPayService {
             } else {
                 //订单已经提交给微信，但未支付
                 //重新支付
-                return Result.getSuccess(generateJSAPISign(xwOrder.getPrepayId()));
+                return getNeedPayInfo(type, xwOrder.getPrepayId(), xwOrder.getCodeURL());
             }
         } else if (xwOrder.getStatus() == PayStatus.close){
             throw new BusinessException("订单已" + xwOrder.getMessage());
@@ -99,7 +97,7 @@ public class WechatPayServiceImpl implements IWechatPayService {
         }
     }
 
-    private Result commitOrderToWechat(String order, XwOrder xwOrder) {
+    private Result commitOrderToWechat(String order,PayType type, XwOrder xwOrder) {
         WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = new WxPayUnifiedOrderRequest();
         EmptyUtils.assertObject(xwOrder, "没有找到订单信息！");
         wxPayUnifiedOrderRequest.setVersion("1.0");
@@ -115,18 +113,21 @@ public class WechatPayServiceImpl implements IWechatPayService {
             wxPayUnifiedOrderRequest.setTimeExpire(timeFormat.format(xwOrder.getTimeExpire()));
         }
         //使用jsapi公众号中支付
-        wxPayUnifiedOrderRequest.setTradeType("JSAPI");
+        wxPayUnifiedOrderRequest.setTradeType(type.getType());
         //指定不能使用信用卡支付,因为信用卡支付需要交手续费的
         wxPayUnifiedOrderRequest.setLimitPay("no_credit");
-        Optional<WxUser> userOptional = wxUserService.findByUserId(xwOrder.getUser().getId());
-        EmptyUtils.assertOptional(userOptional, "该用户未绑定微信");
-        wxPayUnifiedOrderRequest.setOpenid(userOptional.get().getOpenId());
+        if (type == PayType.JSAPI) {
+            Optional<WxUser> userOptional = wxUserService.findByUserId(xwOrder.getUser().getId());
+            EmptyUtils.assertOptional(userOptional, "该用户未绑定微信");
+            wxPayUnifiedOrderRequest.setOpenid(userOptional.get().getOpenId());
+        }
         try {
             WxPayUnifiedOrderResult wxPayUnifiedOrderResult = wxPayService.unifiedOrder(wxPayUnifiedOrderRequest);
             if (StringUtils.isBlank(wxPayUnifiedOrderResult.getPrepayId())) {
                 throw new BusinessException("获取预支付代码失败！");
             }
             xwOrder.setPrepayId(wxPayUnifiedOrderResult.getPrepayId());
+            xwOrder.setCodeURL(wxPayUnifiedOrderResult.getCodeURL());
             //更新本地订单状态为未支付
             xwOrder.setStatus(PayStatus.unpaid);
             //默认两小时
@@ -137,12 +138,30 @@ public class WechatPayServiceImpl implements IWechatPayService {
             //创建延时任务，在配置的时间后若未支付则关闭此订单
             //由于微信会自动关闭超时订单，因此为了防止手动关闭和自动关闭冲突，因此延时10秒
             messagePushSender.sendDelay(MqQueueConstant.DELAY_PAY_TASK_ROUTING, order, (int) (xwOrder.getTimeExpire().getTime() - new Date().getTime()) + 10000);
-            WxPayMpOrderResult result = generateJSAPISign(wxPayUnifiedOrderResult.getPrepayId());
-            return Result.getSuccess(result);
+            String prepayId = wxPayUnifiedOrderResult.getPrepayId();
+            String codeURL = wxPayUnifiedOrderResult.getCodeURL();
+            return getNeedPayInfo(type, prepayId, codeURL);
         } catch (WxPayException e) {
             log.error("创建订单错误！", e);
             throw new BusinessException("创建订单错误！");
         }
+    }
+
+    /**
+     * 获取最终的前端需要的支付信息
+     * @param type
+     * @param prepayId
+     * @param codeURL
+     * @return
+     */
+    private Result getNeedPayInfo(PayType type, String prepayId, String codeURL) {
+        switch (type) {
+            case JSAPI:
+                return Result.getSuccess(generateJSAPISign(prepayId));
+            case QR:
+                return Result.getSuccess(generateQrBase64(codeURL));
+        }
+        return null;
     }
 
     /**
@@ -311,5 +330,14 @@ public class WechatPayServiceImpl implements IWechatPayService {
 
         payResult.setPaySign(SignUtils.createSign(payResult, signType, wechatProperties.getMchKey(), false));
         return payResult;
+    }
+
+    /**
+     * 生成支付二维码的base64
+     * @param codeUrl
+     */
+    private String generateQrBase64(String codeUrl) {
+        final byte[] payQrBytes = wxPayService.createScanPayQrcodeMode2(codeUrl, null, null);
+        return Base64.getEncoder().encodeToString(payQrBytes);
     }
 }

@@ -17,10 +17,22 @@ public class ConfigUtils {
      * @return
      */
     public static String getConfigValue(String code) {
-        ISysConfigService sysConfigService = ContextUtils.getApplicationContext().getBean(ISysConfigService.class);
-        SysConfig config = sysConfigService.findByCode(code);
+        SysConfig config = getConfig(code);
         if (config == null) {
             throw new BusinessException("未找到系统配置的" + code + "!请联系管理员配置");
+        }
+        return config.getValue();
+    }
+
+    /**
+     * 获取配置，配置是必须的，如果找不到配置，就会取默认配置
+     * @param code
+     * @return
+     */
+    public static String getConfigValueOrDefault(String code,String defaultStr) {
+        SysConfig config = getConfig(code);
+        if (config == null) {
+            return defaultStr;
         }
         return config.getValue();
     }

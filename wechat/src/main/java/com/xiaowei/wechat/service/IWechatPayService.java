@@ -2,6 +2,7 @@ package com.xiaowei.wechat.service;
 
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.wechat.dto.PayType;
 
 public interface IWechatPayService {
 
@@ -11,7 +12,7 @@ public interface IWechatPayService {
      * @param order
      * @return
      */
-    Result createPayOrder(String order);
+    Result createPayOrder(String order, PayType type);
 
     /**
      * 处理返回的结果信息

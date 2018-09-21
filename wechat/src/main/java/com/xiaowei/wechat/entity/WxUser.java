@@ -23,6 +23,12 @@ public class WxUser {
     private String openId;
 
     /**
+     * 邀请来源描述
+     */
+    @Lob
+    private String invitationInfo;
+
+    /**
      * 是否订阅
      */
     private Boolean subscribe;

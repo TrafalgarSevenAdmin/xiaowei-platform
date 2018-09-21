@@ -106,6 +106,12 @@ public class XwOrder extends BaseEntity {
      */
     private String prepayId;
 
+    /**
+     * 微信生成的codeURL，用于后续接口调用中使用，该值有效期为2小时
+     * 方便重复支付
+     */
+    private String codeURL;
+
     public XwOrder() {
     }
 

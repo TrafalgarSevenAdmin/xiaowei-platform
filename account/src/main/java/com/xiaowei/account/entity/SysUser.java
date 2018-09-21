@@ -102,5 +102,10 @@ public class SysUser extends BaseEntity {
      */
     private String card;
 
+    /**
+     * 是否绑定微信
+     */
+    private Boolean SubWechat = false;
+
 
 }

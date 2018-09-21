@@ -26,4 +26,13 @@ public class MagicValueStore {
      * 只关注微信但没有绑定的微信的标签
      */
     public static final String notBindRole = "未绑定用户";
+
+    /**
+     * 微信邀请链接二维码超时时间
+     */
+    public static final String WechatInvitationExpireSecondsSetKey = "Wechat.Invitation.QR.ExpireSeconds";
+
+
+    public static final String WechatSubscribeMessage = "Wechat.Subscribe.Message";
+
 }
