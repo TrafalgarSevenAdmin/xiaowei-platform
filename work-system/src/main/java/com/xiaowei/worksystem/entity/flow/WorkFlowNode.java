@@ -33,6 +33,10 @@ public class WorkFlowNode extends BaseEntity {
      */
     private Double toll;
     /**
+     * 节点类型
+     */
+    private String nodeType;
+    /**
      * 保外收费
      */
     private Double outToll;
