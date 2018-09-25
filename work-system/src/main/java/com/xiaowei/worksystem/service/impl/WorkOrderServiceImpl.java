@@ -496,9 +496,9 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
         EngineerWork oneEngineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
-        engineerWork.setEndInhandTime(new Date());//处理完成时间
-        engineerWork.setArriveFileStore(engineerWork.getArriveFileStore());
-        engineerWork.setState(engineerWork.getState());
+        oneEngineerWork.setEndInhandTime(new Date());//处理完成时间
+        oneEngineerWork.setArriveFileStore(engineerWork.getArriveFileStore());
+        oneEngineerWork.setState(engineerWork.getState());
         engineerWorkRepository.save(oneEngineerWork);
         WorkOrder save = workOrderRepository.save(workOrder);
         return save;
