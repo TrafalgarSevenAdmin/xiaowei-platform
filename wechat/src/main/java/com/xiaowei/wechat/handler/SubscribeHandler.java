@@ -73,7 +73,7 @@ public class SubscribeHandler extends AbstractHandler {
                     user.setSysUser(sysUser);
                     //存储邀请信息
                     user.setInvitationInfo(JSONObject.toJSONString(invitationInfo));
-                    sysUserService.saveUser(sysUser);
+                    sysUserService.updateUser(sysUser);
                     //绑定后,也许应该给业务系统推送消息说此用户绑定，需要推送相应的消息
                 }
             }
