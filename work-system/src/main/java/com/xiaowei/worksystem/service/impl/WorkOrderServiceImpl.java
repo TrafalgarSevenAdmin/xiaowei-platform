@@ -109,8 +109,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         } else {
             SysUser sysUser = new SysUser();
             sysUser.setMobile(workOrder.getLinkPhone());
-            sysUser.setLoginName(workOrder.getLinkMan());
-            sysUser.setNickName(workOrder.getLinkMan());
+            sysUser.setLoginName(StringUtils.isNotEmpty(workOrder.getLinkMan())?workOrder.getLinkMan():workOrder.getLinkPhone());
+            sysUser.setNickName(StringUtils.isNotEmpty(workOrder.getLinkMan())?workOrder.getLinkMan():workOrder.getLinkPhone());
             workOrder.setProposer(userService.registerUser(sysUser));
         }
     }
