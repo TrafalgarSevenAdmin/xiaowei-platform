@@ -10,7 +10,6 @@ import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.dto.InvitationInfoDto;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
-import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -21,9 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 订阅/关注公众号事件
@@ -46,7 +43,7 @@ public class SubscribeHandler extends AbstractHandler {
             wxUserService = ContextUtils.getApplicationContext().getBean(IWxUserService.class);
         }
         if (redisTemplate == null) {
-            redisTemplate = ContextUtils.getApplicationContext().getBean(RedisTemplate.class);
+            redisTemplate = (RedisTemplate) ContextUtils.getApplicationContext().getBean("redisTemplate");
         }
         if (sysUserService == null) {
             sysUserService = ContextUtils.getApplicationContext().getBean(ISysUserService.class);
@@ -63,7 +60,6 @@ public class SubscribeHandler extends AbstractHandler {
             //扫码过来的邀请链接
             String ticket = wxMessage.getTicket();
             if (StringUtils.isNotBlank(ticket)) {
-                RedisTemplate redisTemplate = ContextUtils.getApplicationContext().getBean(RedisTemplate.class);
                 Object obj = redisTemplate.opsForValue().get(ticket);
                 if (obj != null) {
                     InvitationInfoDto invitationInfo = (InvitationInfoDto) obj;

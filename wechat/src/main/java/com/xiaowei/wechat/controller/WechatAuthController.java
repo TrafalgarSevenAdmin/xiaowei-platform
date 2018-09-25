@@ -115,10 +115,7 @@ public class WechatAuthController {
 //            如果没有就新建一个系统用户，标识为普通用户
             sysUser = new SysUser();
             sysUser.setLoginName(bindMobileDTO.getMobile());
-            sysUser.setPassword("123456");//默认密码
-            sysUser.setCreatedTime(new Date());
             sysUser.setMobile(bindMobileDTO.getMobile());
-            sysUser.setStatus(0);
             sysUser.setNickName(bindMobileDTO.getName());
             sysUser.setSubWechat(true);
             sysUser = sysUserService.registerUser(sysUser);
