@@ -3,6 +3,7 @@ package com.xiaowei.wechat.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.account.utils.ConfigUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.wechat.builder.TextBuilder;
@@ -85,7 +86,7 @@ public class SubscribeHandler extends AbstractHandler {
         }
 
         try {
-            return new TextBuilder().build(MagicValueStore.WechatSubscribeMessage, wxMessage, weixinService);
+            return new TextBuilder().build(ConfigUtils.getConfigValue(MagicValueStore.WechatSubscribeMessage), wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
