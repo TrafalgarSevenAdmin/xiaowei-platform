@@ -3,6 +3,7 @@ package com.xiaowei.wechat.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.account.utils.ConfigUtils;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.wechat.builder.TextBuilder;
@@ -10,7 +11,6 @@ import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.dto.InvitationInfoDto;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.service.IWxUserService;
-import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -21,9 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 订阅/关注公众号事件
@@ -46,7 +44,7 @@ public class SubscribeHandler extends AbstractHandler {
             wxUserService = ContextUtils.getApplicationContext().getBean(IWxUserService.class);
         }
         if (redisTemplate == null) {
-            redisTemplate = ContextUtils.getApplicationContext().getBean(RedisTemplate.class);
+            redisTemplate = (RedisTemplate) ContextUtils.getApplicationContext().getBean("redisTemplate");
         }
         if (sysUserService == null) {
             sysUserService = ContextUtils.getApplicationContext().getBean(ISysUserService.class);
@@ -63,7 +61,6 @@ public class SubscribeHandler extends AbstractHandler {
             //扫码过来的邀请链接
             String ticket = wxMessage.getTicket();
             if (StringUtils.isNotBlank(ticket)) {
-                RedisTemplate redisTemplate = ContextUtils.getApplicationContext().getBean(RedisTemplate.class);
                 Object obj = redisTemplate.opsForValue().get(ticket);
                 if (obj != null) {
                     InvitationInfoDto invitationInfo = (InvitationInfoDto) obj;
@@ -76,7 +73,7 @@ public class SubscribeHandler extends AbstractHandler {
                     user.setSysUser(sysUser);
                     //存储邀请信息
                     user.setInvitationInfo(JSONObject.toJSONString(invitationInfo));
-                    sysUserService.saveUser(sysUser);
+                    sysUserService.updateUser(sysUser);
                     //绑定后,也许应该给业务系统推送消息说此用户绑定，需要推送相应的消息
                 }
             }
@@ -89,7 +86,7 @@ public class SubscribeHandler extends AbstractHandler {
         }
 
         try {
-            return new TextBuilder().build(MagicValueStore.WechatSubscribeMessage, wxMessage, weixinService);
+            return new TextBuilder().build(ConfigUtils.getConfigValue(MagicValueStore.WechatSubscribeMessage), wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }

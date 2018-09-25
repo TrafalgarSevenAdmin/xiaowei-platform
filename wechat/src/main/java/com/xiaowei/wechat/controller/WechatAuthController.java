@@ -107,7 +107,7 @@ public class WechatAuthController {
             user.setSysUser(sysUser);
             //绑定到一起
             wxUserService.save(user);
-            sysUserService.saveUser(sysUser);
+            sysUserService.updateUser(sysUser);
             //将系统中的角色绑定到微信中的标签中
             wxUserService.syncUserTag(sysUseByMobile.get(), user.getOpenId());
         } else {
@@ -115,10 +115,7 @@ public class WechatAuthController {
 //            如果没有就新建一个系统用户，标识为普通用户
             sysUser = new SysUser();
             sysUser.setLoginName(bindMobileDTO.getMobile());
-            sysUser.setPassword("123456");//默认密码
-            sysUser.setCreatedTime(new Date());
             sysUser.setMobile(bindMobileDTO.getMobile());
-            sysUser.setStatus(0);
             sysUser.setNickName(bindMobileDTO.getName());
             sysUser.setSubWechat(true);
             sysUser = sysUserService.registerUser(sysUser);
@@ -313,7 +310,7 @@ public class WechatAuthController {
         // 绑定本微信
         wxUser.setSysUser(sysUser);
         wxUserService.saveOrUpdate(wxUser);
-        sysUserService.saveUser(sysUser);
+        sysUserService.updateUser(sysUser);
         //同步用户标签
         wxUserService.syncUserTag(sysUser,wxUser.getOpenId());
 
