@@ -15,6 +15,7 @@ import com.xiaowei.worksystem.query.WorkOrderTypeQuery;
 import com.xiaowei.worksystem.service.IWorkOrderTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +37,7 @@ public class WorkOrderTypeController {
     @ApiOperation(value = "添加工单服务类型")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("order:workorderType:add")
     @HandleLog(type = "添加工单服务类型", contentParams = {@ContentParam(useParamField = true, field = "workOrderTypeDTO", value = "工单服务类型信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderTypeDTO workOrderTypeDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         WorkOrderType workOrderType = BeanCopyUtils.copy(workOrderTypeDTO, WorkOrderType.class);
@@ -46,6 +48,7 @@ public class WorkOrderTypeController {
     @ApiOperation(value = "修改工单服务类型")
     @AutoErrorHandler
     @PutMapping("/{WorkOrderTypeId}")
+    @RequiresPermissions("order:workorderType:update")
     @HandleLog(type = "修改工单服务类型", contentParams = {@ContentParam(useParamField = true, field = "workOrderTypeDTO", value = "工单服务类型信息"),
             @ContentParam(useParamField = false, field = "WorkOrderTypeId", value = "工单服务类型id")})
     public Result update(@PathVariable("WorkOrderTypeId") String WorkOrderTypeId, @RequestBody @Validated(V.Update.class) WorkOrderTypeDTO workOrderTypeDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
@@ -57,6 +60,7 @@ public class WorkOrderTypeController {
 
     @ApiOperation("工单服务类型查询接口")
     @GetMapping("")
+    @RequiresPermissions("order:workorderType:query")
     public Result query(WorkOrderTypeQuery workOrderTypeQuery, FieldsView fieldsView) {
         //查询工单服务类型设置默认条件
         setDefaultCondition(workOrderTypeQuery);
@@ -77,6 +81,7 @@ public class WorkOrderTypeController {
 
     @ApiOperation("根据id获取工单服务类型")
     @GetMapping("/{WorkOrderTypeId}")
+    @RequiresPermissions("order:workorderType:get")
     public Result findById(@PathVariable("WorkOrderTypeId") String WorkOrderTypeId, FieldsView fieldsView) {
         WorkOrderType workOrderType = workOrderTypeService.findById(WorkOrderTypeId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrderType, fieldsView));
@@ -84,6 +89,7 @@ public class WorkOrderTypeController {
 
     @ApiOperation("删除工单服务类型")
     @DeleteMapping("/{WorkOrderTypeId}")
+    @RequiresPermissions("order:workorderType:delete")
     @HandleLog(type = "删除工单服务类型", contentParams = {@ContentParam(field = "WorkOrderTypeId", value = "工单服务类型id")})
     public Result delete(@PathVariable("WorkOrderTypeId") String WorkOrderTypeId, FieldsView fieldsView) {
         workOrderTypeService.delete(WorkOrderTypeId);

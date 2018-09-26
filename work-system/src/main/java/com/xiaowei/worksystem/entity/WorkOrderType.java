@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "W_WORKORDERTYPE")
 @Data
-@SQLDelete(sql = "update w_workorder set delete_flag = true, delete_time = now() where id=?")
+@SQLDelete(sql = "update W_WORKORDERTYPE set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class WorkOrderType extends BaseEntity {
 
