@@ -63,12 +63,15 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
             throw new BusinessException("工单不是完成状态!");
         }
+        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.EVALUATED.getStatus())) {
+            throw new BusinessException("工单不是待评价状态!");
+        }
         if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非内部工单!");
         }
         evaluate.setCreatedTime(new Date());
         workOrder.setEvaluate(evaluateRepository.save(evaluate));
-        workOrder.setSystemStatus(WorkOrderSystemStatus.PIGEONHOLED.getStatus());//归档
+        workOrder.setUserStatus(WorkOrderUserStatus.NORMAO.getStatus());//修改为正常
         workOrderRepository.save(workOrder);
         return evaluate;
     }

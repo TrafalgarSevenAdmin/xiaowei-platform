@@ -493,7 +493,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
-
+        workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         EngineerWork oneEngineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         oneEngineerWork.setEndInhandTime(new Date());//处理完成时间
