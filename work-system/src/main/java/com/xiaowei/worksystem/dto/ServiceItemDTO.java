@@ -97,5 +97,10 @@ public class ServiceItemDTO implements Serializable{
     @ApiModelProperty(value = "工作标准说明")
     @ParamField("工作标准说明")
     private String standard;
+    /**
+     * 工作标准图片
+     */
+    @ApiModelProperty(value = "工作标准图片")
+    private String standardFileStore;
 
 }

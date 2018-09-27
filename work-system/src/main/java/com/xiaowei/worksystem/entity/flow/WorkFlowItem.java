@@ -32,6 +32,10 @@ public class WorkFlowItem extends BaseEntity{
      */
     private String standard;
     /**
+     * 工作标准图片
+     */
+    private String standardFileStore;
+    /**
      * 保内收费
      */
     private Double toll;

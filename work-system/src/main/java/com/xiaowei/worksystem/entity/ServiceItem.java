@@ -46,6 +46,10 @@ public class ServiceItem extends BaseEntity{
      */
     private String standard;
     /**
+     * 工作标准图片
+     */
+    private String standardFileStore;
+    /**
      * 状态
      */
     private Integer status;

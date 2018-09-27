@@ -62,4 +62,7 @@ checkfield:
     - W_REQUESTWORKORDER.repair_file_store
     - W_SERVICEITEM.quality_file_store
     - W_WORKORDER.repair_file_store
+    - W_WORKFLOWNODE.standard_file_store
+    - W_SERVICEITEM.standard_file_store
+    - W_WORKFLOWITEM.standard_file_store
 
