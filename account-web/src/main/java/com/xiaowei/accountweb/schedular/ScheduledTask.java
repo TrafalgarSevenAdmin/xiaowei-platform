@@ -27,9 +27,9 @@ public class ScheduledTask {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTask.class);
 
     /**
-     * 每天晚上11点40分更新所有文件数据的检测时间并删除未符合检测的数据
+     * 每天23点40分更新所有文件数据的检测时间并删除未符合检测的数据
      */
-    @Scheduled(cron = "0 25 11 * * ? ")
+    @Scheduled(cron = "0 40 23 * * ? ")
     public void updateAllFileStoreCheckDate() {
         val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDate = new Date();
