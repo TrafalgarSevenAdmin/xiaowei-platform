@@ -16,4 +16,10 @@ public class WorkOrderUtils {
     public static final Integer[] FINISHED = {WorkOrderSystemStatus.FINISHHAND.getStatus(),
             WorkOrderSystemStatus.EXPENSEING.getStatus(),
             WorkOrderSystemStatus.PREPIGEONHOLE.getStatus()};
+    public static final Integer[] DISTRIBUTED = {WorkOrderSystemStatus.RECEIVE.getStatus(),
+            WorkOrderSystemStatus.APPOINTING.getStatus(),
+            WorkOrderSystemStatus.DEPART.getStatus(),
+            WorkOrderSystemStatus.TRIPING.getStatus(),
+            WorkOrderSystemStatus.INHAND.getStatus(),
+            WorkOrderSystemStatus.QUALITY.getStatus()};
 }

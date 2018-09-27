@@ -682,7 +682,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("preCreateCount", requestWorkOrderRepository.findCountByStatus(RequestWorkOrderStatus.UNTREATED.getStatus()));
         dataMap.put("distributeCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.DISTRIBUTE.getStatus()));
-        dataMap.put("receiveCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.RECEIVE.getStatus()));
+        dataMap.put("receiveCount", workOrderRepository.findCountByBackgrounderAndStatusIn(userId, WorkOrderUtils.DISTRIBUTED));
         dataMap.put("qualityCount", workOrderRepository.findCountByBackgrounderAndStatus(userId, WorkOrderSystemStatus.QUALITY.getStatus()));
         dataMap.put("finishedCount", workOrderRepository.findCountByBackgrounderAndStatusIn(userId, WorkOrderUtils.FINISHED));
         return dataMap;
