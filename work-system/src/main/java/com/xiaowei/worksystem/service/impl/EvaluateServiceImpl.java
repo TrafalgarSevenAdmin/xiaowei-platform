@@ -60,10 +60,10 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements IE
     @Transactional
     public Evaluate saveInEvaluate(String workOrderId, Evaluate evaluate) {
         WorkOrder workOrder = workOrderRepository.getOne(workOrderId);
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+        if (!WorkOrderSystemStatus.FINISHHAND.getStatus().equals(workOrder.getSystemStatus())) {
             throw new BusinessException("工单不是完成状态!");
         }
-        if (!workOrder.getUserStatus().equals(WorkOrderUserStatus.EVALUATED.getStatus())) {
+        if (!WorkOrderUserStatus.EVALUATED.getStatus().equals(workOrder.getUserStatus())) {
             throw new BusinessException("工单不是待评价状态!");
         }
         if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
