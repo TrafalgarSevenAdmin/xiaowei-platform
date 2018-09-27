@@ -22,4 +22,7 @@ public interface FileStoreRepository extends BaseRepository<FileStore> {
     @Modifying
     @Query("delete from FileStore f where f.checkDate is null or f.checkDate <> ?1")
     void deleteFileStoreByCheckDate(Date currentDate);
+
+    @Query("select f from FileStore f where f.checkDate is null or f.checkDate <> ?1")
+    List<FileStore> findByCheckDate(Date currentDate);
 }

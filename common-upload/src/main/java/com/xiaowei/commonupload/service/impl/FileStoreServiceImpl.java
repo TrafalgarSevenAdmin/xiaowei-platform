@@ -1,11 +1,13 @@
 package com.xiaowei.commonupload.service.impl;
 
+import com.xiaowei.commonupload.asyn.DeleteFileStoreThread;
 import com.xiaowei.commonupload.entity.FileStore;
 import com.xiaowei.commonupload.repository.FileStoreRepository;
 import com.xiaowei.commonupload.service.IFileStoreService;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import lombok.val;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,7 +69,11 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStore> implements 
     @Override
     @Transactional
     public void deleteFileStoreByCheckDate(Date currentDate) {
-        fileStoreRepository.deleteFileStoreByCheckDate(currentDate);
+        List<FileStore> fileStores = fileStoreRepository.findByCheckDate(currentDate);
+        if(CollectionUtils.isEmpty(fileStores)){
+            return;
+        }
+        new Thread(new DeleteFileStoreThread(fileStores)).start();
     }
 
     @Override
