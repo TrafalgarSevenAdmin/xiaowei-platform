@@ -53,7 +53,7 @@ run_account:
    - cd $ACCOUNT_PACKAGE_NAME && mvn -Dmaven.test.skip=true docker:build
    - docker ps |grep $ACCOUNT_PACKAGE_NAME && docker kill $ACCOUNT_PACKAGE_NAME
    - docker ps -a|grep $ACCOUNT_PACKAGE_NAME && docker rm $ACCOUNT_PACKAGE_NAME
-   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro --net=host --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
+   - docker run -d -v /etc/localtime:/etc/localtime:ro -v /etc/timezone:/etc/timezone:ro -v /root/upload:/root/upload --net=host --name $ACCOUNT_PACKAGE_NAME $ACCOUNT_PACKAGE_NAME
  tags:
    - dev
 

@@ -29,7 +29,7 @@ public class ScheduledTask {
     /**
      * 每天晚上11点40分更新所有文件数据的检测时间并删除未符合检测的数据
      */
-    @Scheduled(cron = "0 0 11 * * ? ")
+    @Scheduled(cron = "0 17 11 * * ? ")
     public void updateAllFileStoreCheckDate() {
         val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDate = new Date();
