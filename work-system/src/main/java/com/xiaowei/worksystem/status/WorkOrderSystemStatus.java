@@ -46,6 +46,10 @@ public enum WorkOrderSystemStatus {
      */
     PIGEONHOLED(10),
     /**
+     * 已取消
+     */
+    CANCEL(11),
+    /**
      * 删除
      */
     DELETE(99);

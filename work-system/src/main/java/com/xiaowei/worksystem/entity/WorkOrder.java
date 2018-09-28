@@ -175,6 +175,10 @@ public class WorkOrder extends BaseEntity {
      * 预计完成时间
      */
     private Date preFinishedTime;
+    /**
+     * 取消时间
+     */
+    private Date cancelTime;
 
     public String getWkt() {
         if (this.shape != null) {

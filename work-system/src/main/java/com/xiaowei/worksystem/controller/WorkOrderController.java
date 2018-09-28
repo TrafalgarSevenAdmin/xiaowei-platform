@@ -332,6 +332,30 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工单取消")
+    @AutoErrorHandler
+    @PutMapping("/cancel/{workOrderId}")
+    @RequiresPermissions("order:workorder:cancel")
+    @HandleLog(type = "工单取消", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
+    public Result cancel(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.cancel(workOrderId);
+        return Result.getSuccess();
+    }
+
+    @ApiOperation(value = "工单延期")
+    @AutoErrorHandler
+    @PutMapping("/postpone/{workOrderId}")
+    @RequiresPermissions("order:workorder:postpone")
+    @HandleLog(type = "工单延期", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id"),
+            @ContentParam(useParamField = true, field = "PostponeDTO", value = "延期详情")})
+    public Result postpone(@PathVariable("workOrderId") String workOrderId,
+                           @RequestBody @Validated(V.Insert.class) PostponeDTO postponeDTO,
+                           BindingResult bindingResult,
+                           FieldsView fieldsView) throws Exception {
+        workOrderService.postpone(workOrderId,postponeDTO.getAppointTime(),postponeDTO.getPreFinishedTime());
+        return Result.getSuccess();
+    }
+
     @ApiOperation(value = "签到审核")
     @AutoErrorHandler
     @PutMapping("/pigeonholedStatus")
@@ -349,11 +373,11 @@ public class WorkOrderController {
     @RequiresPermissions("order:workorder:appointing")
     @HandleLog(type = "工程师预约", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id"),
             @ContentParam(useParamField = true, field = "appointingWorkOrderDTO", value = "预约详情")})
-    public Result appointingWorkOrder(@RequestBody AppointingWorkOrderDTO appointingWorkOrderDTO,
+    public Result appointingWorkOrder(@RequestBody @Validated(V.Insert.class) AppointingWorkOrderDTO appointingWorkOrderDTO,
                                       BindingResult bindingResult,
                                       @PathVariable("workOrderId") String workOrderId,
                                       FieldsView fieldsView) throws Exception {
-        workOrderService.appointingWorkOrder(workOrderId, appointingWorkOrderDTO.getAppointingTime());
+        workOrderService.appointingWorkOrder(workOrderId, appointingWorkOrderDTO.getAppointTime());
         return Result.getSuccess();
     }
 

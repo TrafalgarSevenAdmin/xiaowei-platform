@@ -321,12 +321,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 工程师预约
      *
      * @param workOrderId
-     * @param appointingTime
+     * @param appointTime
      * @return
      */
     @Override
     @Transactional
-    public WorkOrder appointingWorkOrder(String workOrderId, Date appointingTime) {
+    public WorkOrder appointingWorkOrder(String workOrderId, Date appointTime) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
@@ -337,7 +337,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
-        engineerWork.setAppointTime(appointingTime);//预约时间
+        engineerWork.setAppointTime(appointTime);//预约时间
         engineerWorkRepository.save(engineerWork);
         workOrder.setSystemStatus(WorkOrderSystemStatus.DEPART.getStatus());//工程师状态变更为待出发
         return workOrderRepository.save(workOrder);
@@ -505,14 +505,44 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         return save;
     }
 
+    /**
+     * 工单延期
+     *
+     * @param workOrderId
+     * @param appointTime
+     * @param preFinishedTime
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder postpone(String workOrderId, Date appointTime, Date preFinishedTime) {
+        Optional<WorkOrder> optional = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(optional, "没有查询到需要延期的工单");
+        WorkOrder workOrder = optional.get();
+        judgeServiceTypeIsOut(workOrder);
+        //处理预约时间
+        if (appointTime != null) {
+            EngineerWork engineerWork = workOrder.getEngineerWork();
+            EmptyUtils.assertObject(engineerWork, "工单还未开始工作,无法修改预约时间");
+            engineerWork.setAppointTime(appointTime);
+            engineerWorkRepository.save(engineerWork);
+        }
+        //处理预计完成时间
+        if (preFinishedTime != null) {
+            workOrder.setPreFinishedTime(preFinishedTime);
+            workOrderRepository.save(workOrder);
+        }
+        return workOrder;
+    }
+
     private void judgeServiceTypeIsOut(WorkOrder workOrder) {
-        if (!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!workOrder.getWorkOrderType().getServiceType().equals(ServiceType.OUT)) {
             throw new BusinessException("该工单类型非外部工单!");
         }
     }
 
     private void judgeServiceTypeIsIn(WorkOrder workOrder) {
-        if (!ServiceType.IN.equals(workOrder.getWorkOrderType().getServiceType())) {
+        if (!workOrder.getWorkOrderType().getServiceType().equals(ServiceType.IN)) {
             throw new BusinessException("该工单类型非内部工单!");
         }
     }
@@ -617,6 +647,29 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         //终审人,终审时间
         workOrder.setPigeonholedTime(new Date());
         workOrder.setPigeonholedUser(userRepository.getOne(LoginUserUtils.getLoginUser().getId()));
+        return workOrderRepository.save(workOrder);
+    }
+
+    /**
+     * 工单取消
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder cancel(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
+        //工单是否可取消
+        if (!ArrayUtils.contains(WorkOrderUtils.CANCANCEL,workOrder.getSystemStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.CANCEL.getStatus());//工单状态变更为取消
+        //取消时间
+        workOrder.setCancelTime(new Date());
         return workOrderRepository.save(workOrder);
     }
 
