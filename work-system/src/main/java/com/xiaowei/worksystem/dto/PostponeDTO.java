@@ -1,20 +1,23 @@
 package com.xiaowei.worksystem.dto;
 
 import com.xiaowei.commonlog4j.annotation.ParamField;
-import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
-public class AppointingWorkOrderDTO {
+public class PostponeDTO {
     /**
      * 预约时间
      */
-    @NotNull(groups = {V.Insert.class,V.Update.class},message = "预约时间必填!")
     @ParamField("预约时间")
     @ApiModelProperty(value = "预约时间")
-    private Date  appointTime;
+    private Date appointTime;
+    /**
+     * 预计完成时间
+     */
+    @ParamField("预计完成时间")
+    @ApiModelProperty(value = "预计完成时间")
+    private Date preFinishedTime;
 }

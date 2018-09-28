@@ -24,7 +24,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder receivedWorkOrder(String workOrderId, Boolean receive);
 
-    WorkOrder appointingWorkOrder(String workOrderId, Date appointingTime);
+    WorkOrder appointingWorkOrder(String workOrderId, Date appointTime);
 
     WorkOrder departeWorkOrder(String workOrderId, Geometry shape);
 
@@ -55,4 +55,10 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder saveInWorkOrder(WorkOrder workOrder);
 
     WorkOrder inFinishInhand(EngineerWork engineerWork, String workOrderId);
+
+    WorkOrder postpone(String workOrderId, Date appointTime, Date preFinishedTime);
+
+    WorkOrder cancel(String workOrderId);
+
+    WorkOrder termination(String workOrderId);
 }

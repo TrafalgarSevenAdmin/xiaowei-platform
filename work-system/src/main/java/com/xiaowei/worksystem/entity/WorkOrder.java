@@ -90,6 +90,10 @@ public class WorkOrder extends BaseEntity {
      */
     private Integer systemStatus;
     /**
+     * 完成状态
+     */
+    private Integer finishedType;
+    /**
      * 针对用户状态
      */
     private Integer userStatus;
@@ -175,6 +179,10 @@ public class WorkOrder extends BaseEntity {
      * 预计完成时间
      */
     private Date preFinishedTime;
+    /**
+     * 取消时间
+     */
+    private Date cancelTime;
 
     public String getWkt() {
         if (this.shape != null) {
