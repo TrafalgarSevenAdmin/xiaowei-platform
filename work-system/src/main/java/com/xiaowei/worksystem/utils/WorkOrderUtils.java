@@ -10,6 +10,10 @@ public class WorkOrderUtils {
             WorkOrderSystemStatus.RECEIVE.getStatus(),
             WorkOrderSystemStatus.APPOINTING.getStatus(),
             WorkOrderSystemStatus.DEPART.getStatus()};
+    //可以终止的状态
+    public static final Integer[] CANTERMINATION = {WorkOrderSystemStatus.TRIPING.getStatus(),
+            WorkOrderSystemStatus.INHAND.getStatus(),
+            WorkOrderSystemStatus.QUALITY.getStatus()};
     //工程师处理中
     public static final Integer[] INHAND = {WorkOrderSystemStatus.APPOINTING.getStatus(),
             WorkOrderSystemStatus.DEPART.getStatus(),

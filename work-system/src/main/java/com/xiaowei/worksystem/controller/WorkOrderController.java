@@ -342,6 +342,16 @@ public class WorkOrderController {
         return Result.getSuccess();
     }
 
+    @ApiOperation(value = "工单终止")
+    @AutoErrorHandler
+    @PutMapping("/termination/{workOrderId}")
+    @RequiresPermissions("order:workorder:termination")
+    @HandleLog(type = "工单终止", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
+    public Result termination(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
+        workOrderService.termination(workOrderId);
+        return Result.getSuccess();
+    }
+
     @ApiOperation(value = "工单延期")
     @AutoErrorHandler
     @PutMapping("/postpone/{workOrderId}")

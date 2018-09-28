@@ -90,6 +90,10 @@ public class WorkOrder extends BaseEntity {
      */
     private Integer systemStatus;
     /**
+     * 完成状态
+     */
+    private Integer finishedType;
+    /**
      * 针对用户状态
      */
     private Integer userStatus;

@@ -463,7 +463,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         //检查服务项目是否已经全部完成
         judgeServiceItemIsDone(workOrder);
         workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
-
+        workOrder.setFinishedType(FinishedType.OUT_NORMAL_FINISHED.getStatus());//完成状态为外部工单正常完成
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
         engineerWork.setEndInhandTime(new Date());//处理完成时间
@@ -494,6 +494,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工程师状态为处理完成
+        workOrder.setFinishedType(FinishedType.IN_NORMAL_FINISHED.getStatus());//完成状态为内部工单正常完成
         workOrder.setUserStatus(WorkOrderUserStatus.EVALUATED.getStatus());//待评价
         EngineerWork oneEngineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
@@ -672,6 +673,33 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         workOrder.setCancelTime(new Date());
         return workOrderRepository.save(workOrder);
     }
+
+
+    /**
+     * 工单终止
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder termination(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        judgeServiceTypeIsOut(workOrder);
+        //工单是否可终止
+        if (!ArrayUtils.contains(WorkOrderUtils.CANTERMINATION,workOrder.getSystemStatus())) {
+            throw new BusinessException("状态错误!");
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工单状态变更为处理完成
+        workOrder.setFinishedType(FinishedType.OUT_TERMINATION_FINISHED.getStatus());//完成状态为外部工单终止完成
+        EngineerWork engineerWork = workOrder.getEngineerWork();
+        engineerWork.setEndInhandTime(new Date());//处理完成时间
+        engineerWorkRepository.save(engineerWork);
+        return workOrderRepository.save(workOrder);
+    }
+
 
     @Override
     @Transactional

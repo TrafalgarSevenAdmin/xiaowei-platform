@@ -59,4 +59,6 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder postpone(String workOrderId, Date appointTime, Date preFinishedTime);
 
     WorkOrder cancel(String workOrderId);
+
+    WorkOrder termination(String workOrderId);
 }
