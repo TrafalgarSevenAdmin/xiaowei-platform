@@ -48,6 +48,7 @@ public class DelayTaskReceiver {
                 try {
                     //定时通过质检
                     serviceItemService.qualityServiceItem(messageBean.getObjectId(),true);
+                    log.info("自动通过质检过程中成功!");
                 } catch (Exception e) {
                     log.warning("自动通过质检过程中错误："+e.getMessage());
                     e.printStackTrace();
