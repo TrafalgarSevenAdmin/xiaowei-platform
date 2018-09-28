@@ -10,6 +10,7 @@ public class WorkFlowQuery extends Query {
     private String workFlowNameLike;
     private String code;
     private String type;
+    private Integer status;
 
     @Override
     public void generateCondition() {
@@ -21,6 +22,9 @@ public class WorkFlowQuery extends Query {
         }
         if (StringUtils.isNotEmpty(type)) {
             addFilter(new Filter("type", Filter.Operator.eq, type));
+        }
+        if (status != null) {
+            addFilter(new Filter("status", Filter.Operator.eq, status));
         }
     }
 }

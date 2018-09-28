@@ -1,5 +1,7 @@
 package com.xiaowei.worksystem.controller.flow;
 
+import com.xiaowei.commonlog4j.annotation.ContentParam;
+import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -50,6 +52,18 @@ public class WorkFlowController {
         WorkFlow workFlow = BeanCopyUtils.copy(workFlowDTO, WorkFlow.class);
         workFlow.setId(workFlowId);
         workFlow = workFlowService.updateWorkFlow(workFlow);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(workFlow, fieldsView));
+    }
+
+    @RequiresPermissions("account:workflow:status")
+    @ApiOperation(value = "启用/禁用流程模板")
+    @AutoErrorHandler
+    @PutMapping("/{workFlowId}/status")
+    @HandleLog(type = "启用/禁用流程模板", contentParams = {@ContentParam(field = "workFlowId", value = "模板id")})
+    public Result updateStatus(@PathVariable("workFlowId") String workFlowId, @RequestBody @Validated(WorkFlowDTO.UpdateStatus.class) WorkFlowDTO workFlowDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        WorkFlow workFlow = BeanCopyUtils.copy(workFlowDTO, WorkFlow.class);
+        workFlow.setId(workFlowId);
+        workFlow = workFlowService.updateStatus(workFlow);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workFlow, fieldsView));
     }
 

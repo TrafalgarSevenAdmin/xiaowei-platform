@@ -2,6 +2,8 @@ package com.xiaowei.worksystem.entity.flow;
 
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +17,8 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "W_WORKFLOW")
+@SQLDelete(sql = "update W_WORKFLOW set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 public class WorkFlow extends BaseEntity {
     /**
      * 模板名称
@@ -26,6 +30,10 @@ public class WorkFlow extends BaseEntity {
     @Column(unique = true,updatable = false)
     private String code;
     /**
+     * 状态:0表示正常,1表示停用
+     */
+    private Integer status;
+    /**
      * 模板类型
      */
     private String type;
@@ -33,6 +41,7 @@ public class WorkFlow extends BaseEntity {
      * 模板简介
      */
     private String intro;
+
 
     /**
      * 模板下的流程明细

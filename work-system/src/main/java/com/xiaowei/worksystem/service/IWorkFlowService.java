@@ -12,4 +12,6 @@ public interface IWorkFlowService extends IBaseService<WorkFlow> {
     WorkFlow updateWorkFlow(WorkFlow workFlow);
 
     void deleteWorkFlow(String workFlowId);
+
+    WorkFlow updateStatus(WorkFlow workFlow);
 }
