@@ -14,6 +14,7 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -77,6 +78,7 @@ public class RegionController {
     @ApiOperation(value = "添加区域")
     @AutoErrorHandler
     @PostMapping("")
+    @RequiresPermissions("account:region:add")
     public Result save(@RequestBody RegionDTO regionDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Region region = BeanCopyUtils.copy(regionDTO, Region.class);
         region = regionService.saveRegion(region);
@@ -86,6 +88,7 @@ public class RegionController {
     @ApiOperation(value = "编辑区域")
     @AutoErrorHandler
     @PutMapping("/{regionId}")
+    @RequiresPermissions("account:region:edit")
     public Result update(@PathVariable("regionId") String regionId, @RequestBody @Validated(V.Update.class) RegionDTO regionDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
         Region region = BeanCopyUtils.copy(regionDTO, Region.class);
         region.setId(regionId);
@@ -95,6 +98,7 @@ public class RegionController {
 
     @ApiOperation(value = "删除区域")
     @DeleteMapping("/{regionId}")
+    @RequiresPermissions("account:region:delete")
     public Result delete(@PathVariable("regionId") String regionId) throws Exception {
         regionService.deleteRegion(regionId);
         return Result.getSuccess();
