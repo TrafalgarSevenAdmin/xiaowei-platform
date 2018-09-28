@@ -107,6 +107,7 @@ public class PermissionController {
                 a -> {
                     Map<String, Object> dataMap = new HashMap<>();
                     dataMap.put("id", a.getId());
+                    dataMap.put("symbol", a.getSymbol());
                     dataMap.put("level", a.getLevel());
                     return dataMap;
                 },
