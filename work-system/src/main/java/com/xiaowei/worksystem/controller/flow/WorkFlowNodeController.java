@@ -44,7 +44,8 @@ public class WorkFlowNodeController {
     public Result update(@PathVariable("workFlowNodeId") String workFlowNodeId, @RequestBody @Validated(V.Update.class) WorkFlowNodeDTO workFlowNodeDTO, BindingResult bindingResult) throws Exception {
         WorkFlowNode workFlowNode = BeanCopyUtils.copy(workFlowNodeDTO, WorkFlowNode.class);
         workFlowNode.setId(workFlowNodeId);
-        return Result.getSuccess(workFlowNodeService.update(workFlowNode));
+        workFlowNode = workFlowNodeService.updateWorkFlowNode(workFlowNode);
+        return Result.getSuccess(workFlowNode);
     }
 
     @ApiOperation("删除流程节点")

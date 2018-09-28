@@ -1,17 +1,26 @@
 package com.xiaowei.account.utils;
 
 import com.xiaowei.account.consts.SuperUser;
-import com.xiaowei.account.entity.*;
-import com.xiaowei.account.service.*;
+import com.xiaowei.account.entity.SysPermission;
+import com.xiaowei.account.entity.SysRole;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ISysPermissionService;
+import com.xiaowei.account.service.ISysRoleService;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.accountcommon.*;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.context.ContextUtils;
 import com.xiaowei.core.utils.RequestUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AccountUtils {
 
@@ -44,10 +53,20 @@ public class AccountUtils {
             List<SysPermission> sysPermissions = ContextUtils.getApplicationContext().getBean(ISysPermissionService.class).findAll();
             permissions.addAll(BeanCopyUtils.copyList(sysPermissions, PermissionBean.class));
         }else{
+            List<SysPermission> sysPermissions = new ArrayList<>();
             sysUser.getRoles().forEach(sysRole -> {
                 roles.add(BeanCopyUtils.copy(sysRole, RoleBean.class));
-                permissions.addAll(BeanCopyUtils.copyList(sysRole.getPermissions(), PermissionBean.class));
+                sysPermissions.addAll(sysRole.getPermissions());
             });
+            Set<String> splitList = new HashSet<>();
+            sysPermissions.stream().forEach(sysPermission -> {
+                if(StringUtils.isNotEmpty(sysPermission.getPrecondition())){
+                    CollectionUtils.addAll(splitList,sysPermission.getPrecondition().split(","));
+                }
+            });
+            sysPermissions.addAll(ContextUtils.getApplicationContext().getBean(ISysPermissionService.class)
+                    .findBySymbolIn(splitList));
+            permissions.addAll(BeanCopyUtils.copyList(sysPermissions.stream().distinct().collect(Collectors.toList()), PermissionBean.class));
         }
 
         LoginUserBean loginUserBean = new LoginUserBean(

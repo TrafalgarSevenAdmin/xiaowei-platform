@@ -7,6 +7,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mocker
@@ -59,6 +60,20 @@ public class SysPermission extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY,mappedBy = "permissions")
     @JsonIgnore
     private List<SysRole> roles;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SysPermission that = (SysPermission) o;
+        return Objects.equals(this.getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name);
+    }
 
     public List<SysRole> getRoles() {
         return roles;

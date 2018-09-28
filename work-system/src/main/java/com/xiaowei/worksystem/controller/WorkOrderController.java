@@ -252,11 +252,11 @@ public class WorkOrderController {
     @RequiresPermissions("order:workorder:finishInhand")
     @HandleLog(type = "内部工单处理完成", contentParams = {@ContentParam(useParamField = true, field = "finishInhandWorkOrderDTO", value = "处理完成情况")})
     public Result inFinishInhand(@RequestBody @Validated(V.Insert.class) FinishInhandWorkOrderDTO finishInhandWorkOrderDTO,
-                               BindingResult bindingResult,
-                                @PathVariable("workOrderId") String workOrderId,
-                               FieldsView fieldsView) throws Exception {
+                                 BindingResult bindingResult,
+                                 @PathVariable("workOrderId") String workOrderId,
+                                 FieldsView fieldsView) throws Exception {
         EngineerWork engineerWork = BeanCopyUtils.copy(finishInhandWorkOrderDTO, EngineerWork.class);
-        WorkOrder workOrder = workOrderService.inFinishInhand(engineerWork,workOrderId);
+        WorkOrder workOrder = workOrderService.inFinishInhand(engineerWork, workOrderId);
         //处理完成通知
         processingNotification(workOrder, "工程师已处理完成");
         return Result.getSuccess();
@@ -347,9 +347,13 @@ public class WorkOrderController {
     @AutoErrorHandler
     @PutMapping("/appointing/{workOrderId}")
     @RequiresPermissions("order:workorder:appointing")
-    @HandleLog(type = "工程师预约", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id")})
-    public Result appointingWorkOrder(@PathVariable("workOrderId") String workOrderId, FieldsView fieldsView) throws Exception {
-        workOrderService.appointingWorkOrder(workOrderId);
+    @HandleLog(type = "工程师预约", contentParams = {@ContentParam(useParamField = false, field = "workOrderId", value = "工单id"),
+            @ContentParam(useParamField = true, field = "appointingWorkOrderDTO", value = "预约详情")})
+    public Result appointingWorkOrder(@RequestBody AppointingWorkOrderDTO appointingWorkOrderDTO,
+                                      BindingResult bindingResult,
+                                      @PathVariable("workOrderId") String workOrderId,
+                                      FieldsView fieldsView) throws Exception {
+        workOrderService.appointingWorkOrder(workOrderId, appointingWorkOrderDTO.getAppointingTime());
         return Result.getSuccess();
     }
 

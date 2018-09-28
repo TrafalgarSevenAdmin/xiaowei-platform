@@ -15,4 +15,6 @@ public interface WorkFlowItemRepository extends BaseRepository<WorkFlowItem>{
 
     @Query("select wfi from WorkFlowItem wfi where wfi.workFlowId = ?1")
     List<WorkFlowItem> findByWorkFlowId(String workFlowId);
+
+    List<WorkFlowItem> findByCode(String code);
 }

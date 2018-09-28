@@ -109,8 +109,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         } else {
             SysUser sysUser = new SysUser();
             sysUser.setMobile(workOrder.getLinkPhone());
-            sysUser.setLoginName(StringUtils.isNotEmpty(workOrder.getLinkMan())?workOrder.getLinkMan():workOrder.getLinkPhone());
-            sysUser.setNickName(StringUtils.isNotEmpty(workOrder.getLinkMan())?workOrder.getLinkMan():workOrder.getLinkPhone());
+            sysUser.setLoginName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
+            sysUser.setNickName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
             workOrder.setProposer(userService.registerUser(sysUser));
         }
     }
@@ -321,11 +321,12 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
      * 工程师预约
      *
      * @param workOrderId
+     * @param appointingTime
      * @return
      */
     @Override
     @Transactional
-    public WorkOrder appointingWorkOrder(String workOrderId) {
+    public WorkOrder appointingWorkOrder(String workOrderId, Date appointingTime) {
         Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
         EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
         WorkOrder workOrder = one.get();
@@ -336,7 +337,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         }
         EngineerWork engineerWork = workOrder.getEngineerWork();
         EmptyUtils.assertObject(engineerWork, "工程师处理工单对象为空");
-        engineerWork.setAppointTime(new Date());//预约时间
+        engineerWork.setAppointTime(appointingTime);//预约时间
         engineerWorkRepository.save(engineerWork);
         workOrder.setSystemStatus(WorkOrderSystemStatus.DEPART.getStatus());//工程师状态变更为待出发
         return workOrderRepository.save(workOrder);

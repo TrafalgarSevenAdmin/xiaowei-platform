@@ -5,6 +5,7 @@ import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.core.basic.service.IBaseService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author mocker
@@ -21,4 +22,6 @@ public interface ISysPermissionService extends IBaseService<SysPermission> {
     void deletePermission(String permissionId);
 
     List<String> findByRoleId(String roleId);
+
+    List<SysPermission> findBySymbolIn(Set<String> symbols);
 }

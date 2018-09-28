@@ -12,6 +12,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 
 @Data
 public class WorkOrderDTO {
@@ -115,5 +116,10 @@ public class WorkOrderDTO {
     @ApiModelProperty(value = "区县")
     @ParamField("区县")
     private String county;
+
+    /**
+     * 预计完成时间
+     */
+    private Date preFinishedTime;
 
 }

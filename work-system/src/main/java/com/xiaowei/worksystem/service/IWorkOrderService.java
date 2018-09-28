@@ -6,6 +6,7 @@ import com.xiaowei.core.basic.service.IBaseService;
 import com.xiaowei.worksystem.entity.EngineerWork;
 import com.xiaowei.worksystem.entity.WorkOrder;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
     WorkOrder receivedWorkOrder(String workOrderId, Boolean receive);
 
-    WorkOrder appointingWorkOrder(String workOrderId);
+    WorkOrder appointingWorkOrder(String workOrderId, Date appointingTime);
 
     WorkOrder departeWorkOrder(String workOrderId, Geometry shape);
 

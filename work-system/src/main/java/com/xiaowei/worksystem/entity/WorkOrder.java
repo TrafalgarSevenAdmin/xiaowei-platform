@@ -171,6 +171,11 @@ public class WorkOrder extends BaseEntity {
      */
     private String county;
 
+    /**
+     * 预计完成时间
+     */
+    private Date preFinishedTime;
+
     public String getWkt() {
         if (this.shape != null) {
             return this.shape.toText();

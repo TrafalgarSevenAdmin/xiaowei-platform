@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author mocker
@@ -39,4 +40,7 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission> {
 
     @Query(value = "SELECT rp.PERMISSION_ID from sys_role_permission rp where rp.ROLE_ID = :roleId",nativeQuery=true)
     List<String> findByRoleId(@Param("roleId") String roleId);
+
+    @Query("select p from SysPermission p where p.symbol in ?1")
+    List<SysPermission> findBySymbolIn(Set<String> symbols);
 }

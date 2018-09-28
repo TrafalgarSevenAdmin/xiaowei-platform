@@ -115,6 +115,11 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
         return sysPermissionRepository.findByRoleId(roleId);
     }
 
+    @Override
+    public List<SysPermission> findBySymbolIn(Set<String> symbols) {
+        return sysPermissionRepository.findBySymbolIn(symbols);
+    }
+
     private void judgeAttribute(SysPermission permission, JudgeType judgeType) {
         //判定同级下的权限下名称的唯一性
         String name = permission.getName();

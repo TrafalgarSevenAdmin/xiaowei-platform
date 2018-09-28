@@ -7,4 +7,5 @@ import com.xiaowei.worksystem.entity.flow.WorkFlowNode;
 
 public interface IWorkFlowNodeService extends IBaseService<WorkFlowNode> {
 
+    WorkFlowNode updateWorkFlowNode(WorkFlowNode workFlowNode);
 }
