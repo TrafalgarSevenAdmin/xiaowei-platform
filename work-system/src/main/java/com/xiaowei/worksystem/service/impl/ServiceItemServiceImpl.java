@@ -85,7 +85,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
     }
 
     private void judgeServiceTypeIsOut(WorkOrder workOrder) {
-        if(!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())){
+        if (!ServiceType.OUT.equals(workOrder.getWorkOrderType().getServiceType())) {
             throw new BusinessException("该工单类型非外部工单!");
         }
     }
@@ -150,7 +150,7 @@ public class ServiceItemServiceImpl extends BaseServiceImpl<ServiceItem> impleme
         ServiceItem serviceItem = one.get();
         //判断是否待审核
         if (!serviceItem.getStatus().equals(ServiceItemStatus.AUDITED.getStatus())) {
-            throw new BusinessException("服务项目状态错误");
+            throw new BusinessException("服务项目状态错误,状态为:" + serviceItem.getStatus());
         }
         //判断工单状态是否为质检中
         if (!serviceItem.getWorkOrder().getSystemStatus().equals(WorkOrderSystemStatus.QUALITY.getStatus())) {
