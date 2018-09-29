@@ -134,6 +134,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    @Transactional
     public void updateSubWechat(String userId, Boolean subWechat) {
         sysUserRepository.updateSubWechat(userId, subWechat);
     }

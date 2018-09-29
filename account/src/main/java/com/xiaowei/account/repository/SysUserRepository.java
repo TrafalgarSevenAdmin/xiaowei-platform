@@ -41,7 +41,7 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
     @Query("select u from SysUser u where u.company.id = ?1")
     List<SysUser> findByCompanyId(String companyId);
 
-    @Query("update SysUser set subWechat=?2 where id = ?1")
-    @Modifying()
+    @Query("update SysUser set subWechat = ?2 where id = ?1")
+    @Modifying
     void updateSubWechat(String userId, Boolean subWechat);
 }
