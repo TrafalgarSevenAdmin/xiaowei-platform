@@ -148,6 +148,12 @@ public class WorkOrder extends BaseEntity {
     private String repairFileStore;
 
     /**
+     * 报修音频id(多文件以分号隔开)
+     */
+    @Lob
+    private String repairVoice;
+
+    /**
      * 用户付费项目金额(元)
      */
     private Double itemAmount;

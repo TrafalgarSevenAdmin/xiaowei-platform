@@ -60,8 +60,10 @@ checkfield:
     - E_EXPENSEFORMITEM.invoice_file_store
     - E_EXPENSEFORMITEM.voucher_file_store
     - W_REQUESTWORKORDER.repair_file_store
+    - W_REQUESTWORKORDER.repair_voice
     - W_SERVICEITEM.quality_file_store
     - W_WORKORDER.repair_file_store
+    - W_WORKORDER.repair_voice
     - W_WORKFLOWNODE.standard_file_store
     - W_SERVICEITEM.standard_file_store
     - W_WORKFLOWITEM.standard_file_store
