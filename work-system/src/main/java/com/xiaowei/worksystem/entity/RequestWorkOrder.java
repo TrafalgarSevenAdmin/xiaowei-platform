@@ -57,6 +57,12 @@ public class RequestWorkOrder extends BaseEntity {
     private String repairFileStore;
 
     /**
+     * 报修音频id(多文件以分号隔开)
+     */
+    @Lob
+    private String repairVoice;
+
+    /**
      * 状态
      */
     private Integer status;

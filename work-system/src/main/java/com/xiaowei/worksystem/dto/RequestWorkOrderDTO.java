@@ -57,7 +57,13 @@ public class RequestWorkOrderDTO {
     /**
      * 报修文件id(多文件以分号隔开)
      */
+    @ApiModelProperty(value = "报修文件id(多文件以分号隔开)")
     private String repairFileStore;
+    /**
+     * 报修音频id(多文件以分号隔开)
+     */
+    @ApiModelProperty(value = "报修音频id(多文件以分号隔开)")
+    private String repairVoice;
 
     /**
      * 状态
