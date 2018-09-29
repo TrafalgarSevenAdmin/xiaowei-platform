@@ -75,7 +75,13 @@
             <artifactId>common-dict</artifactId>
             <version>1.0</version>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.xiaowei</groupId>
+            <artifactId>mq-core</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
         <finalName>account-web</finalName>

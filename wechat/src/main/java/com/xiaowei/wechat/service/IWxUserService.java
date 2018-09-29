@@ -35,7 +35,9 @@ public interface IWxUserService extends IBaseService<WxUser> {
      */
     WxUser saveOrUpdate(WxUser user);
 
-    void syncUserTag(SysUser user, String openId) throws WxErrorException;
+    void syncUser(String userId) throws WxErrorException;
+
+    void syncUser(SysUser user, String openId) throws WxErrorException;
 
     void setUserTag(String openId, String tag, List<WxUserTag> wxUserTags) throws WxErrorException;
 

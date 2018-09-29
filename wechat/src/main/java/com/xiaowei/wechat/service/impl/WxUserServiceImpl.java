@@ -2,6 +2,7 @@ package com.xiaowei.wechat.service.impl;
 
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.wechat.config.WechatProperties;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,6 +37,9 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     @Autowired
     private WechatProperties wechatProperties;
 
+    @Autowired
+    private ISysUserService sysUserService;
+
     public WxUserServiceImpl(@Qualifier("wxUserRepository")BaseRepository repository) {
         super(repository);
     }
@@ -42,6 +47,14 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     @Override
     public void unsubscribe(String openId) {
         wxUserRepository.unsubscribe(openId,new Date());
+        final Optional<WxUser> byOpenId = this.findByOpenId(openId);
+        if (byOpenId.isPresent()) {
+            final WxUser user = byOpenId.get();
+            if (user.getSysUser() != null) {
+                //更新用户信息为取消关注
+                sysUserService.updateSubWechat(user.getSysUser().getId(), false);
+            }
+        }
     }
 
     @Override
@@ -74,13 +87,30 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         return wxUserRepository.save(user);
     }
 
+    @Override
+    @Transactional
+    public void syncUser(String userId) throws WxErrorException {
+        SysUser sysUser = sysUserService.findById(userId);
+        //查询到用户，且关注了微信后
+        if (sysUser != null) {
+            //查询用户的openid
+            Optional<WxUser> byUserId = this.findByUserId(userId);
+            if (byUserId.isPresent()) {
+                this.syncUser(sysUser, byUserId.get().getOpenId());
+            }
+        }
+    }
     /**
      * 同步用户标签
      * @param user  必须要含有roles
      * @param openId
      */
     @Override
-    public void syncUserTag(SysUser user, String openId) throws WxErrorException {
+    @Transactional
+    public void syncUser(SysUser user, String openId) throws WxErrorException {
+        if (CollectionUtils.isEmpty(user.getRoles())) {
+            return;
+        }
         //获取这个用户的角色，并将角色名作为标签
         log.debug("正在同步用户:{}的角色:{}",user.getNickName(),user.getRoles().stream().map(SysRole::getName).collect(Collectors.toList()).toString());
         //添加备注
@@ -103,8 +133,9 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         List<Long> tagIds = wxMpService.getUserTagService().userTagList(openId);
         Set<WxUserTag> haveTag = tagIds.stream().map(idMapTag::get).collect(Collectors.toSet());
         //增量更新用户标签
-        Collection<Serializable> addTags = CollectionUtils.subtract(collect.keySet(), haveTag);
-        Collection<Serializable> deleteTags = CollectionUtils.subtract(haveTag,collect.keySet());
+        final List<String> havaTagName = haveTag.stream().map(WxUserTag::getName).collect(Collectors.toList());
+        Collection<Serializable> addTags = CollectionUtils.subtract(collect.keySet(), havaTagName);
+        Collection<Serializable> deleteTags = CollectionUtils.subtract(havaTagName,collect.keySet());
         for (Serializable addTag : addTags) {
             try {
                 wxMpService.getUserTagService().batchTagging(tagMapId.get(addTag), new String[]{openId});

@@ -133,6 +133,11 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         return user;
     }
 
+    @Override
+    public void updateSubWechat(String userId, Boolean subWechat) {
+        sysUserRepository.updateSubWechat(userId, subWechat);
+    }
+
     /**
      * 对密码进行加密
      *

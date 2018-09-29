@@ -7,6 +7,7 @@ public class MqQueueConstant {
      */
     public static final String DELAY_EXCHAGE = "delay_exchage";
 
+
     /**
      * 微信消息推送队列
      */
@@ -27,6 +28,11 @@ public class MqQueueConstant {
      * 订单支付后处理队列，用于二次校验微信支付数据以及定时关闭订单
      */
     public static final String ORDER_EXPIRED_DELAY_QUEUE = "order_expired_delay_queue";
+
+    /**
+     * 用户信息修改事件队列
+     */
+    public static final String USER_INFO_CHANGE_QUEUE = "user_info_change_queue";
 
     /**
      * 用于延迟的任务队列
