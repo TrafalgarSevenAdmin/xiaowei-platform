@@ -27,6 +27,13 @@ public interface ISysUserService extends IBaseService<SysUser> {
 
     SysUser updateUser(SysUser user);
 
+    /**
+     * 更新用户的微信关注状态
+     * @param userId
+     * @param subWechat
+     */
+    void updateSubWechat(String userId,Boolean subWechat);
+
     void fakeDeleteUser(String userId);
 
     SysUser updateStatus(SysUser user);

@@ -69,11 +69,10 @@ public class SubscribeHandler extends AbstractHandler {
                     String userId = invitationInfo.getUser();
                     //若之前的用户已经绑定过。。这里需要业务判断，此处直接替换之前绑定的用户。毕竟之前的用户已经取消关注了。
                     SysUser sysUser = sysUserService.findById(userId);
-                    sysUser.setSubWechat(true);
                     user.setSysUser(sysUser);
                     //存储邀请信息
                     user.setInvitationInfo(JSONObject.toJSONString(invitationInfo));
-                    sysUserService.updateUser(sysUser);
+                    sysUserService.updateSubWechat(sysUser.getId(),true);
                     //绑定后,也许应该给业务系统推送消息说此用户绑定，需要推送相应的消息
                 }
             }
@@ -81,7 +80,7 @@ public class SubscribeHandler extends AbstractHandler {
             user = wxUserService.saveOrUpdate(user);
             if (user.getSysUser() != null) {
                 //同步用户信息
-                wxUserService.syncUserTag(user.getSysUser(), user.getOpenId());
+                wxUserService.syncUser(user.getSysUser(), user.getOpenId());
             }
         }
 

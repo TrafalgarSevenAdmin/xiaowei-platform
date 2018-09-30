@@ -21,7 +21,7 @@ public class WxPayExpireReceiver {
         try {
             wechatPayService.closeOrder(order, "超时自动关闭");
         } catch (Exception e) {
-            log.warn(e.toString());
+            log.warn(e.toString(),e);
         }
     }
 }

@@ -33,6 +33,13 @@ public class MessagePushSender {
     }
 
     /**
+     * 发送用户信息更改的消息
+     */
+    public void sendUserInfoChageMessage(String userId) {
+        amqpTemplate.convertAndSend(MqQueueConstant.USER_INFO_CHANGE_QUEUE, userId);
+    }
+
+    /**
      * 发送订单支付完成的消息
      *
      * @param orderId

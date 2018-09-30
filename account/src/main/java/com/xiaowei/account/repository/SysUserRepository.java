@@ -2,8 +2,8 @@ package com.xiaowei.account.repository;
 
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.repository.BaseRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,4 +40,8 @@ public interface SysUserRepository extends BaseRepository<SysUser> {
 
     @Query("select u from SysUser u where u.company.id = ?1")
     List<SysUser> findByCompanyId(String companyId);
+
+    @Query("update SysUser set subWechat = ?2 where id = ?1")
+    @Modifying
+    void updateSubWechat(String userId, Boolean subWechat);
 }
