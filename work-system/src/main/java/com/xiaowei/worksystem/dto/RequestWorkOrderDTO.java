@@ -9,9 +9,7 @@ import com.xiaowei.worksystem.entity.customer.Customer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 @Data
 public class RequestWorkOrderDTO {
@@ -26,14 +24,11 @@ public class RequestWorkOrderDTO {
      * 联系人
      */
     @ApiModelProperty(value = "联系人")
-    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "联系人必填!")
     private String linkMan;
     /**
      * 联系电话
      */
     @ApiModelProperty(value = "联系电话")
-    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "联系电话必填!")
-    @Pattern(regexp = "\\d{11}",groups = {V.Insert.class,V.Update.class},message = "手机号11位!")
     private String linkPhone;
     /**
      * 故障描述
