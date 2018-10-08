@@ -124,7 +124,7 @@
             <id>release</id>
             <properties>
                 <label>release</label>
-                <server.host>http://gongdan.xwseries.com</server.host>
+                <server.host>https://gongdan.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://gongdan.xwseries.com:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
