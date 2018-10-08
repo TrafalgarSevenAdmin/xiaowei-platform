@@ -39,6 +39,19 @@ public class RequestWorkOrderDTO {
     @ApiModelProperty(value = "故障描述")
     @ParamField("故障描述")
     private String errorDescription;
+
+    /**
+     * 工单标题
+     */
+    @ApiModelProperty(value = "工单标题")
+    @ParamField("工单标题")
+    private String workOrderTitle;
+    /**
+     * 要求
+     */
+    @ApiModelProperty(value = "要求")
+    @ParamField("要求")
+    private String demand;
     /**
      * 服务类型
      */
