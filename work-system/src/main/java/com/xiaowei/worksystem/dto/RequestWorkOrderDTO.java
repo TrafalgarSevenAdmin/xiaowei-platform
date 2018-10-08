@@ -68,6 +68,12 @@ public class RequestWorkOrderDTO {
     private Integer status;
 
     /**
+     * 地图定位
+     */
+    @ApiModelProperty(value = "地图定位")
+    private String wkt;
+
+    /**
      * 服务对象
      */
     @ApiModelProperty(value = "服务对象")

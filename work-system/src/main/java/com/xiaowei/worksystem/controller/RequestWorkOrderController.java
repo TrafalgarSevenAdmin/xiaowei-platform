@@ -1,5 +1,6 @@
 package com.xiaowei.worksystem.controller;
 
+import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
@@ -42,6 +43,7 @@ public class RequestWorkOrderController {
                          BindingResult bindingResult,
                          FieldsView fieldsView) throws Exception {
         RequestWorkOrder requestWorkOrder = BeanCopyUtils.copy(requestWorkOrderDTO, RequestWorkOrder.class);
+        requestWorkOrder.setShape(GeometryUtil.transWKT(requestWorkOrderDTO.getWkt()));
         requestWorkOrder = requestWorkOrderService.saveRequestWorkOrder(requestWorkOrder);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestWorkOrder, fieldsView));
     }

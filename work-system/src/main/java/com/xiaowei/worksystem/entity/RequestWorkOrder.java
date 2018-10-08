@@ -1,5 +1,7 @@
 package com.xiaowei.worksystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.entity.customer.Customer;
@@ -80,5 +82,26 @@ public class RequestWorkOrder extends BaseEntity {
      */
     private String county;
 
+    /**
+     * 地图定位
+     */
+    @Column(columnDefinition = "geometry(POINT,4326)")
+    @JsonIgnore
+    private Geometry shape;
+
+    @Transient
+    private String wkt;
+
+    public String getWkt() {
+        if (this.shape != null) {
+            return this.shape.toText();
+        }
+        return wkt;
+    }
+
+    @JsonIgnore
+    public Geometry getShape() {
+        return shape;
+    }
 
 }
