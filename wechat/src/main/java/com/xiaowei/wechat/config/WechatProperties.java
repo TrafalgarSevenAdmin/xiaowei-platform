@@ -48,6 +48,16 @@ public class WechatProperties {
    */
   private String notifyUrl;
 
+  /**
+   * 代理地址
+   */
+  private String proxyHost;
+
+  /**
+   * 代理端口
+   */
+  private Integer proxyPort = 0;
+
   @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this,

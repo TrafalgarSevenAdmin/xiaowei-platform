@@ -81,6 +81,7 @@ public class SubscribeHandler extends AbstractHandler {
             if (user.getSysUser() != null) {
                 //同步用户信息
                 wxUserService.syncUser(user.getSysUser(), user.getOpenId());
+                sysUserService.updateSubWechat(user.getSysUser().getId(), true);
             }
         }
 

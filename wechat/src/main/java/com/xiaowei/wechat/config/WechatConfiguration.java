@@ -68,6 +68,8 @@ public class WechatConfiguration {
     configStorage.setSecret(this.properties.getSecret());
     configStorage.setToken(this.properties.getToken());
     configStorage.setAesKey(this.properties.getAesKey());
+    configStorage.setHttpProxyHost(this.properties.getProxyHost());
+    configStorage.setHttpProxyPort(this.properties.getProxyPort());
     return configStorage;
   }
 

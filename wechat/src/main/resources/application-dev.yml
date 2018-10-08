@@ -58,6 +58,8 @@ wechat:
     mchId:  1492859472
     mchKey: Xwkx2018A2019a2020a2021a2022Xwkj
     keyPath: classpath:/apiclient_cert.p12
+    proxyHost: @wechat.proxyHost@
+    proxyPort: @wechat.proxyPort@
 upload:
   path: @upload.path@ #将此路径用iis配置发布
   type: local

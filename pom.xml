@@ -90,6 +90,8 @@
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <wechat.proxyHost>119.23.224.29</wechat.proxyHost>
+                <wechat.proxyPort>7979</wechat.proxyPort>
                 <upload.path>C:/upload</upload.path>
                 <upload.accessUrlRoot>127.0.0.1:7000/</upload.accessUrlRoot>
             </properties>
@@ -116,6 +118,8 @@
                 <wechat.secret>fd3ea4f364a0da910b2bab3af07c8d28</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <wechat.proxyHost>119.23.224.29</wechat.proxyHost>
+                <wechat.proxyPort>7979</wechat.proxyPort>
                 <upload.path>/root/upload</upload.path>
                 <upload.accessUrlRoot>192.168.1.218:8080/static/</upload.accessUrlRoot>
             </properties>
@@ -142,6 +146,8 @@
                 <wechat.secret>a1f045dc2459e949cb3e63a37f011a21</wechat.secret>
                 <wechat.token>md4YoeT4mVRQN2Rd244IOdQzqyDS4us2</wechat.token>
                 <wechat.aesKey>e2eoR3JqjQn429S2oruZJ2NVvIIoTlEtCLnCILCMsS4</wechat.aesKey>
+                <wechat.proxyHost></wechat.proxyHost>
+                <wechat.proxyPort></wechat.proxyPort>
                 <upload.path>/root/upload</upload.path>
                 <upload.accessUrlRoot>gongdan.xwseries.com/static/</upload.accessUrlRoot>
             </properties>

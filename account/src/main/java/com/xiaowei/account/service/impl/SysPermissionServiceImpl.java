@@ -14,6 +14,7 @@ import com.xiaowei.core.validate.JudgeType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -117,7 +118,10 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
 
     @Override
     public List<SysPermission> findBySymbolIn(Set<String> symbols) {
-        return sysPermissionRepository.findBySymbolIn(symbols);
+        if (CollectionUtils.isNotEmpty(symbols)) {
+            return sysPermissionRepository.findBySymbolIn(symbols);
+        }
+        return Lists.emptyList();
     }
 
     private void judgeAttribute(SysPermission permission, JudgeType judgeType) {
