@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -49,7 +48,6 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
                 dictionary.setLevel(parentDictionary.getLevel() + 1);
                 dictionary.setCode(parentDictionary.getCode() + "_" + dictionary.getOwnCode());
             }
-            dictionary.setCreatedTime(new Date());
         }else if(judgeType.equals(JudgeType.UPDATE)){//修改
             String dictionaryId = dictionary.getId();
             EmptyUtils.assertString(dictionaryId, "没有传入对象id");

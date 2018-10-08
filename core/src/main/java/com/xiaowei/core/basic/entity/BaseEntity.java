@@ -3,10 +3,7 @@ package com.xiaowei.core.basic.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,13 +26,35 @@ public class BaseEntity implements Serializable {
      * 创建时间
      */
     @Column(updatable = false)
-    private Date createdTime = new Date();
+    private Date createdTime;
+    /**
+     * 最后修改时间
+     */
+    private Date updateTime;
 
     @Column(nullable=false,columnDefinition="Boolean default false")
     private Boolean delete_flag = false;
     private Date delete_time;
 
     public BaseEntity() {
+    }
+
+    @PrePersist
+    public void onCreate() {
+        createdTime = new Date();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updateTime = new Date();
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public Date getDelete_time() {
