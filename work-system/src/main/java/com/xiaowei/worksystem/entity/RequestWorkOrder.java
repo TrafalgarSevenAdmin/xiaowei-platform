@@ -53,6 +53,14 @@ public class RequestWorkOrder extends BaseEntity {
     private SysUser proposer;
 
     /**
+     * 处理工程师
+     */
+    @ManyToOne(targetEntity = SysUser.class)
+    @JoinColumn(name = "engineer_id")
+    @Fetch(FetchMode.JOIN)
+    private SysUser engineer;
+
+    /**
      * 报修文件id(多文件以分号隔开)
      */
     @Lob

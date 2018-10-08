@@ -19,21 +19,25 @@ public class RequestWorkOrderDTO {
      * 所属设备
      */
     @ApiModelProperty(value = "所属设备")
+    @ParamField("所属设备")
     private Equipment equipment;
     /**
      * 联系人
      */
     @ApiModelProperty(value = "联系人")
+    @ParamField("联系人")
     private String linkMan;
     /**
      * 联系电话
      */
     @ApiModelProperty(value = "联系电话")
+    @ParamField("联系电话")
     private String linkPhone;
     /**
      * 故障描述
      */
     @ApiModelProperty(value = "故障描述")
+    @ParamField("故障描述")
     private String errorDescription;
     /**
      * 服务类型
@@ -46,7 +50,15 @@ public class RequestWorkOrderDTO {
      * 申请处理人
      */
     @ApiModelProperty(value = "申请处理人")
+    @ParamField("申请处理人")
     private SysUser proposer;
+
+    /**
+     * 处理工程师
+     */
+    @ApiModelProperty(value = "处理工程师")
+    @ParamField("处理工程师")
+    private SysUser engineer;
 
     /**
      * 报修文件id(多文件以分号隔开)
