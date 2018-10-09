@@ -9,7 +9,6 @@ import java.util.List;
 public interface ChiefEngineerRepository extends BaseRepository<ChiefEngineer>{
 
     @Query(value = "SELECT * from A_CHIEFENGINEER c LEFT JOIN A_CHIEF_DEPARTMENT cd on c.id = cd.chief_id " +
-            "LEFT JOIN SYS_DEPARTMENT d on cd.department_id = d.id " +
-            "LEFT JOIN SYS_USER_DEPARTMENT ud on d.id = ud.department_id where ud.user_id = ?1",nativeQuery = true)
+            "LEFT JOIN sys_user u on cd.department_id = u.department_id where u.id  = ?1",nativeQuery = true)
     List<ChiefEngineer> findByUserId(String userId);
 }
