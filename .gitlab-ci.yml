@@ -17,13 +17,13 @@ stages:
  - run_work
  - run_account
  - run_wechat
-# - run_attendance
+ - run_attendance
  - run_expense
 
  - release_work
  - release_account
  - release_wechat
-# - release_attendance
+ - release_attendance
  - release_expense
 
  - notify_failure
