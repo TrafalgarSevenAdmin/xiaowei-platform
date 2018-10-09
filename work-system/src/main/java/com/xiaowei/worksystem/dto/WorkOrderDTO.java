@@ -52,6 +52,12 @@ public class WorkOrderDTO {
     @ParamField("工单标题")
     private String workOrderTitle;
     /**
+     * 要求
+     */
+    @ApiModelProperty(value = "要求")
+    @ParamField("要求")
+    private String demand;
+    /**
      * 服务类型
      */
     @ApiModelProperty(value = "服务类型")

@@ -37,6 +37,15 @@ public class RequestWorkOrder extends BaseEntity {
      * 故障描述
      */
     private String errorDescription;
+
+    /**
+     * 要求
+     */
+    private String demand;
+    /**
+     * 工单标题
+     */
+    private String workOrderTitle;
     /**
      * 服务类型
      */
