@@ -110,6 +110,32 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                 formatter.parse(firstDayOfMonth), formatter.parse(lastDayOfMonth));
     }
 
+    @Override
+    @Transactional
+    public PunchRecord updateOnStatus(PunchRecord punchRecord) {
+        String punchRecordId = punchRecord.getId();
+        EmptyUtils.assertString(punchRecordId, "没有传入对象id");
+        Optional<PunchRecord> optional = punchRecordRepository.findById(punchRecordId);
+        EmptyUtils.assertOptional(optional, "没有查询到需要删除的对象");
+        PunchRecord one = optional.get();
+        one.setOnPunchRecordStatus(punchRecord.getOnPunchRecordStatus());
+        punchRecordRepository.save(one);
+        return one;
+    }
+
+    @Override
+    @Transactional
+    public PunchRecord updateOffStatus(PunchRecord punchRecord) {
+        String punchRecordId = punchRecord.getId();
+        EmptyUtils.assertString(punchRecordId, "没有传入对象id");
+        Optional<PunchRecord> optional = punchRecordRepository.findById(punchRecordId);
+        EmptyUtils.assertOptional(optional, "没有查询到需要删除的对象");
+        PunchRecord one = optional.get();
+        one.setOffPunchRecordStatus(punchRecord.getOffPunchRecordStatus());
+        punchRecordRepository.save(one);
+        return one;
+    }
+
     /**
      * 判断是上班打卡还是下班打卡
      *
