@@ -57,6 +57,32 @@ public class PunchRecordController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
     }
 
+    @ApiOperation(value = "修改上班打卡状态")
+    @AutoErrorHandler
+    @PutMapping("/{punchRecordId}/on/status")
+    public Result updateOnStatus(@PathVariable("punchRecordId") String punchRecordId,
+                               @RequestBody @Validated(PunchRecordDTO.UpdateOnStatus.class) PunchRecordDTO punchRecordDTO,
+                               BindingResult bindingResult,
+                               FieldsView fieldsView) throws Exception {
+        PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
+        punchRecord.setId(punchRecordId);
+        punchRecord = punchRecordService.updateOnStatus(punchRecord);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
+    @ApiOperation(value = "修改下班打卡状态")
+    @AutoErrorHandler
+    @PutMapping("/{punchRecordId}/off/status")
+    public Result updateOffStatus(@PathVariable("punchRecordId") String punchRecordId,
+                                 @RequestBody @Validated(PunchRecordDTO.UpdateOffStatus.class) PunchRecordDTO punchRecordDTO,
+                                 BindingResult bindingResult,
+                                 FieldsView fieldsView) throws Exception {
+        PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
+        punchRecord.setId(punchRecordId);
+        punchRecord = punchRecordService.updateOffStatus(punchRecord);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
     @ApiOperation("打卡记录查询接口")
     @GetMapping("")
     public Result query(PunchRecordQuery punchRecordQuery, FieldsView fieldsView) {
