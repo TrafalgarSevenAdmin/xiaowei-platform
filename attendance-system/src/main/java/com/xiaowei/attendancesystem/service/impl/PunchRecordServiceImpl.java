@@ -12,6 +12,7 @@ import com.xiaowei.attendancesystem.repository.ChiefEngineerRepository;
 import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
 import com.xiaowei.attendancesystem.status.ChiefEngineerStatus;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.commonjts.utils.CalculateUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.basic.repository.BaseRepository;
@@ -61,8 +62,26 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         //   若是下班打卡,则判断当前次数是否是1次
         //   若都不是,则证明是在时间范围外打卡,抛出异常
         PunchRecord currentPunchRecord = judgeIsExist(punchRecord);
-        ChiefEngineer chiefEngineer = judgeWithinRange(currentPunchRecord, shape);
-        judgePunchTime(currentPunchRecord, chiefEngineer);
+        Object[] datas = judgeWithinRange(currentPunchRecord, shape);
+        Integer status = judgePunchTime(currentPunchRecord, (ChiefEngineer) datas[0]);
+        boolean isTrue = (boolean) datas[1];
+        if (status == 1) {
+            //是否正常打卡
+            if (isTrue) {
+                currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.NORMAL);
+            } else {
+                currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.EXCEPTION);
+            }
+            currentPunchRecord.setOnPunchFileStore(punchRecord.getPunchFileStore());
+        } else {
+            //是否正常打卡
+            if (isTrue) {
+                currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.NORMAL);
+            } else {
+                currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.EXCEPTION);
+            }
+            currentPunchRecord.setOffPunchFileStore(punchRecord.getPunchFileStore());
+        }
         return punchRecordRepository.save(currentPunchRecord);
     }
 
@@ -97,7 +116,8 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
      * @param currentPunchRecord
      * @param chiefEngineer
      */
-    private void judgePunchTime(PunchRecord currentPunchRecord, ChiefEngineer chiefEngineer) {
+    private Integer judgePunchTime(PunchRecord currentPunchRecord, ChiefEngineer chiefEngineer) {
+        int stauts = 0;
         //   若是上班打卡,则判断当前次数是否是0次
         //                 判断是否迟到
         //   若是下班打卡,则判断当前次数是否是1次
@@ -116,6 +136,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                 //迟到
                 currentPunchRecord.setBeLate(true);
             }
+            stauts = 1;
         } else if (chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockOutTime().compareTo(currentTime) == 1) {
             //下班打卡
             //判断是否已经下班打卡
@@ -130,10 +151,12 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             if (punchCount != 2) {
                 currentPunchRecord.setPunchCount(punchCount + 1);
             }
+            stauts = 2;
         } else {
             //非打卡时间
             throw new BusinessException("现在是非打卡时间!");
         }
+        return stauts;
     }
 
     /**
@@ -142,7 +165,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
      * @param currentPunchRecord
      * @param shape
      */
-    private ChiefEngineer judgeWithinRange(PunchRecord currentPunchRecord, Geometry shape) {
+    private Object[] judgeWithinRange(PunchRecord currentPunchRecord, Geometry shape) {
         //chiefEngineers 当前用户的办公点集合
         List<ChiefEngineer> chiefEngineers = chiefEngineerRepository.findByUserId(currentPunchRecord.getSysUser().getId());
         if (CollectionUtils.isEmpty(chiefEngineers)) {
@@ -150,6 +173,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         }
 
         Double shortest = 0.00;
+        ChiefEngineer defaultChief = null;
         for (int i = 0; i < chiefEngineers.size(); i++) {
             ChiefEngineer chiefEngineer = chiefEngineers.get(i);
             //用户当前位置和打卡点位置的距离
@@ -157,25 +181,27 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                     GeometryUtil.getGps((Point) chiefEngineer.getShape())) * 1000;
 
             Integer distance = chiefEngineer.getDistance();
-            if(distance==null){
+            if (distance == null) {
                 distance = 500;//默认500米
             }
             //判断是否正常
             if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
                 if (v < distance) {
-                    return chiefEngineer;
-                }else{
+                    return new Object[]{chiefEngineer, true};
+                } else {
                     if (shortest < v - distance) {//验算最小距离
                         shortest = v - distance;
+                        defaultChief = chiefEngineer;
                     }
                 }
             }
-//
-//            if (i == chiefEngineers.size() - 1) {//如果是最后一次
+
+            if (i == chiefEngineers.size() - 1) {//如果是最后一次
+                return new Object[]{defaultChief, false};
 //                throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
-//            }
+            }
         }
-        return chiefEngineers.get(0);
+        return new Object[]{defaultChief, true};
     }
 
     /**
