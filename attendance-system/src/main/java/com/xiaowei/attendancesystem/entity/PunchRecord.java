@@ -64,6 +64,7 @@ public class PunchRecord extends BaseEntity{
     /**
      * 打卡图片
      */
+    @Lob
     private String punchFileStore;
 
     public PunchRecord() {
