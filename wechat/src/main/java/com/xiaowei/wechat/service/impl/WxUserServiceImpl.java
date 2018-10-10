@@ -79,7 +79,10 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         Optional<WxUser> optionalWxUser = this.findByOpenId(user.getOpenId());
         if (optionalWxUser.isPresent()) {
             WxUser tempUser = optionalWxUser.get();
-            user.setSysUser(tempUser.getSysUser());
+            //不允许代码中出现取消关联系统用户的情况存在
+            if (user.getSysUser() == null) {
+                user.setSysUser(tempUser.getSysUser());
+            }
             user.setUnsubscribeTime(tempUser.getUnsubscribeTime());
         }
         user.setLastUpdate(new Date());

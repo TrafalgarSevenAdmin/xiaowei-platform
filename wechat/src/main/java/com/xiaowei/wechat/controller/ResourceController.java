@@ -1,6 +1,7 @@
 package com.xiaowei.wechat.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.WriterException;
 import com.xiaowei.account.utils.ConfigUtils;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.commonupload.UploadConfigBean;
@@ -9,6 +10,7 @@ import com.xiaowei.commonupload.model.FileModel;
 import com.xiaowei.commonupload.service.IUploadService;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.result.Result;
+import com.xiaowei.core.utils.QrCodeCreateUtil;
 import com.xiaowei.wechat.consts.MagicValueStore;
 import com.xiaowei.wechat.dto.InvitationInfoDto;
 import com.xiaowei.wechat.dto.ResourceUploadDto;
@@ -103,21 +105,14 @@ public class ResourceController {
 
     @ApiOperation(value = "获取邀请二维码图片")
     @GetMapping("/invitation/qr")
-    public void createTmpTicket(InvitationInfoDto invitationInfo, HttpServletResponse httpResponse) throws IOException, WxErrorException {
+    public void createTmpTicket(InvitationInfoDto invitationInfo, HttpServletResponse httpResponse) throws IOException, WxErrorException, WriterException {
         //由于换取临时二维码时，场景字符串限制长度为64，因此邀请信息只能保存到reids中
         Integer expireSeconds = Integer.valueOf(ConfigUtils.getConfigValueOrDefault(MagicValueStore.WechatInvitationExpireSecondsSetKey, "3600"));
         String sceneStr = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(sceneStr, invitationInfo, expireSeconds + 60, TimeUnit.SECONDS);
         WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(sceneStr, expireSeconds);//获取临时关注二维码
+        redisTemplate.opsForValue().set(MagicValueStore.wxInvitationValuePro+wxMpQrCodeTicket.getTicket(), invitationInfo, expireSeconds + 60, TimeUnit.SECONDS);
         String url = wxMpQrCodeTicket.getUrl();
-        HttpGet httpGet = new HttpGet(url);
-        try (CloseableHttpResponse response = DefaultApacheHttpClientBuilder.get().build().execute(httpGet);
-             InputStream inputStream = InputStreamResponseHandler.INSTANCE.handleResponse(response)) {
-            Header[] contentTypeHeader = response.getHeaders("Content-Type");
-            IOUtils.copy(inputStream, httpResponse.getOutputStream());
-            response.setHeader(contentTypeHeader[0]);
-        } finally {
-            httpGet.releaseConnection();
-        }
+        httpResponse.setHeader("Content-type", "image/jpeg");
+        QrCodeCreateUtil.createQrCode(httpResponse.getOutputStream(),url, 800, "jpeg");
     }
 }
