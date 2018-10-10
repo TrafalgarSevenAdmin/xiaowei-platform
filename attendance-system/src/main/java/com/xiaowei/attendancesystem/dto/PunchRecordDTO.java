@@ -29,4 +29,5 @@ public class PunchRecordDTO {
      */
     @ApiModelProperty(value = "打卡图片")
     private String punchFileStore;
+
 }

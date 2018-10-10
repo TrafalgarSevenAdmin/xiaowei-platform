@@ -1,6 +1,7 @@
 package com.xiaowei.attendancesystem.entity;
 
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -25,6 +26,14 @@ public class PunchRecord extends BaseEntity{
      * 上班打卡时间
      */
     private Time clockInTime;
+    /**
+     * 上班打卡状态
+     */
+    private PunchRecordStatus onPunchRecordStatus;
+    /**
+     * 下班打卡状态
+     */
+    private PunchRecordStatus offPunchRecordStatus;
     /**
      * 下班打卡时间
      */
@@ -62,10 +71,19 @@ public class PunchRecord extends BaseEntity{
      */
     private String vacateType;
     /**
-     * 打卡图片
+     * 上班打卡图片
      */
     @Lob
+    private String onPunchFileStore;
+
+    @Transient
     private String punchFileStore;
+
+    /**
+     * 下班打卡图片
+     */
+    @Lob
+    private String offPunchFileStore;
 
     public PunchRecord() {
     }
@@ -77,4 +95,5 @@ public class PunchRecord extends BaseEntity{
         this.punchCount = 0;
         this.beLate = false;
     }
+
 }
