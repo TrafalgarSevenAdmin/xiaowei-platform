@@ -20,7 +20,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "A_CHIEFENGINEER")
-@SQLDelete(sql = "update sys_user set delete_flag = true, delete_time = now() where id=?")
+@SQLDelete(sql = "update A_CHIEFENGINEER set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class ChiefEngineer extends BaseEntity {
     /**

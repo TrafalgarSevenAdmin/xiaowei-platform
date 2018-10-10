@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "A_PUNCHRECORD")
-@SQLDelete(sql = "update sys_user set delete_flag = true, delete_time = now() where id=?")
+@SQLDelete(sql = "update A_PUNCHRECORD set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class PunchRecord extends BaseEntity{
     /**
