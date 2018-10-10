@@ -14,7 +14,13 @@ public class MagicValueStore {
      * 微信state字段在redis中的key前缀
      * 为了更好的分组查看
      */
-    public static final String wxStatesValuePro = "wechat:states:value";
+    public static final String wxStatesValuePro = "wechat:states:";
+
+    /**
+     * 微信邀请字段在redis中的key前缀
+     * 为了更好的分组查看
+     */
+    public static final String wxInvitationValuePro = "wechat:invitation:";
 
     /**
      * 微信服务器地址白名单

@@ -61,7 +61,7 @@ public class SubscribeHandler extends AbstractHandler {
             //扫码过来的邀请链接
             String ticket = wxMessage.getTicket();
             if (StringUtils.isNotBlank(ticket)) {
-                Object obj = redisTemplate.opsForValue().get(ticket);
+                Object obj = redisTemplate.opsForValue().get(MagicValueStore.wxInvitationValuePro+ticket);
                 if (obj != null) {
                     InvitationInfoDto invitationInfo = (InvitationInfoDto) obj;
                     this.logger.info("获取到邀请关注信息:" + invitationInfo);
@@ -77,7 +77,7 @@ public class SubscribeHandler extends AbstractHandler {
                 }
             }
             //添加关注用户到本地
-            user = wxUserService.saveOrUpdate(user);
+            wxUserService.saveOrUpdate(user);
             if (user.getSysUser() != null) {
                 //同步用户信息
                 wxUserService.syncUser(user.getSysUser(), user.getOpenId());
