@@ -23,4 +23,10 @@ public class PunchRecordDTO {
     @ApiModelProperty(value = "打卡地点的wkt字符串")
     @NotBlank(groups = {V.Insert.class,V.Update.class},message = "打卡地点的wkt字符串!")
     private String wkt;
+
+    /**
+     * 打卡图片
+     */
+    @ApiModelProperty(value = "打卡图片")
+    private String punchFileStore;
 }

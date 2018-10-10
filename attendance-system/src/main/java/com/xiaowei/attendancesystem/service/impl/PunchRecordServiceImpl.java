@@ -170,10 +170,10 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                     }
                 }
             }
-
-            if (i == chiefEngineers.size() - 1) {//如果是最后一次
-                throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
-            }
+//
+//            if (i == chiefEngineers.size() - 1) {//如果是最后一次
+//                throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
+//            }
         }
         return chiefEngineers.get(0);
     }

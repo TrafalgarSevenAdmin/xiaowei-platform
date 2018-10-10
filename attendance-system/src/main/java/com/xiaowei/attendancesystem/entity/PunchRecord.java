@@ -61,6 +61,10 @@ public class PunchRecord extends BaseEntity{
      * 请假类型
      */
     private String vacateType;
+    /**
+     * 打卡图片
+     */
+    private String punchFileStore;
 
     public PunchRecord() {
     }
