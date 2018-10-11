@@ -109,6 +109,4 @@ public class ChiefEngineerController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(chiefEngineer, fieldsView));
     }
 
-
-
 }

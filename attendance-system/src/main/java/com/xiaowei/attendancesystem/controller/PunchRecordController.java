@@ -1,5 +1,6 @@
 package com.xiaowei.attendancesystem.controller;
 
+import com.xiaowei.account.consts.UserStatus;
 import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.repository.SysUserRepository;
@@ -140,7 +141,8 @@ public class PunchRecordController {
         //查询一个公司下所有人某个月份的打卡记录
         List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(), punchFormDTO.getSelectMonth());
         final Company company = companyService.findById(punchFormDTO.getCompanyId());
-        final List<SysUser> users = userRepository.findByCompanyId(company.getId());
+        List<SysUser> users = userRepository.findByCompanyId(company.getId());
+        users = users.stream().filter(sysUser -> !sysUser.getStatus().equals(UserStatus.FORBIDDEN.getStatus())).collect(Collectors.toList());
         List<Object[]> totalDatas = new ArrayList<>();
         //获取当前天的时间格式化对象
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
