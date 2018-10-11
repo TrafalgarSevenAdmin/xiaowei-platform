@@ -64,6 +64,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         PunchRecord currentPunchRecord = judgeIsExist(punchRecord);
         Object[] datas = judgeWithinRange(currentPunchRecord, shape);
         Integer status = judgePunchTime(currentPunchRecord, (ChiefEngineer) datas[0]);
+        //是上班还是下班打卡
         boolean isTrue = (boolean) datas[1];
         if (status == 1) {
             //是否正常打卡
@@ -73,6 +74,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                 currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.EXCEPTION);
             }
             currentPunchRecord.setOnPunchFileStore(punchRecord.getPunchFileStore());
+            currentPunchRecord.setOnShape(shape);//上班打卡地点
         } else {
             //是否正常打卡
             if (isTrue) {
@@ -81,6 +83,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                 currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.EXCEPTION);
             }
             currentPunchRecord.setOffPunchFileStore(punchRecord.getPunchFileStore());
+            currentPunchRecord.setOffShape(shape);//下班打卡地点
         }
         return punchRecordRepository.save(currentPunchRecord);
     }

@@ -1,5 +1,7 @@
 package com.xiaowei.attendancesystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.core.basic.entity.BaseEntity;
@@ -85,7 +87,49 @@ public class PunchRecord extends BaseEntity{
     @Lob
     private String offPunchFileStore;
 
+    /**
+     * 上班打卡地点
+     */
+    @Column(columnDefinition = "geometry(POINT,4326)")
+    private Geometry onShape;
+
+    /**
+     * 下班打卡地点
+     */
+    @Column(columnDefinition = "geometry(POINT,4326)")
+    private Geometry offShape;
+
+    @Transient
+    private String onWkt;
+
+    @Transient
+    private String offWkt;
+
     public PunchRecord() {
+    }
+
+    public String getOnWkt() {
+        if (this.onShape != null) {
+            return this.onShape.toText();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public Geometry getOffShape() {
+        return offShape;
+    }
+
+    @JsonIgnore
+    public Geometry getOnShape() {
+        return onShape;
+    }
+
+    public String getOffWkt() {
+        if (this.offShape != null) {
+            return this.offShape.toText();
+        }
+        return null;
     }
 
     public PunchRecord(SysUser sysUser) {
