@@ -10,6 +10,7 @@ import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.attendancesystem.status.PunchRecordType;
 import com.xiaowei.attendancesystem.utils.PunchMonthExcelUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
@@ -61,9 +62,9 @@ public class PunchRecordController {
     @AutoErrorHandler
     @PutMapping("/{punchRecordId}/on/status")
     public Result updateOnStatus(@PathVariable("punchRecordId") String punchRecordId,
-                               @RequestBody @Validated(PunchRecordDTO.UpdateOnStatus.class) PunchRecordDTO punchRecordDTO,
-                               BindingResult bindingResult,
-                               FieldsView fieldsView) throws Exception {
+                                 @RequestBody @Validated(PunchRecordDTO.UpdateOnStatus.class) PunchRecordDTO punchRecordDTO,
+                                 BindingResult bindingResult,
+                                 FieldsView fieldsView) throws Exception {
         PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
         punchRecord.setId(punchRecordId);
         punchRecord = punchRecordService.updateOnStatus(punchRecord);
@@ -74,9 +75,9 @@ public class PunchRecordController {
     @AutoErrorHandler
     @PutMapping("/{punchRecordId}/off/status")
     public Result updateOffStatus(@PathVariable("punchRecordId") String punchRecordId,
-                                 @RequestBody @Validated(PunchRecordDTO.UpdateOffStatus.class) PunchRecordDTO punchRecordDTO,
-                                 BindingResult bindingResult,
-                                 FieldsView fieldsView) throws Exception {
+                                  @RequestBody @Validated(PunchRecordDTO.UpdateOffStatus.class) PunchRecordDTO punchRecordDTO,
+                                  BindingResult bindingResult,
+                                  FieldsView fieldsView) throws Exception {
         PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
         punchRecord.setId(punchRecordId);
         punchRecord = punchRecordService.updateOffStatus(punchRecord);
@@ -159,8 +160,20 @@ public class PunchRecordController {
                         .filter(punchRecord -> Integer.valueOf(simpleDateFormat.format(punchRecord.getPunchDate())) == finalI)
                         .findFirst();
                 if (optionalRecord.isPresent()) {
-                    datas.add(judgePunchRecordType(optionalRecord.get()));
+                    PunchRecord punchRecord = optionalRecord.get();
+                    //如果上下班状态正常,则直接判断输出,否则输出异常
+                    if (punchRecord.getOnPunchRecordStatus() == null || PunchRecordStatus.NORMAL.equals(punchRecord.getOnPunchRecordStatus())) {
+                        datas.add(judgeOnPunchRecordType(punchRecord));
+                    } else {
+                        datas.add(PunchRecordType.EXCEPTION);
+                    }
+                    if (punchRecord.getOffPunchRecordStatus() == null || PunchRecordStatus.NORMAL.equals(punchRecord.getOffPunchRecordStatus())) {
+                        datas.add(judgeOffPunchRecordType(punchRecord));
+                    } else {
+                        datas.add(PunchRecordType.EXCEPTION);
+                    }
                 } else {
+                    datas.add(PunchRecordType.NOPUNCH);
                     datas.add(PunchRecordType.NOPUNCH);
                 }
             }
@@ -170,24 +183,43 @@ public class PunchRecordController {
 
     }
 
-    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {
-        //判断是否上班未打卡,下班未打卡,上下班均未打卡,上班迟到,上班迟到且下班未打卡
-        if (punchRecord.getClockInTime() == null && punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.CLOCKINISNULLANDCLOCKOUTISNULL;//上下班均未打卡
-        }
-        if (punchRecord.getBeLate() && punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.BELATEANDCLOCKOUTISNULL;//迟到且下班未打卡
-        }
-        if (punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.CLOCKOUTISNULL;//下班未打卡
-        }
+    private PunchRecordType judgeOnPunchRecordType(PunchRecord punchRecord) {
+        //判断上班未打卡,迟到,正常
         if (punchRecord.getClockInTime() == null) {
-            return PunchRecordType.CLOCKINISNULL;//上班未打卡
+            return PunchRecordType.CLOCKISNULL;//未打卡
         }
         if (punchRecord.getBeLate()) {
             return PunchRecordType.BELATE;//迟到
         }
         return PunchRecordType.NORMAL;
     }
+
+    private PunchRecordType judgeOffPunchRecordType(PunchRecord punchRecord) {
+        //判断下班未打卡,正常
+        if (punchRecord.getClockOutTime() == null) {
+            return PunchRecordType.CLOCKISNULL;//未打卡
+        }
+        return PunchRecordType.NORMAL;
+    }
+
+//    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {
+//        //判断是否上班未打卡,下班未打卡,上下班均未打卡,上班迟到,上班迟到且下班未打卡
+//        if (punchRecord.getClockInTime() == null && punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.CLOCKINISNULLANDCLOCKOUTISNULL;//上下班均未打卡
+//        }
+//        if (punchRecord.getBeLate() && punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.BELATEANDCLOCKOUTISNULL;//迟到且下班未打卡
+//        }
+//        if (punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.CLOCKOUTISNULL;//下班未打卡
+//        }
+//        if (punchRecord.getClockInTime() == null) {
+//            return PunchRecordType.CLOCKINISNULL;//上班未打卡
+//        }
+//        if (punchRecord.getBeLate()) {
+//            return PunchRecordType.BELATE;//迟到
+//        }
+//        return PunchRecordType.NORMAL;
+//    }
 
 }
