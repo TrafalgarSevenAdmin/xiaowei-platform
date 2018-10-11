@@ -74,4 +74,6 @@ checkfield:
     - W_WORKFLOWNODE.standard_file_store
     - W_SERVICEITEM.standard_file_store
     - W_WORKFLOWITEM.standard_file_store
+    - A_PUNCHRECORD.on_punch_file_store
+    - A_PUNCHRECORD.off_punch_file_store
 
