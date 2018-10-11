@@ -12,24 +12,14 @@ public enum PunchRecordType {
     BELATE("迟到"),
 
     /**
-     * 上班未打卡
+     * 未打卡
      */
-    CLOCKINISNULL("上班未打卡"),
+    CLOCKISNULL("未打卡"),
 
     /**
-     * 下班未打卡
+     * 异常
      */
-    CLOCKOUTISNULL("下班未打卡"),
-
-    /**
-     * 上下班均未打卡
-     */
-    CLOCKINISNULLANDCLOCKOUTISNULL("上下班均未打卡"),
-
-    /**
-     * 迟到且下班未打卡
-     */
-    BELATEANDCLOCKOUTISNULL("迟到且下班未打卡"),
+    EXCEPTION("异常"),
 
     /**
      * 没有记录
