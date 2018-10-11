@@ -99,6 +99,17 @@ public class PunchRecord extends BaseEntity{
     @Column(columnDefinition = "geometry(POINT,4326)")
     private Geometry offShape;
 
+    /**
+     * 上班距离
+     */
+    private Double onDistance;
+
+    /**
+     * 下班距离
+     */
+    private Double offDistance;
+
+
     @Transient
     private String onWkt;
 

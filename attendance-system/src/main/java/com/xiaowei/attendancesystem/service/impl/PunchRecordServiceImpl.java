@@ -66,6 +66,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         Integer status = judgePunchTime(currentPunchRecord, (ChiefEngineer) datas[0]);
         //是上班还是下班打卡
         boolean isTrue = (boolean) datas[1];
+        double distance = (double) datas[2];
         if (status == 1) {
             //是否正常打卡
             if (isTrue) {
@@ -75,6 +76,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
             currentPunchRecord.setOnPunchFileStore(punchRecord.getPunchFileStore());
             currentPunchRecord.setOnShape(shape);//上班打卡地点
+            currentPunchRecord.setOnDistance(distance);//上班打卡记录
         } else {
             //是否正常打卡
             if (isTrue) {
@@ -84,6 +86,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
             currentPunchRecord.setOffPunchFileStore(punchRecord.getPunchFileStore());
             currentPunchRecord.setOffShape(shape);//下班打卡地点
+            currentPunchRecord.setOffDistance(distance);//下班打卡记录
         }
         return punchRecordRepository.save(currentPunchRecord);
     }
@@ -216,7 +219,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             //判断是否正常
             if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
                 if (v < distance) {
-                    return new Object[]{chiefEngineer, true};
+                    return new Object[]{chiefEngineer, true,0.00};
                 } else {
                     if (shortest < v - distance) {//验算最小距离
                         shortest = v - distance;
@@ -226,11 +229,11 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
 
             if (i == chiefEngineers.size() - 1) {//如果是最后一次
-                return new Object[]{defaultChief, false};
+                return new Object[]{defaultChief, false,shortest};
 //                throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
             }
         }
-        return new Object[]{defaultChief, true};
+        return new Object[]{defaultChief, true,0.00};
     }
 
     /**
