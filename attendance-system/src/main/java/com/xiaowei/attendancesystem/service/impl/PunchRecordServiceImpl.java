@@ -68,25 +68,21 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         boolean isTrue = (boolean) datas[1];
         double distance = (double) datas[2];
         if (status == 1) {
-            //是否正常打卡
-            if (isTrue) {
-                currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.NORMAL);
-            } else {
+            //是否异常打卡
+            if (!isTrue) {
                 currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.EXCEPTION);
             }
             currentPunchRecord.setOnPunchFileStore(punchRecord.getPunchFileStore());
             currentPunchRecord.setOnShape(shape);//上班打卡地点
-            currentPunchRecord.setOnDistance(distance);//上班打卡记录
+            currentPunchRecord.setOnDistance(distance);//上班打卡距离
         } else {
-            //是否正常打卡
-            if (isTrue) {
-                currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.NORMAL);
-            } else {
+            //是否异常打卡
+            if (!isTrue && status == 3) {
                 currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.EXCEPTION);
             }
             currentPunchRecord.setOffPunchFileStore(punchRecord.getPunchFileStore());
             currentPunchRecord.setOffShape(shape);//下班打卡地点
-            currentPunchRecord.setOffDistance(distance);//下班打卡记录
+            currentPunchRecord.setOffDistance(distance);//下班打卡距离
         }
         return punchRecordRepository.save(currentPunchRecord);
     }
@@ -172,6 +168,19 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
                 currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.NORMAL);
             }
             stauts = 1;
+        } else if (chiefEngineer.getEndClockInTime().compareTo(currentTime) == -1 && chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == 1) {
+            //早退
+            currentPunchRecord.setClockOutTime(currentTime);
+            Integer punchCount = currentPunchRecord.getPunchCount();
+            if (punchCount == null) {
+                punchCount = 0;
+            }
+            if (punchCount != 2) {
+                currentPunchRecord.setPunchCount(punchCount + 1);
+            }
+            //早退
+            currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.BEEARLY);
+            stauts = 2;
         } else if (chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockOutTime().compareTo(currentTime) == 1) {
             //下班打卡
             //判断是否已经下班打卡
@@ -188,10 +197,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
             //正常
             currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.NORMAL);
-            stauts = 2;
-        } else {
-            //非打卡时间
-            throw new BusinessException("现在是非打卡时间!");
+            stauts = 3;
         }
         return stauts;
     }

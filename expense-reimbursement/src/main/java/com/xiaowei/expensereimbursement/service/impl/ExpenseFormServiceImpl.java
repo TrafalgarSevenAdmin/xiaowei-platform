@@ -264,14 +264,14 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
     private void finishedExpense(ExpenseForm one) {
         //如果有其他报销单,并且报销单状态为报销中的状态,则不修改工单状态;否则,修改工单状态为处理完成
         final List<ExpenseForm> expenseForms = expenseFormRepository.findByWorkOrderCodeAndNotId(one.getWorkOrderCode(), one.getId());
-        if(CollectionUtils.isEmpty(expenseForms)){
+        if (CollectionUtils.isEmpty(expenseForms)) {
             //修改工单状态为处理完成
             messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
-        }else{
+        } else {
             for (ExpenseForm expenseForm : expenseForms) {
-                if(expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())||
-                        expenseForm.getStatus().equals(ExpenseFormStatus.FIRSTAUDIT.getStatus())||
-                        expenseForm.getStatus().equals(ExpenseFormStatus.SECONDAUDIT.getStatus())){
+                if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus()) ||
+                        expenseForm.getStatus().equals(ExpenseFormStatus.FIRSTAUDIT.getStatus()) ||
+                        expenseForm.getStatus().equals(ExpenseFormStatus.SECONDAUDIT.getStatus())) {
                     return;
                 }
             }
