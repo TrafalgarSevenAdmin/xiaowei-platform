@@ -56,10 +56,7 @@ public class PunchRecord extends BaseEntity{
      */
     @Temporal(TemporalType.DATE)
     private Date punchDate;
-    /**
-     * 是否早退
-     */
-    private Boolean leaveEarly;
+
     /**
      * 是否请假
      */
