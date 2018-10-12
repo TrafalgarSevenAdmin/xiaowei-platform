@@ -152,15 +152,15 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         //   若都不是,则证明是在时间范围外打卡,抛出异常
         Calendar calendar = Calendar.getInstance();
         Time currentTime = new Time(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+        //设置打卡次数
+        currentPunchRecord.setPunchCount(currentPunchRecord.getPunchCount() == null ? 1 : (currentPunchRecord.getPunchCount() + 1));
         if (chiefEngineer.getBeginClockInTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockInTime().compareTo(currentTime) == 1) {
             //上班打卡
-            //判断是否已经上班打卡
-            if (currentPunchRecord.getPunchCount() != 0) {
-                throw new BusinessException("已经上班打卡!");
-            }
             currentPunchRecord.setClockInTime(currentTime);
-            currentPunchRecord.setPunchCount(1);//当天打卡次数为1
             if (chiefEngineer.getBeLateTime().compareTo(currentTime) == -1) {
+                if (currentPunchRecord.getPunchCount() > 1) {
+                    throw new BusinessException("已经上班打卡!");
+                }
                 //迟到
                 currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.BELATE);
             } else {
@@ -171,30 +171,14 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         } else if (chiefEngineer.getEndClockInTime().compareTo(currentTime) == -1 && chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == 1) {
             //早退
             currentPunchRecord.setClockOutTime(currentTime);
-            Integer punchCount = currentPunchRecord.getPunchCount();
-            if (punchCount == null) {
-                punchCount = 0;
-            }
-            if (punchCount != 2) {
-                currentPunchRecord.setPunchCount(punchCount + 1);
-            }
+
             //早退
             currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.BEEARLY);
             stauts = 2;
         } else if (chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockOutTime().compareTo(currentTime) == 1) {
             //下班打卡
-            //判断是否已经下班打卡
-//            if (currentPunchRecord.getPunchCount() != 1) {
-//                throw new BusinessException("已经下班打卡!");
-//            }
             currentPunchRecord.setClockOutTime(currentTime);
-            Integer punchCount = currentPunchRecord.getPunchCount();
-            if (punchCount == null) {
-                punchCount = 0;
-            }
-            if (punchCount != 2) {
-                currentPunchRecord.setPunchCount(punchCount + 1);
-            }
+
             //正常
             currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.NORMAL);
             stauts = 3;
