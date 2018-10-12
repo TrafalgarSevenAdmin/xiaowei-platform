@@ -1,6 +1,6 @@
 package com.xiaowei.attendancesystem.utils;
 
-import com.xiaowei.attendancesystem.status.PunchRecordType;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
@@ -32,9 +32,11 @@ public class PunchMonthExcelUtils {
         this.response = response;
     }
 
-    /*
+    /**
      * 导出数据
-     * */
+     *
+     * @throws Exception
+     */
     public void export() throws Exception {
         try {
             HSSFWorkbook workbook = new HSSFWorkbook();                        // 创建工作簿对象
@@ -108,7 +110,7 @@ public class PunchMonthExcelUtils {
                     } else {
                         cell = row.createCell(j, CellType.STRING);
                         if (obj[j] != null) {
-                            cell.setCellValue(setStyleByPunchRecordType(style, (PunchRecordType) obj[j]));//设置单元格的值
+                            cell.setCellValue(setStyleByPunchRecordType(style, (PunchRecordStatus) obj[j]));//设置单元格的值
                         }
                     }
                     cell.setCellStyle(style);                                    //设置单元格样式
@@ -172,7 +174,7 @@ public class PunchMonthExcelUtils {
         return style;
     }
 
-    private String setStyleByPunchRecordType(HSSFCellStyle style, PunchRecordType punchRecordType) {
+    private String setStyleByPunchRecordType(HSSFCellStyle style, PunchRecordStatus punchRecordType) {
         switch (punchRecordType) {
             case NORMAL:
                 style.setFillForegroundColor(HSSFColor.GREEN.index);

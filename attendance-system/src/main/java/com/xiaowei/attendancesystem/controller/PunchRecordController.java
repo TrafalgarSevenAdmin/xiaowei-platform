@@ -11,7 +11,6 @@ import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
-import com.xiaowei.attendancesystem.status.PunchRecordType;
 import com.xiaowei.attendancesystem.utils.PunchMonthExcelUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
@@ -116,11 +115,11 @@ public class PunchRecordController {
     private Map<String, Object> getPunchFormMap(List<PunchRecord> punchRecords) {
         Map<String, Object> punchMap = new HashMap<>();
         //迟到次数
-        long belateCount = punchRecords.stream().filter(punchRecord -> punchRecord.getBeLate()).count();
+        long belateCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.BELATE.equals(punchRecord.getOnPunchRecordStatus())).count();
         //上班未打卡次数
-        long clockInIsNullCount = punchRecords.stream().filter(punchRecord -> punchRecord.getClockInTime() == null).count();
+        long clockInIsNullCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.CLOCKISNULL.equals(punchRecord.getOnPunchRecordStatus())).count();
         //下班未打卡次数
-        long clockOutIsNullCount = punchRecords.stream().filter(punchRecord -> punchRecord.getClockOutTime() == null).count();
+        long clockOutIsNullCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.CLOCKISNULL.equals(punchRecord.getOffPunchRecordStatus())).count();
         //迟到率
         float beLateRate = (float) belateCount / (float) punchRecords.size();
         float clockInIsNullRate = (float) clockInIsNullCount / (float) punchRecords.size();
@@ -159,22 +158,14 @@ public class PunchRecordController {
                 final Optional<PunchRecord> optionalRecord = userPunchs.stream()
                         .filter(punchRecord -> Integer.valueOf(simpleDateFormat.format(punchRecord.getPunchDate())) == finalI)
                         .findFirst();
+                //添加上、下班打卡状态到列表
                 if (optionalRecord.isPresent()) {
                     PunchRecord punchRecord = optionalRecord.get();
-                    //如果上下班状态正常,则直接判断输出,否则输出异常
-                    if (punchRecord.getOnPunchRecordStatus() == null || PunchRecordStatus.NORMAL.equals(punchRecord.getOnPunchRecordStatus())) {
-                        datas.add(judgeOnPunchRecordType(punchRecord));
-                    } else {
-                        datas.add(PunchRecordType.EXCEPTION);
-                    }
-                    if (punchRecord.getOffPunchRecordStatus() == null || PunchRecordStatus.NORMAL.equals(punchRecord.getOffPunchRecordStatus())) {
-                        datas.add(judgeOffPunchRecordType(punchRecord));
-                    } else {
-                        datas.add(PunchRecordType.EXCEPTION);
-                    }
+                    datas.add(judgeOnPunchRecordType(punchRecord));
+                    datas.add(judgeOffPunchRecordType(punchRecord));
                 } else {
-                    datas.add(PunchRecordType.NOPUNCH);
-                    datas.add(PunchRecordType.NOPUNCH);
+                    datas.add(PunchRecordStatus.NOPUNCH);
+                    datas.add(PunchRecordStatus.NOPUNCH);
                 }
             }
             totalDatas.add(datas.toArray());
@@ -183,23 +174,20 @@ public class PunchRecordController {
 
     }
 
-    private PunchRecordType judgeOnPunchRecordType(PunchRecord punchRecord) {
-        //判断上班未打卡,迟到,正常
-        if (punchRecord.getClockInTime() == null) {
-            return PunchRecordType.CLOCKISNULL;//未打卡
+    private PunchRecordStatus judgeOnPunchRecordType(PunchRecord punchRecord) {
+        if (punchRecord.getOnPunchRecordStatus() != null) {
+            return punchRecord.getOnPunchRecordStatus();
+        } else {
+            return PunchRecordStatus.NOPUNCH;
         }
-        if (punchRecord.getBeLate()) {
-            return PunchRecordType.BELATE;//迟到
-        }
-        return PunchRecordType.NORMAL;
     }
 
-    private PunchRecordType judgeOffPunchRecordType(PunchRecord punchRecord) {
-        //判断下班未打卡,正常
-        if (punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.CLOCKISNULL;//未打卡
+    private PunchRecordStatus judgeOffPunchRecordType(PunchRecord punchRecord) {
+        if (punchRecord.getOffPunchRecordStatus() != null) {
+            return punchRecord.getOffPunchRecordStatus();
+        } else {
+            return PunchRecordStatus.NOPUNCH;
         }
-        return PunchRecordType.NORMAL;
     }
 
 //    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {

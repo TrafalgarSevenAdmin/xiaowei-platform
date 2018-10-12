@@ -166,7 +166,10 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             currentPunchRecord.setPunchCount(1);//当天打卡次数为1
             if (chiefEngineer.getBeLateTime().compareTo(currentTime) == -1) {
                 //迟到
-                currentPunchRecord.setBeLate(true);
+                currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.BELATE);
+            } else {
+                //正常
+                currentPunchRecord.setOnPunchRecordStatus(PunchRecordStatus.NORMAL);
             }
             stauts = 1;
         } else if (chiefEngineer.getBeginClockOutTime().compareTo(currentTime) == -1 && chiefEngineer.getEndClockOutTime().compareTo(currentTime) == 1) {
@@ -183,6 +186,8 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             if (punchCount != 2) {
                 currentPunchRecord.setPunchCount(punchCount + 1);
             }
+            //正常
+            currentPunchRecord.setOffPunchRecordStatus(PunchRecordStatus.NORMAL);
             stauts = 2;
         } else {
             //非打卡时间
@@ -219,7 +224,7 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             //判断是否正常
             if (ChiefEngineerStatus.NORMAL.getStatus().equals(chiefEngineer.getStatus())) {
                 if (v < distance) {
-                    return new Object[]{chiefEngineer, true,0.00};
+                    return new Object[]{chiefEngineer, true, 0.00};
                 } else {
                     if (shortest < v - distance) {//验算最小距离
                         shortest = v - distance;
@@ -229,11 +234,11 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
             }
 
             if (i == chiefEngineers.size() - 1) {//如果是最后一次
-                return new Object[]{defaultChief, false,shortest};
+                return new Object[]{defaultChief, false, shortest};
 //                throw new BusinessException("您未到达打卡范围,距离:" + String.format("%.2f", shortest) + "米");
             }
         }
-        return new Object[]{defaultChief, true,0.00};
+        return new Object[]{defaultChief, true, 0.00};
     }
 
     /**

@@ -57,10 +57,6 @@ public class PunchRecord extends BaseEntity{
     @Temporal(TemporalType.DATE)
     private Date punchDate;
     /**
-     * 是否迟到
-     */
-    private Boolean beLate;
-    /**
      * 是否早退
      */
     private Boolean leaveEarly;
@@ -148,7 +144,8 @@ public class PunchRecord extends BaseEntity{
         this.sysUser = sysUser;
         this.punchDate = new Date();
         this.punchCount = 0;
-        this.beLate = false;
+        this.onPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
+        this.offPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
     }
 
 }

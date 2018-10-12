@@ -1,6 +1,7 @@
 package com.xiaowei.attendancesystem.query;
 
 import com.xiaowei.account.consts.UserStatus;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
@@ -21,9 +22,8 @@ public class PunchRecordQuery extends Query {
     private Date b_punchTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date e_punchTime;
-    private Boolean beLate;
-    private Boolean clockInIsNull;
-    private Boolean clockOutIsNull;
+    private PunchRecordStatus onPunchRecordStatus;
+    private PunchRecordStatus offPunchRecordStatus;
 
     @Override
     public void generateCondition() {
@@ -41,25 +41,11 @@ public class PunchRecordQuery extends Query {
         if (b_punchTime != null && e_punchTime != null) {
             addFilter(new Filter("punchDate", Filter.Operator.between, b_punchTime, e_punchTime));
         }
-        //是否迟到
-        if (beLate != null) {
-            addFilter(new Filter("beLate", Filter.Operator.eq, beLate));
+        if (onPunchRecordStatus != null) {
+            addFilter(new Filter("onPunchRecordStatus", Filter.Operator.eq, onPunchRecordStatus));
         }
-        //上班未打卡
-        if (clockInIsNull != null) {
-            if (clockInIsNull) {
-                addFilter(new Filter("clockInTime", Filter.Operator.isNull));
-            } else {
-                addFilter(new Filter("clockInTime", Filter.Operator.notNull));
-            }
-        }
-        //下班未打卡
-        if (clockOutIsNull != null) {
-            if (clockOutIsNull) {
-                addFilter(new Filter("clockOutTime", Filter.Operator.isNull));
-            } else {
-                addFilter(new Filter("clockOutTime", Filter.Operator.notNull));
-            }
+        if (offPunchRecordStatus != null) {
+            addFilter(new Filter("offPunchRecordStatus", Filter.Operator.eq, offPunchRecordStatus));
         }
 
     }
