@@ -24,4 +24,6 @@ public interface ISysPermissionService extends IBaseService<SysPermission> {
     List<String> findByRoleId(String roleId);
 
     List<SysPermission> findBySymbolIn(Set<String> symbols);
+
+    List<SysPermission> findBySymbolPrefix(String prefix);
 }

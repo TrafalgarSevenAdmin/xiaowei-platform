@@ -21,10 +21,10 @@ import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -85,8 +85,13 @@ public class PermissionController {
     @RequiresPermissions("account:permission:tree")
     @ApiOperation("权限树查询接口,roleId可传可不传,传的话代表修改角色需要的权限树有checked")
     @GetMapping("/tree")
-    public Result tree(String roleId) {
-        List<SysPermission> permissions = sysPermissionService.findAll();
+    public Result tree(String roleId,String prefix) {
+        List<SysPermission> permissions;
+        if (StringUtils.isNotBlank(prefix)) {
+            permissions = sysPermissionService.findBySymbolPrefix(prefix);
+        } else {
+            permissions = sysPermissionService.findAll();
+        }
         Set<String> checkedIds;       //用于显示权限是否被勾选
         if (!StringUtils.isEmpty(roleId)) {
             checkedIds = sysPermissionService.findByRoleId(roleId).stream().collect(Collectors.toSet());
