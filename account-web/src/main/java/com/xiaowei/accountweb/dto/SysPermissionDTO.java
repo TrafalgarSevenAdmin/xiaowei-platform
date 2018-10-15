@@ -27,6 +27,10 @@ public class SysPermissionDTO {
     @ParamField("权限标识")
     private String symbol;
 
+    @ApiModelProperty(value = "资源地址")
+    @ParamField("资源地址")
+    private String uri;
+
     @ApiModelProperty(value = "权限前置条件")
     private String precondition;
 
@@ -60,5 +64,13 @@ public class SysPermissionDTO {
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }
