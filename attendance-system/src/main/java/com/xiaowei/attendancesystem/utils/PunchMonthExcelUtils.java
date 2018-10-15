@@ -1,6 +1,6 @@
 package com.xiaowei.attendancesystem.utils;
 
-import com.xiaowei.attendancesystem.status.PunchRecordType;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
@@ -32,9 +32,11 @@ public class PunchMonthExcelUtils {
         this.response = response;
     }
 
-    /*
+    /**
      * 导出数据
-     * */
+     *
+     * @throws Exception
+     */
     public void export() throws Exception {
         try {
             HSSFWorkbook workbook = new HSSFWorkbook();                        // 创建工作簿对象
@@ -46,7 +48,7 @@ public class PunchMonthExcelUtils {
 
             //sheet样式定义【getColumnTopStyle()/getStyle()均为自定义方法 - 在下面  - 可扩展】
             HSSFCellStyle columnTopStyle = this.getColumnTopStyle(workbook);//获取列头样式对象
-            sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, (ROWNAME.length - 1)));
+            sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, (ROWNAME.length * 2 - 3)));
             cellTiltle.setCellStyle(columnTopStyle);
             cellTiltle.setCellValue(title);
 
@@ -56,18 +58,45 @@ public class PunchMonthExcelUtils {
 
             // 将列头设置到sheet的单元格中
             for (int n = 0; n < columnNum; n++) {
-                HSSFCell cellRowName = rowRowName.createCell(n);                //创建列头对应个数的单元格
+                if (n == 0 || n == 1) {
+                    HSSFCell cellRowName = rowRowName.createCell(n);                //创建列头对应个数的单元格
+                    cellRowName.setCellType(CellType.STRING);                //设置列头单元格的数据类型
+                    HSSFRichTextString text = new HSSFRichTextString(ROWNAME[n]);
+                    cellRowName.setCellValue(text);                                    //设置列头单元格的值
+                    cellRowName.setCellStyle(columnTopStyle);                        //设置列头单元格样式
+                } else {
+                    HSSFCell cellRowName = rowRowName.createCell(n * 2 - 2);                //创建列头对应个数的单元格
+                    cellRowName.setCellType(CellType.STRING);                //设置列头单元格的数据类型
+                    HSSFRichTextString text = new HSSFRichTextString(ROWNAME[n]);
+                    sheet.addMergedRegion(new CellRangeAddress(2, 2, n * 2 - 2, n * 2 - 1));
+                    cellRowName.setCellValue(text);                                    //设置列头单元格的值
+                    cellRowName.setCellStyle(columnTopStyle);                        //设置列头单元格样式
+
+                    HSSFCell cellRowName2 = rowRowName.createCell(n * 2 - 1);                //创建列头对应个数的单元格
+                    cellRowName2.setCellStyle(columnTopStyle);                        //设置列头单元格样式
+                }
+            }
+
+            HSSFRow clockRow = sheet.createRow(3);
+            // 设置上下班标题行
+            for (int n = 2; n < columnNum * 2; n++) {
+                HSSFCell cellRowName = clockRow.createCell(n);                //创建列头对应个数的单元格
                 cellRowName.setCellType(CellType.STRING);                //设置列头单元格的数据类型
-                HSSFRichTextString text = new HSSFRichTextString(ROWNAME[n]);
+                HSSFRichTextString text;
+                if (n % 2 == 0) {
+                    text = new HSSFRichTextString("上班");
+                } else {
+                    text = new HSSFRichTextString("下班");
+                }
                 cellRowName.setCellValue(text);                                    //设置列头单元格的值
-                cellRowName.setCellStyle(columnTopStyle);                        //设置列头单元格样式
+                cellRowName.setCellStyle(getStyle(workbook));                        //设置列头单元格样式
             }
 
             //将查询出的数据设置到sheet对应的单元格中
             for (int i = 0; i < dataList.size(); i++) {
 
                 Object[] obj = dataList.get(i);//遍历每个对象
-                HSSFRow row = sheet.createRow(i + 3);//创建所需的行数
+                HSSFRow row = sheet.createRow(i + 4);//创建所需的行数
 
                 for (int j = 0; j < obj.length; j++) {
                     HSSFCellStyle style = getCellStyle(workbook);                    //单元格样式对象
@@ -75,20 +104,20 @@ public class PunchMonthExcelUtils {
                     if (j == 0) {
                         cell = row.createCell(j, CellType.NUMERIC);
                         cell.setCellValue(i + 1);
-                    }else if(j == 1){
+                    } else if (j == 1) {
                         cell = row.createCell(j, CellType.STRING);
                         cell.setCellValue(obj[j].toString());
                     } else {
                         cell = row.createCell(j, CellType.STRING);
                         if (obj[j] != null) {
-                            cell.setCellValue(setStyleByPunchRecordType(style, (PunchRecordType) obj[j]));//设置单元格的值
+                            cell.setCellValue(setStyleByPunchRecordType(style, (PunchRecordStatus) obj[j]));//设置单元格的值
                         }
                     }
                     cell.setCellStyle(style);                                    //设置单元格样式
                 }
             }
             //让列宽随着导出的列长自动适应
-            for (int colNum = 0; colNum < columnNum; colNum++) {
+            for (int colNum = 0; colNum < columnNum * 2; colNum++) {
                 int columnWidth = sheet.getColumnWidth(colNum) / 256;
                 for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
                     HSSFRow currentRow;
@@ -145,15 +174,23 @@ public class PunchMonthExcelUtils {
         return style;
     }
 
-    private String setStyleByPunchRecordType(HSSFCellStyle style, PunchRecordType punchRecordType) {
-        switch (punchRecordType){
-            case NORMAL:break;//正常
-            case BELATE:style.setFillForegroundColor(HSSFColor.YELLOW.index);break;//迟到
-            case CLOCKINISNULL:style.setFillForegroundColor(HSSFColor.ORANGE.index);break;//上班未打卡
-            case CLOCKOUTISNULL:style.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);break;//下班未打卡
-            case CLOCKINISNULLANDCLOCKOUTISNULL:style.setFillForegroundColor(HSSFColor.RED.index);break;//上下班均未打卡
-            case BELATEANDCLOCKOUTISNULL:style.setFillForegroundColor(HSSFColor.ORCHID.index);break;//迟到且下班未打卡
-            case NOPUNCH:style.setFillForegroundColor(HSSFColor.GREY_40_PERCENT.index);break;//没有记录
+    private String setStyleByPunchRecordType(HSSFCellStyle style, PunchRecordStatus punchRecordType) {
+        switch (punchRecordType) {
+            case NORMAL:
+                style.setFillForegroundColor(HSSFColor.GREEN.index);
+                break;//正常
+            case BELATE:
+                style.setFillForegroundColor(HSSFColor.YELLOW.index);
+                break;//迟到
+            case EXCEPTION:
+                style.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
+                break;//异常
+            case CLOCKISNULL:
+                style.setFillForegroundColor(HSSFColor.RED.index);
+                break;//未打卡
+            case NOPUNCH:
+                style.setFillForegroundColor(HSSFColor.GREY_40_PERCENT.index);
+                break;//没有记录
         }
         return punchRecordType.getValue();
     }

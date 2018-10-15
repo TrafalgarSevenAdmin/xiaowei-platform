@@ -12,4 +12,8 @@ public interface IPunchRecordService extends IBaseService<PunchRecord> {
     PunchRecord savePunchRecord(PunchRecord punchRecord, Geometry shape);
 
     List<PunchRecord> findByCompanyIdAndMonth(String companyId, Date selectMonth) throws Exception;
+
+    PunchRecord updateOnStatus(PunchRecord punchRecord);
+
+    PunchRecord updateOffStatus(PunchRecord punchRecord);
 }

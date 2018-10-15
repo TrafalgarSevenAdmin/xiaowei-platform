@@ -1,6 +1,9 @@
 package com.xiaowei.attendancesystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -18,13 +21,21 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "A_PUNCHRECORD")
-@SQLDelete(sql = "update sys_user set delete_flag = true, delete_time = now() where id=?")
+@SQLDelete(sql = "update A_PUNCHRECORD set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 public class PunchRecord extends BaseEntity{
     /**
      * 上班打卡时间
      */
     private Time clockInTime;
+    /**
+     * 上班打卡状态
+     */
+    private PunchRecordStatus onPunchRecordStatus;
+    /**
+     * 下班打卡状态
+     */
+    private PunchRecordStatus offPunchRecordStatus;
     /**
      * 下班打卡时间
      */
@@ -45,14 +56,7 @@ public class PunchRecord extends BaseEntity{
      */
     @Temporal(TemporalType.DATE)
     private Date punchDate;
-    /**
-     * 是否迟到
-     */
-    private Boolean beLate;
-    /**
-     * 是否早退
-     */
-    private Boolean leaveEarly;
+
     /**
      * 是否请假
      */
@@ -61,8 +65,75 @@ public class PunchRecord extends BaseEntity{
      * 请假类型
      */
     private String vacateType;
+    /**
+     * 上班打卡图片
+     */
+    @Lob
+    private String onPunchFileStore;
+
+    @Transient
+    private String punchFileStore;
+
+    /**
+     * 下班打卡图片
+     */
+    @Lob
+    private String offPunchFileStore;
+
+    /**
+     * 上班打卡地点
+     */
+    @Column(columnDefinition = "geometry(POINT,4326)")
+    private Geometry onShape;
+
+    /**
+     * 下班打卡地点
+     */
+    @Column(columnDefinition = "geometry(POINT,4326)")
+    private Geometry offShape;
+
+    /**
+     * 上班距离
+     */
+    private Double onDistance;
+
+    /**
+     * 下班距离
+     */
+    private Double offDistance;
+
+
+    @Transient
+    private String onWkt;
+
+    @Transient
+    private String offWkt;
 
     public PunchRecord() {
+    }
+
+    public String getOnWkt() {
+        if (this.onShape != null) {
+            return this.onShape.toText();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public Geometry getOffShape() {
+        return offShape;
+    }
+
+    @JsonIgnore
+    public Geometry getOnShape() {
+        return onShape;
+    }
+
+    public String getOffWkt() {
+        if (this.offShape != null) {
+            return this.offShape.toText();
+        }
+        return null;
     }
 
     public PunchRecord(SysUser sysUser) {
@@ -70,6 +141,8 @@ public class PunchRecord extends BaseEntity{
         this.sysUser = sysUser;
         this.punchDate = new Date();
         this.punchCount = 0;
-        this.beLate = false;
+        this.onPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
+        this.offPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
     }
+
 }

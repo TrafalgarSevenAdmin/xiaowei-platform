@@ -10,7 +10,7 @@ import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
-import com.xiaowei.attendancesystem.status.PunchRecordType;
+import com.xiaowei.attendancesystem.status.PunchRecordStatus;
 import com.xiaowei.attendancesystem.utils.PunchMonthExcelUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
@@ -57,6 +57,32 @@ public class PunchRecordController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
     }
 
+    @ApiOperation(value = "修改上班打卡状态")
+    @AutoErrorHandler
+    @PutMapping("/{punchRecordId}/on/status")
+    public Result updateOnStatus(@PathVariable("punchRecordId") String punchRecordId,
+                                 @RequestBody @Validated(PunchRecordDTO.UpdateOnStatus.class) PunchRecordDTO punchRecordDTO,
+                                 BindingResult bindingResult,
+                                 FieldsView fieldsView) throws Exception {
+        PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
+        punchRecord.setId(punchRecordId);
+        punchRecord = punchRecordService.updateOnStatus(punchRecord);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
+    @ApiOperation(value = "修改下班打卡状态")
+    @AutoErrorHandler
+    @PutMapping("/{punchRecordId}/off/status")
+    public Result updateOffStatus(@PathVariable("punchRecordId") String punchRecordId,
+                                  @RequestBody @Validated(PunchRecordDTO.UpdateOffStatus.class) PunchRecordDTO punchRecordDTO,
+                                  BindingResult bindingResult,
+                                  FieldsView fieldsView) throws Exception {
+        PunchRecord punchRecord = BeanCopyUtils.copy(punchRecordDTO, PunchRecord.class);
+        punchRecord.setId(punchRecordId);
+        punchRecord = punchRecordService.updateOffStatus(punchRecord);
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
     @ApiOperation("打卡记录查询接口")
     @GetMapping("")
     public Result query(PunchRecordQuery punchRecordQuery, FieldsView fieldsView) {
@@ -89,11 +115,11 @@ public class PunchRecordController {
     private Map<String, Object> getPunchFormMap(List<PunchRecord> punchRecords) {
         Map<String, Object> punchMap = new HashMap<>();
         //迟到次数
-        long belateCount = punchRecords.stream().filter(punchRecord -> punchRecord.getBeLate()).count();
+        long belateCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.BELATE.equals(punchRecord.getOnPunchRecordStatus())).count();
         //上班未打卡次数
-        long clockInIsNullCount = punchRecords.stream().filter(punchRecord -> punchRecord.getClockInTime() == null).count();
+        long clockInIsNullCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.CLOCKISNULL.equals(punchRecord.getOnPunchRecordStatus())).count();
         //下班未打卡次数
-        long clockOutIsNullCount = punchRecords.stream().filter(punchRecord -> punchRecord.getClockOutTime() == null).count();
+        long clockOutIsNullCount = punchRecords.stream().filter(punchRecord -> PunchRecordStatus.CLOCKISNULL.equals(punchRecord.getOffPunchRecordStatus())).count();
         //迟到率
         float beLateRate = (float) belateCount / (float) punchRecords.size();
         float clockInIsNullRate = (float) clockInIsNullCount / (float) punchRecords.size();
@@ -113,7 +139,7 @@ public class PunchRecordController {
         //查询一个公司下所有人某个月份的打卡记录
         List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(), punchFormDTO.getSelectMonth());
         final Company company = companyService.findById(punchFormDTO.getCompanyId());
-        final List<SysUser> users = userRepository.findByCompanyId(company.getId());
+        List<SysUser> users = userRepository.findByCompanyId(company.getId());
         List<Object[]> totalDatas = new ArrayList<>();
         //获取当前天的时间格式化对象
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
@@ -132,10 +158,14 @@ public class PunchRecordController {
                 final Optional<PunchRecord> optionalRecord = userPunchs.stream()
                         .filter(punchRecord -> Integer.valueOf(simpleDateFormat.format(punchRecord.getPunchDate())) == finalI)
                         .findFirst();
+                //添加上、下班打卡状态到列表
                 if (optionalRecord.isPresent()) {
-                    datas.add(judgePunchRecordType(optionalRecord.get()));
+                    PunchRecord punchRecord = optionalRecord.get();
+                    datas.add(judgeOnPunchRecordType(punchRecord));
+                    datas.add(judgeOffPunchRecordType(punchRecord));
                 } else {
-                    datas.add(PunchRecordType.NOPUNCH);
+                    datas.add(PunchRecordStatus.NOPUNCH);
+                    datas.add(PunchRecordStatus.NOPUNCH);
                 }
             }
             totalDatas.add(datas.toArray());
@@ -144,24 +174,40 @@ public class PunchRecordController {
 
     }
 
-    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {
-        //判断是否上班未打卡,下班未打卡,上下班均未打卡,上班迟到,上班迟到且下班未打卡
-        if (punchRecord.getClockInTime() == null && punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.CLOCKINISNULLANDCLOCKOUTISNULL;//上下班均未打卡
+    private PunchRecordStatus judgeOnPunchRecordType(PunchRecord punchRecord) {
+        if (punchRecord.getOnPunchRecordStatus() != null) {
+            return punchRecord.getOnPunchRecordStatus();
+        } else {
+            return PunchRecordStatus.NOPUNCH;
         }
-        if (punchRecord.getBeLate() && punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.BELATEANDCLOCKOUTISNULL;//迟到且下班未打卡
-        }
-        if (punchRecord.getClockOutTime() == null) {
-            return PunchRecordType.CLOCKOUTISNULL;//下班未打卡
-        }
-        if (punchRecord.getClockInTime() == null) {
-            return PunchRecordType.CLOCKINISNULL;//上班未打卡
-        }
-        if (punchRecord.getBeLate()) {
-            return PunchRecordType.BELATE;//迟到
-        }
-        return PunchRecordType.NORMAL;
     }
+
+    private PunchRecordStatus judgeOffPunchRecordType(PunchRecord punchRecord) {
+        if (punchRecord.getOffPunchRecordStatus() != null) {
+            return punchRecord.getOffPunchRecordStatus();
+        } else {
+            return PunchRecordStatus.NOPUNCH;
+        }
+    }
+
+//    private PunchRecordType judgePunchRecordType(PunchRecord punchRecord) {
+//        //判断是否上班未打卡,下班未打卡,上下班均未打卡,上班迟到,上班迟到且下班未打卡
+//        if (punchRecord.getClockInTime() == null && punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.CLOCKINISNULLANDCLOCKOUTISNULL;//上下班均未打卡
+//        }
+//        if (punchRecord.getBeLate() && punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.BELATEANDCLOCKOUTISNULL;//迟到且下班未打卡
+//        }
+//        if (punchRecord.getClockOutTime() == null) {
+//            return PunchRecordType.CLOCKOUTISNULL;//下班未打卡
+//        }
+//        if (punchRecord.getClockInTime() == null) {
+//            return PunchRecordType.CLOCKINISNULL;//上班未打卡
+//        }
+//        if (punchRecord.getBeLate()) {
+//            return PunchRecordType.BELATE;//迟到
+//        }
+//        return PunchRecordType.NORMAL;
+//    }
 
 }
