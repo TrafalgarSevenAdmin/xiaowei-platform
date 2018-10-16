@@ -13,9 +13,9 @@ import java.util.Map;
 
 public interface IWorkOrderService extends IBaseService<WorkOrder> {
 
-    WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId);
+    WorkOrder saveWorkOrder(WorkOrder workOrder);
 
-    WorkOrder updateWorkOrder(WorkOrder workOrder, String workFlowId);
+    WorkOrder updateWorkOrder(WorkOrder workOrder);
 
 
     WorkOrder confirmed(String workOrderId, List<String> serviceItemIds);

@@ -6,6 +6,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.entity.WorkOrderType;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,6 +15,13 @@ import javax.validation.constraints.NotNull;
 @Data
 public class RequestWorkOrderDTO {
     public interface UpdateStatus{}
+
+    /**
+     * 流程模板
+     */
+    @ApiModelProperty(value = "流程模板")
+    @ParamField("流程模板")
+    private WorkFlow workFlow;
 
     /**
      * 所属设备
