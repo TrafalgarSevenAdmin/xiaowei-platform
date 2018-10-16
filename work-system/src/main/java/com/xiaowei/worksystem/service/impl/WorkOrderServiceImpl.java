@@ -105,11 +105,22 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (workOrder.getProposer() != null) {
             return;
         } else {
-            SysUser sysUser = new SysUser();
-            sysUser.setMobile(workOrder.getLinkPhone());
-            sysUser.setLoginName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
-            sysUser.setNickName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
-            workOrder.setProposer(userService.registerUser(sysUser));
+            Optional<SysUser> byMobile = userService.findByMobile(workOrder.getLinkPhone());
+            if (byMobile.isPresent()) {
+                workOrder.setProposer(byMobile.get());
+            } else {
+                SysUser sysUser = new SysUser();
+                SysUser byLoginName = userService.findByLoginName(workOrder.getLinkMan());
+                //如果用户名已经存在.则使用电话号码作为用户名,否则使用用户输入的用户名
+                if (byLoginName != null) {
+                    sysUser.setLoginName(workOrder.getLinkPhone());
+                } else {
+                    sysUser.setLoginName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
+                }
+                sysUser.setMobile(workOrder.getLinkPhone());
+                sysUser.setNickName(StringUtils.isNotEmpty(workOrder.getLinkMan()) ? workOrder.getLinkMan() : workOrder.getLinkPhone());
+                workOrder.setProposer(userService.registerUser(sysUser));
+            }
         }
     }
 
