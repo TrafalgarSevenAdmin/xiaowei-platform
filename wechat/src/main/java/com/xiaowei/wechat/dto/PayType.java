@@ -3,7 +3,7 @@ package com.xiaowei.wechat.dto;
 public enum PayType {
     JSAPI("JSAPI"),
 
-    QR("");
+    QR("NATIVE");
 
 
     String type;
