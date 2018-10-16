@@ -54,6 +54,11 @@ public class SysPermission extends BaseEntity {
     private Integer level;
 
     /**
+     * 资源地址
+     */
+    private String uri;
+
+    /**
      * 权限所属的角色
      */
     @Fetch(FetchMode.SUBSELECT)
@@ -137,5 +142,13 @@ public class SysPermission extends BaseEntity {
 
     public void setLevel(Integer level) {
         this.level = level;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

@@ -124,6 +124,11 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
         return Lists.emptyList();
     }
 
+    @Override
+    public List<SysPermission> findBySymbolPrefix(String prefix) {
+        return sysPermissionRepository.findBySymbolLike(prefix+"%");
+    }
+
     private void judgeAttribute(SysPermission permission, JudgeType judgeType) {
         //判定同级下的权限下名称的唯一性
         String name = permission.getName();
