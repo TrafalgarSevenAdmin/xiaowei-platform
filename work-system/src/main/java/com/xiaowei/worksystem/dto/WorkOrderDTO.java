@@ -6,6 +6,7 @@ import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.Equipment;
 import com.xiaowei.worksystem.entity.WorkOrderType;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +18,13 @@ import java.util.Date;
 @Data
 public class WorkOrderDTO {
     public interface DistributeWorkOrder{}
+
+    /**
+     * 流程模板
+     */
+    @ApiModelProperty(value = "流程模板")
+    @ParamField("流程模板")
+    private WorkFlow workFlow;
 
     /**
      * 所属设备

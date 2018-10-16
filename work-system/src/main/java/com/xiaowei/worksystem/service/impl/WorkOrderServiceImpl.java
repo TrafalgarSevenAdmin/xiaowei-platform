@@ -81,20 +81,18 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     @Override
     @Transactional
-    public WorkOrder saveWorkOrder(WorkOrder workOrder, String workFlowId) {
+    public WorkOrder saveWorkOrder(WorkOrder workOrder) {
         //判断工单申请人
         judgeProposer(workOrder);
         //判定参数是否合规
         judgeAttribute(workOrder, JudgeType.INSERT);
         workOrderRepository.save(workOrder);
-        if (StringUtils.isNotEmpty(workFlowId)) {
-            WorkFlow workFlow = new WorkFlow();
-            workFlow.setId(workFlowId);
-            workOrder.setWorkFlow(workFlow);
+        WorkFlow workFlow = workOrder.getWorkFlow();
+        if (workFlow != null) {
             //设置服务项目
-            setServiceItems(workOrder, workFlowId);
-
+            setServiceItems(workOrder, workFlow.getId());
         }
+
         return workOrder;
     }
 
@@ -220,18 +218,16 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
 
     @Override
     @Transactional
-    public WorkOrder updateWorkOrder(WorkOrder workOrder, String workFlowId) {
+    public WorkOrder updateWorkOrder(WorkOrder workOrder) {
         //判定参数是否合规
         judgeAttribute(workOrder, JudgeType.UPDATE);
         workOrderRepository.save(workOrder);
-        if (StringUtils.isNotEmpty(workFlowId)) {
+        WorkFlow workFlow = workOrder.getWorkFlow();
+        if (workFlow != null) {
             //先删除服务项目
             serviceItemRepository.deleteByWorkOrderId(workOrder.getId());
-            WorkFlow workFlow = new WorkFlow();
-            workFlow.setId(workFlowId);
-            workOrder.setWorkFlow(workFlow);
             //再重新保存服务项目
-            setServiceItems(workOrder, workFlowId);
+            setServiceItems(workOrder, workFlow.getId());
         }
         return workOrder;
     }
@@ -665,7 +661,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         WorkOrder workOrder = one.get();
         judgeServiceTypeIsOut(workOrder);
         //工单是否可取消
-        if (!ArrayUtils.contains(WorkOrderUtils.CANCANCEL,workOrder.getSystemStatus())) {
+        if (!ArrayUtils.contains(WorkOrderUtils.CANCANCEL, workOrder.getSystemStatus())) {
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.CANCEL.getStatus());//工单状态变更为取消
@@ -689,7 +685,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         WorkOrder workOrder = one.get();
         judgeServiceTypeIsOut(workOrder);
         //工单是否可终止
-        if (!ArrayUtils.contains(WorkOrderUtils.CANTERMINATION,workOrder.getSystemStatus())) {
+        if (!ArrayUtils.contains(WorkOrderUtils.CANTERMINATION, workOrder.getSystemStatus())) {
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工单状态变更为处理完成

@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -18,6 +19,15 @@ import javax.persistence.*;
 @Table(name = "W_REQUESTWORKORDER")
 @Data
 public class RequestWorkOrder extends BaseEntity {
+
+    /**
+     * 流程模板
+     */
+    @ManyToOne(targetEntity = WorkFlow.class)
+    @JoinColumn(name = "workflow_id")
+    @Fetch(FetchMode.JOIN)
+    private WorkFlow workFlow;
+
     /**
      * 所属设备
      */

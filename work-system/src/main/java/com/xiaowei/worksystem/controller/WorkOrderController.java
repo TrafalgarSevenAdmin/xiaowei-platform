@@ -64,11 +64,10 @@ public class WorkOrderController {
     @HandleLog(type = "添加工单", contentParams = {@ContentParam(useParamField = true, field = "workOrderDTO", value = "工单信息")})
     public Result insert(@RequestBody @Validated(V.Insert.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
-                         String workFlowId,
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
-        workOrder = workOrderService.saveWorkOrder(workOrder, workFlowId);
+        workOrder = workOrderService.saveWorkOrder(workOrder);
         if (workOrder.getEngineer() != null) {
             //派单提醒通知
             maintenanceOfDispatching(workOrder);
@@ -123,12 +122,11 @@ public class WorkOrderController {
     public Result update(@PathVariable("workOrderId") String workOrderId,
                          @RequestBody @Validated(V.Update.class) WorkOrderDTO workOrderDTO,
                          BindingResult bindingResult,
-                         String workFlowId,
                          FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(workOrderDTO, WorkOrder.class);
         workOrder.setId(workOrderId);
         workOrder.setShape(GeometryUtil.transWKT(workOrderDTO.getWkt()));
-        workOrder = workOrderService.updateWorkOrder(workOrder, workFlowId);
+        workOrder = workOrderService.updateWorkOrder(workOrder);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
 
