@@ -1,6 +1,6 @@
 package com.xiaowei.account.entity;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Entity
 @SQLDelete(sql = "update SYS_DEPARTMENT set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class Department extends BaseEntity {
+public class Department extends MultiBaseEntity {
     /**
      * 编号
      */

@@ -123,6 +123,11 @@ public class Equipment extends BaseEntity{
      */
     String locationType;
 
+    /**
+     * 备注信息
+     */
+    String note;
+
 //    /**
 //     * 操作系统名称
 //     */
