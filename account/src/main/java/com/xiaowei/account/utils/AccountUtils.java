@@ -1,5 +1,6 @@
 package com.xiaowei.account.utils;
 
+import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
@@ -45,6 +46,7 @@ public class AccountUtils {
     public static LoginUserBean toLoginBean(SysUser sysUser){
         List<RoleBean> roles = new ArrayList<>();
         List<PermissionBean> permissions = new ArrayList<>();
+        String tenementId = null;
         //构建登录用户信息
         if(SuperUser.ADMINISTRATOR_NAME.equals(sysUser.getLoginName())){
             //如果是超级管理员则拥有所有的权限和角色
@@ -52,6 +54,7 @@ public class AccountUtils {
             roles.addAll(BeanCopyUtils.copyList(sysRoles, RoleBean.class));
             List<SysPermission> sysPermissions = ContextUtils.getApplicationContext().getBean(ISysPermissionService.class).findAll();
             permissions.addAll(BeanCopyUtils.copyList(sysPermissions, PermissionBean.class));
+            tenementId = AccountConst.ADMIN_TENENCYID;
         }else{
             List<SysPermission> sysPermissions = new ArrayList<>();
             sysUser.getRoles().forEach(sysRole -> {
@@ -67,6 +70,7 @@ public class AccountUtils {
             sysPermissions.addAll(ContextUtils.getApplicationContext().getBean(ISysPermissionService.class)
                     .findBySymbolIn(splitList));
             permissions.addAll(BeanCopyUtils.copyList(sysPermissions.stream().distinct().collect(Collectors.toList()), PermissionBean.class));
+            tenementId = sysUser.getTenancyId();
         }
 
         LoginUserBean loginUserBean = new LoginUserBean(
@@ -80,7 +84,8 @@ public class AccountUtils {
                 permissions,
                 BeanCopyUtils.copy(sysUser.getCompany(), CompanyBean.class),
                 BeanCopyUtils.copy( sysUser.getDepartment(), DepartmentBean.class),
-                BeanCopyUtils.copy(sysUser.getPost(), PostBean.class)
+                BeanCopyUtils.copy(sysUser.getPost(), PostBean.class),
+                tenementId
         );
         return loginUserBean;
     }
