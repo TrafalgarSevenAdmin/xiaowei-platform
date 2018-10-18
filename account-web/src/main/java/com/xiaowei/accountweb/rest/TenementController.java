@@ -4,6 +4,7 @@ import com.xiaowei.account.consts.AccountConst;
 import com.xiaowei.account.entity.Tenement;
 import com.xiaowei.account.query.TenementQuery;
 import com.xiaowei.account.service.ITenementService;
+import com.xiaowei.account.utils.AccountUtils;
 import com.xiaowei.accountweb.dto.TenementDTO;
 import com.xiaowei.core.bean.BeanCopyUtils;
 import com.xiaowei.core.result.FieldsView;
@@ -73,6 +74,7 @@ public class TenementController {
         Tenement tenement = tenementService.findById(tenementId);
         EmptyUtils.assertObject(tenement,"没有查询到需要切换的租户");
         AccountConst.ADMIN_TENENCYID = tenementId;
+        AccountUtils.loadUser();
         return Result.getSuccess();
     }
 
