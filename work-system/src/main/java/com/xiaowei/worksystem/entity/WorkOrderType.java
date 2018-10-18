@@ -1,6 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.worksystem.status.ServiceType;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Data
 @SQLDelete(sql = "update W_WORKORDERTYPE set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class WorkOrderType extends BaseEntity {
+public class WorkOrderType extends MultiBaseEntity {
 
     private String name;
 

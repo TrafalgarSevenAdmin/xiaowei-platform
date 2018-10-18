@@ -1,7 +1,7 @@
 package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "E_REQUESTFORMITEM")
 @Entity
 @Data
-public class RequestFormItem extends BaseEntity {
+public class RequestFormItem extends MultiBaseEntity {
 
     /**
      * 所属科目编号

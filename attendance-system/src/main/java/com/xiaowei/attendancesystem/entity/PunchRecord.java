@@ -3,8 +3,8 @@ package com.xiaowei.attendancesystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
-import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -23,7 +23,7 @@ import java.util.Date;
 @Table(name = "A_PUNCHRECORD")
 @SQLDelete(sql = "update A_PUNCHRECORD set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class PunchRecord extends BaseEntity{
+public class PunchRecord extends MultiBaseEntity {
     /**
      * 上班打卡时间
      */

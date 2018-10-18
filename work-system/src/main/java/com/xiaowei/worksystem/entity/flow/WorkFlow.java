@@ -1,6 +1,6 @@
 package com.xiaowei.worksystem.entity.flow;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "W_WORKFLOW")
 @SQLDelete(sql = "update W_WORKFLOW set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class WorkFlow extends BaseEntity {
+public class WorkFlow extends MultiBaseEntity {
     /**
      * 模板名称
      */

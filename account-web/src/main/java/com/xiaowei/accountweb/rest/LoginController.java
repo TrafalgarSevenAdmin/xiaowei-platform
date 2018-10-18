@@ -42,6 +42,10 @@ public class LoginController {
     @HandleLog(type = "登录")
     public Result login(@RequestBody @Validated LoginSysUserDTO loginSysUserDTO, BindingResult bindingResult){
         Subject subject = SecurityUtils.getSubject();
+        //先退出后登陆
+        if(subject.isAuthenticated()){
+            subject.logout();
+        }
         subject.login(new UsernamePasswordToken(loginSysUserDTO.getLoginName(),loginSysUserDTO.getPassword(),ContextUtils.getIpAddr()));
 //        SysUser sysUser = sysUserService.findByLoginName(loginSysUserDTO.getLoginName());
         AccountUtils.loadUser();

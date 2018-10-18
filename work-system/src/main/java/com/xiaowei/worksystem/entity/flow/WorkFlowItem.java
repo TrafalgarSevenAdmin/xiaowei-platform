@@ -1,6 +1,6 @@
 package com.xiaowei.worksystem.entity.flow;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -13,7 +13,7 @@ import java.sql.Time;
 @Data
 @Entity
 @Table(name = "W_WORKFLOWITEM")
-public class WorkFlowItem extends BaseEntity{
+public class WorkFlowItem extends MultiBaseEntity {
     private String code;
     /**
      * 是否收费
