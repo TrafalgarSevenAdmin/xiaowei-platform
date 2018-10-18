@@ -1,6 +1,6 @@
 package com.xiaowei.expensereimbursement.entity;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Table(name = "E_AUDITCONFIGURATION")
 @Entity
 @Data
-public class AuditConfiguration extends BaseEntity {
+public class AuditConfiguration extends MultiBaseEntity {
     /**
      * 审核配置用户
      */

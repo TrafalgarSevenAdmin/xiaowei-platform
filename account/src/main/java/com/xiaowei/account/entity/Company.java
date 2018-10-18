@@ -1,7 +1,7 @@
 package com.xiaowei.account.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Entity
 @SQLDelete(sql = "update sys_company set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class Company extends BaseEntity {
+public class Company extends MultiBaseEntity {
     /**
      * 公司名称
      */

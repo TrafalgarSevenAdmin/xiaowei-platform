@@ -1,7 +1,7 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SQLDelete;
@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "W_EQUIPMENT_MODIFIED")
 @SQLDelete(sql = "update w_equipment_modified set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class EquipmentModified extends BaseEntity{
+public class EquipmentModified extends MultiBaseEntity {
     /**
      * 设备名称
      */

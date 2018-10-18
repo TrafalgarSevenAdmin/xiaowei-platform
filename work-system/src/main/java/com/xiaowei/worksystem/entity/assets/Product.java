@@ -1,8 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xiaowei.core.basic.entity.BaseEntity;
-import com.xiaowei.worksystem.status.ProductTagType;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -19,7 +18,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "W_PRODUCT")
 @JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
-public class Product extends BaseEntity {
+public class Product extends MultiBaseEntity {
     /**
      * 产品编码
      * 该产品唯一对应的一个数字编码标识

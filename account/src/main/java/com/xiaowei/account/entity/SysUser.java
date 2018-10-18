@@ -2,7 +2,7 @@ package com.xiaowei.account.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @SQLDelete(sql = "update sys_user set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class SysUser extends BaseEntity {
+public class SysUser extends MultiBaseEntity {
 
     @Column(updatable = false,unique = true)
     private String code;

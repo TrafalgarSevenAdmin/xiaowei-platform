@@ -1,6 +1,6 @@
 package com.xiaowei.worksystem.entity;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.worksystem.entity.customer.Customer;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -22,7 +22,7 @@ import java.util.Date;
 @Table(name = "W_EQUIPMENT")
 @SQLDelete(sql = "update w_equipment set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class Equipment extends BaseEntity{
+public class Equipment extends MultiBaseEntity {
     /**
      * 设备名称
      */
@@ -122,6 +122,11 @@ public class Equipment extends BaseEntity{
      * 安装位置(离行、在行)
      */
     String locationType;
+
+    /**
+     * 备注信息
+     */
+    String note;
 
 //    /**
 //     * 操作系统名称

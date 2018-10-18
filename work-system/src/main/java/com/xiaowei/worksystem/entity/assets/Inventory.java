@@ -2,7 +2,7 @@ package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "W_INVENTORY")
 @JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
-public class Inventory  extends BaseEntity {
+public class Inventory  extends MultiBaseEntity {
     // TODO: 2018/7/6 0006 租户编码
 
     /**

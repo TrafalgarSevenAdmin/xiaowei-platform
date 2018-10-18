@@ -1,14 +1,17 @@
 package com.xiaowei.worksystem.entity.customer;
 
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * 服务对象联系人
@@ -18,7 +21,7 @@ import javax.persistence.*;
 @Table(name = "W_CUSTOMER_USER")
 @SQLDelete(sql = "update w_customer_user set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class CustomerUser extends BaseEntity {
+public class CustomerUser extends MultiBaseEntity {
 
     /**
      * 用户名

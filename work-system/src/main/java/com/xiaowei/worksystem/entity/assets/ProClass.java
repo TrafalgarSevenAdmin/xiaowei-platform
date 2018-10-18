@@ -1,7 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "W_PRO_CLASS")
 @JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
-public class ProClass extends BaseEntity {
+public class ProClass extends MultiBaseEntity {
     /**
      * 分类编码
      * 该分类唯一对应的一个数字编码

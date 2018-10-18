@@ -2,7 +2,7 @@ package com.xiaowei.worksystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -18,7 +18,7 @@ import java.util.Date;
 @SQLDelete(sql = "update w_engineerwork set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
 @Data
-public class EngineerWork extends BaseEntity {
+public class EngineerWork extends MultiBaseEntity {
     /**
      * 接单时间
      */

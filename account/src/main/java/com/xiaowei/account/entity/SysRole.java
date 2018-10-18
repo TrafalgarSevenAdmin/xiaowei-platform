@@ -2,7 +2,7 @@ package com.xiaowei.account.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @Table(name = "sys_role")
 @Entity
-public class SysRole extends BaseEntity {
+public class SysRole extends MultiBaseEntity {
 
     /**
      * 角色名称

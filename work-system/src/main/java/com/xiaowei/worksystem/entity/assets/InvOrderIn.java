@@ -1,7 +1,7 @@
 package com.xiaowei.worksystem.entity.assets;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.worksystem.status.InvOrderInType;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "W_INV_ORDER_IN")
 @JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
-public class InvOrderIn extends BaseEntity {
+public class InvOrderIn extends MultiBaseEntity {
 
 
     /**

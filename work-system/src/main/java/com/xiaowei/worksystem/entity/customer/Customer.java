@@ -1,6 +1,6 @@
 package com.xiaowei.worksystem.entity.customer;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "W_CUSTOMER")
 @SQLDelete(sql = "update w_customer set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class Customer extends BaseEntity {
+public class Customer extends MultiBaseEntity {
 
     /**
      * 客户名称

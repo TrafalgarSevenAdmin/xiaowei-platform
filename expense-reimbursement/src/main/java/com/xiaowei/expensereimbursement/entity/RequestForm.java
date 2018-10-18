@@ -2,7 +2,7 @@ package com.xiaowei.expensereimbursement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaowei.account.entity.SysUser;
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -21,7 +21,7 @@ import java.util.List;
 @Data
 @SQLDelete(sql = "update E_REQUESTFORM set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class RequestForm extends BaseEntity {
+public class RequestForm extends MultiBaseEntity {
     /**
      * 所属工单编号
      */
