@@ -1,6 +1,6 @@
 package com.xiaowei.account.entity;
 
-import com.xiaowei.core.basic.entity.BaseEntity;
+import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
