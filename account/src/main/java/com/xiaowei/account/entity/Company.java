@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Entity
 @SQLDelete(sql = "update sys_company set delete_flag = true, delete_time = now() where id=?")
 @Where(clause = "delete_flag <> true")
-public class Company extends BaseEntity {
+public class Company extends MultiBaseEntity {
     /**
      * 公司名称
      */
