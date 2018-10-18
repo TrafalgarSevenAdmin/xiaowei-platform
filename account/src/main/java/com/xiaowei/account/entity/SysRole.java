@@ -66,6 +66,12 @@ public class SysRole extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Company company;
 
+    /**
+     *  微信个性化菜单的id
+     *  用于表示这个角色是否已经配置了个性化菜单
+     */
+    private String wechatMenuId;
+
     @Override
     public String toString() {
         return "SysRole{" +

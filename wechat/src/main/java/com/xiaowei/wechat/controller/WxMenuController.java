@@ -2,7 +2,9 @@ package com.xiaowei.wechat.controller;
 
 import com.xiaowei.core.result.Result;
 import com.xiaowei.wechat.dto.MeunDTO;
+import com.xiaowei.wechat.dto.WechatMenuDto;
 import com.xiaowei.wechat.service.IMeunService;
+import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -22,7 +24,7 @@ import java.util.List;
 public class WxMenuController {
 
   @Autowired
-  private IMeunService menuCreate;
+  private IMeunService meunService;
 
   @Autowired
   private WxMpService wxService;
@@ -38,7 +40,7 @@ public class WxMenuController {
   @PostMapping("/create")
   @RequiresPermissions("wechat:menu:create")
   public Result menuCreate(@RequestBody MeunDTO menus) throws WxErrorException {
-    menuCreate.individuationMeun(menus);
+    meunService.individuationMeun(menus);
     return Result.getSuccess();
   }
 
@@ -94,4 +96,28 @@ public class WxMenuController {
   public WxMpGetSelfMenuInfoResult getSelfMenuInfo() throws WxErrorException {
     return this.wxService.getMenuService().getSelfMenuInfo();
   }
+
+  /**
+   * 设置微信的菜单
+   * 同时也设置了菜单相关的角色
+   * @return
+   */
+  @ApiOperation("设置微信的角色菜单")
+  @PostMapping("/role/{roleId}")
+  @RequiresPermissions("wechat:menu:set")
+  public Result setWechatMenu(@PathVariable("roleId") String roleId, @RequestBody WechatMenuDto wechatMenuDto) throws WxErrorException {
+      return meunService.setRoleWechtMenu(roleId, wechatMenuDto);
+  }
+
+  /**
+   * 回现设置的微信菜单
+   * @return
+   */
+  @ApiOperation("回现设置的微信菜单")
+  @GetMapping("/role/{roleId}")
+  @RequiresPermissions("wechat:menu:get")
+  public Result getWechatMenu(@PathVariable("roleId") String roleId) throws WxErrorException {
+      return Result.getSuccess(meunService.getRoleWechtMenu(roleId));
+  }
+
 }

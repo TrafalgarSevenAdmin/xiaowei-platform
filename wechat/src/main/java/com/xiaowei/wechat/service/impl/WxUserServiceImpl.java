@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -103,6 +104,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             }
         }
     }
+
     /**
      * 同步用户标签
      * @param user  必须要含有roles
@@ -115,12 +117,13 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             return;
         }
         //获取这个用户的角色，并将角色名作为标签
-        log.debug("正在同步用户:{}的角色:{}",user.getNickName(),user.getRoles().stream().map(SysRole::getName).collect(Collectors.toList()).toString());
+        Stream<SysRole> sysRoleStream = user.getRoles().stream().filter(v -> StringUtils.isNotEmpty(v.getWechatMenuId()));
+        log.debug("正在同步用户:{}的角色:{}",user.getNickName(), sysRoleStream.map(SysRole::getName).collect(Collectors.toList()).toString());
         //添加备注
         if (StringUtils.isNotEmpty(user.getNickName())) {
             wxMpService.getUserService().userUpdateRemark(openId, user.getNickName());
         }
-        Map<String, SysRole> collect = user.getRoles().stream().collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue,newValue) -> newValue));
+        Map<String, SysRole> collect = sysRoleStream.collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue, newValue) -> newValue));
         //获得所有的标签
         List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();
         Set<String> allTagsName = allTags.stream().map(WxUserTag::getName).collect(Collectors.toSet());
