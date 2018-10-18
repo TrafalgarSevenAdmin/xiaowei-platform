@@ -9,6 +9,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 
@@ -29,6 +30,7 @@ public class MultiBaseEntity extends BaseEntity {
     /**
      * 租户id
      */
+    @Column(updatable = false)
     private String tenancyId;
 
     @PrePersist
@@ -36,4 +38,5 @@ public class MultiBaseEntity extends BaseEntity {
         LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
         tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
     }
+
 }
