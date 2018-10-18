@@ -43,11 +43,12 @@ public class LoginUserBean implements Serializable {
     private DepartmentBean departmentBean;
 
     private PostBean postBean;
+    private String tenancyId;
 
     public LoginUserBean() {
     }
 
-    public LoginUserBean(String id, String loginName, String mobile, String email, String nickName, Integer status, List<RoleBean> roles, List<PermissionBean> permissions, CompanyBean companyBean, DepartmentBean departmentBean, PostBean postBean) {
+    public LoginUserBean(String id, String loginName, String mobile, String email, String nickName, Integer status, List<RoleBean> roles, List<PermissionBean> permissions, CompanyBean companyBean, DepartmentBean departmentBean, PostBean postBean, String tenancyId) {
         this.id = id;
         this.loginName = loginName;
         this.mobile = mobile;
@@ -59,5 +60,6 @@ public class LoginUserBean implements Serializable {
         this.companyBean = companyBean;
         this.departmentBean = departmentBean;
         this.postBean = postBean;
+        this.tenancyId = tenancyId;
     }
 }

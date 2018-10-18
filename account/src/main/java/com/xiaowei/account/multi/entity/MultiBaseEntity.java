@@ -19,10 +19,10 @@ import static com.xiaowei.account.multi.consts.MultiConsts.MultiTenancyFilterNam
  * 多租户实例
  */
 @MappedSuperclass
-@FilterDef(name = MultiTenancyFilterName,parameters={
-        @ParamDef(name = "tenancyId",type="string")
+@FilterDef(name = MultiTenancyFilterName, parameters = {
+        @ParamDef(name = "tenancyId", type = "string")
 })
-@Filter(name = MultiTenancyFilterName,condition = "tenancy_id=:tenancyId")
+@Filter(name = MultiTenancyFilterName, condition = "tenancy_id=:tenancyId")
 @Data
 public class MultiBaseEntity extends BaseEntity {
 
@@ -34,6 +34,6 @@ public class MultiBaseEntity extends BaseEntity {
     @PrePersist
     public void onTenancyId() {
         LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-        tenancyId = loginUserOrNull != null?loginUserOrNull.getTenancyId():null;
+        tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
     }
 }

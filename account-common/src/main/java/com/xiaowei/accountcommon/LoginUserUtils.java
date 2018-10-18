@@ -26,6 +26,20 @@ public class LoginUserUtils {
         }
     }
 
+    /**
+     * 获取当前登录的用户
+     * @return
+     * @throws UnauthenticatedException
+     */
+    public static LoginUserBean getLoginUserOrNull() throws UnauthenticatedException{
+        if(!SecurityUtils.getSubject().isAuthenticated()) {
+            return null;
+        }else{
+            Object user = SecurityUtils.getSubject().getSession().getAttribute(SESSION_USER_KEY);
+            return (LoginUserBean) user;
+        }
+    }
+
 
     /**
      * 判断当前用户是否登录

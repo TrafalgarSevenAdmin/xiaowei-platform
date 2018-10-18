@@ -9,6 +9,7 @@ public class AccountConst {
 
     //在线用户列表，redis键
     public final static String ON_LINE_USER_KEY = "SYSTEM:USERS:ON_LINE_USER_KEY";
+    public static String ADMIN_TENENCYID = "1";
 
     //用户cookie分组前缀
     public final static String USER_REDIS_GROUP_PREFIX = "SYSTEM:USERS:LOGINED:";
