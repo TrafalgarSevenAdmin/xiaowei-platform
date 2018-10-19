@@ -51,7 +51,7 @@ public class SysRole extends MultiBaseEntity {
     /**
      * 角色完整代码
      */
-    @Column(unique = true,updatable = false)
+    @Column(updatable = false)
     private String code;
     /**
      * 角色类型
