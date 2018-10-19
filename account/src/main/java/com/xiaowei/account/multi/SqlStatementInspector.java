@@ -18,7 +18,7 @@ public class SqlStatementInspector implements StatementInspector {
         Pattern compile = Pattern.compile("tenancy_id=\\?");
         // 这里可以拦截到sql ， 这里的sql格式会有占位符？  如：select u.name from user u where u.id = ?
         Filter enabledFilter = ContextUtils.getApplicationContext().getBean(EntityManager.class).unwrap(Session.class).getEnabledFilter(MultiTenancyFilterName);
-        if (enabledFilter==null) {
+        if (enabledFilter == null && sql.contains("tenancy_id=?")) {
             //替换所有租户过滤配置
             return compile.matcher(sql).replaceAll("tenancy_id=\'" + LoginUserUtils.getLoginUser().getTenancyId() + "\'");
         }
