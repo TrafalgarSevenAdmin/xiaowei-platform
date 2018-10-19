@@ -160,7 +160,9 @@ public class UserController {
             Session session = (Session) redisTemplate.opsForValue().get(AccountConst.USER_REDIS_GROUP_PREFIX + id);
             LoginUserBean user;
             if (session != null && (user = (LoginUserBean) session.getAttribute(SESSION_USER_KEY)) != null) {
-                onlineUsers.add(new OnlineUser(session,user));
+                if(user.getTenancyId().equals(LoginUserUtils.getLoginUserOrNull().getTenancyId())){
+                    onlineUsers.add(new OnlineUser(session,user));
+                }
             }
         }
         //根据最后一次请求排序

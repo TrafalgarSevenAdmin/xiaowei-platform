@@ -1,5 +1,6 @@
 package com.xiaowei.wechat.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.service.ISysPermissionService;
@@ -82,7 +83,7 @@ public class MeunService implements IMeunService {
     @Override
     public Result setRoleWechtMenu(@PathVariable("roleId") String roleId, @RequestBody WechatMenuDto wechatMenuDto) throws WxErrorException {
         //角色的权限配置
-        SysRole role = sysRoleService.getOne(roleId);
+        SysRole role = sysRoleService.findById(roleId);
         EmptyUtils.assertObject(role,"未找到对应的角色信息");
         //查询出这个角色所分配的所有的微信菜单权限
         List<SysPermission> havePermissions = role.getPermissions().stream().filter(v->v.getSymbol().indexOf("menu:wechat")>=0).collect(Collectors.toList());
@@ -125,8 +126,8 @@ public class MeunService implements IMeunService {
                     button.setSubButtons(menu.getSubButtons().stream().map(id->{
                         WxMenuButton wxMenuButton = new WxMenuButton();
                         wxMenuButton.setType("view");
-                        wxMenuButton.setName(idMap.get(menu.getId()).getName());
-                        wxMenuButton.setUrl(idMap.get(menu.getId()).getId());
+                        wxMenuButton.setName(idMap.get(id).getName());
+                        wxMenuButton.setUrl(idMap.get(id).getUri());
                         return wxMenuButton;
                     }).collect(Collectors.toList()));
                     buttons.add(button);
@@ -144,7 +145,9 @@ public class MeunService implements IMeunService {
             } else {
                 tagId = first.get().getId();
             }
-            wxMenu.getMatchRule().setTagId(String.valueOf(tagId));
+            WxMenuRule matchRule = new WxMenuRule();
+            matchRule.setTagId(String.valueOf(tagId));
+            wxMenu.setMatchRule(matchRule);
             //若之前存在自定义菜单，就先删除
             if (StringUtils.isNotEmpty(role.getWechatMenuId())) {
                 wxMpService.getMenuService().menuDelete(role.getWechatMenuId());
@@ -164,7 +167,7 @@ public class MeunService implements IMeunService {
             }
         }
         //保存到数据库中
-        sysRoleService.saveRole(role);
+        sysRoleService.save(role);
         return Result.getSuccess();
     }
 
@@ -180,7 +183,7 @@ public class MeunService implements IMeunService {
         if (!byId.isPresent()) {
             return new WechatMenuDto();
         } else {
-            return FastJsonUtils.jsonToObject(byId.get().getData(), WechatMenuDto.class);
+            return JSON.parseObject(byId.get().getData(), WechatMenuDto.class);
         }
     }
 }

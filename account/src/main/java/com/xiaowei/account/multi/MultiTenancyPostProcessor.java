@@ -39,7 +39,7 @@ public class MultiTenancyPostProcessor implements RepositoryProxyPostProcessor {
         @Override
         public Object invoke(MethodInvocation Invocation) throws Throwable {
             LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-            if (loginUserOrNull != null && StringUtils.isNotEmpty(loginUserOrNull.getTenancyId())) {
+            if (!Invocation.getMethod().getName().equals("getOne") && loginUserOrNull != null && StringUtils.isNotEmpty(loginUserOrNull.getTenancyId())) {
                 //补全多租户id
                 try {
                     getEntityManager().unwrap(Session.class).enableFilter(MultiTenancyFilterName).setParameter("tenancyId", loginUserOrNull.getTenancyId());

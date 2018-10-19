@@ -99,10 +99,8 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             if (StringUtils.isEmpty(roleId)) {
                 throw new BusinessException("保存失败:没有传入对象id");
             }
-            SysRole one = sysRoleRepository.getOne(roleId);
-            if (one == null) {
-                throw new BusinessException("保存失败:没有查询到需要修改的对象");
-            }
+            Optional<SysRole> byId = sysRoleRepository.findById(roleId);
+            EmptyUtils.assertOptional(byId,"保存失败:没有查询到需要修改的对象");
 
             //修改角色判断当前登录用户是否拥有被修改的角色的权限
             if (!LoginUserUtils.hasRoleId(roleId)) {

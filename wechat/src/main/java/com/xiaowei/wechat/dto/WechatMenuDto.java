@@ -11,8 +11,11 @@ public class WechatMenuDto {
 
     public List<OneLevelMenu> menus;
 
-    public class OneLevelMenu {
-         String id;
+    public static class OneLevelMenu {
+        public OneLevelMenu() {
+        }
+
+        String id;
          String name;
          List<String> subButtons;
 
