@@ -87,9 +87,11 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     private void judgeAttribute(SysRole role, JudgeType judgeType) {
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             role.setId(null);
-
             //设置code
             role.setCode(StringPYUtils.getSpellCode(role.getName()));
+            if (sysRoleRepository.findByCode(role.getCode()) != null) {
+                throw new BusinessException("角色编码重复");
+            }
             //设置创建时间
             role.setCreatedTime(new Date());
 
@@ -100,7 +102,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
                 throw new BusinessException("保存失败:没有传入对象id");
             }
             Optional<SysRole> byId = sysRoleRepository.findById(roleId);
-            EmptyUtils.assertOptional(byId,"保存失败:没有查询到需要修改的对象");
+            EmptyUtils.assertOptional(byId, "保存失败:没有查询到需要修改的对象");
 
             //修改角色判断当前登录用户是否拥有被修改的角色的权限
             if (!LoginUserUtils.hasRoleId(roleId)) {
@@ -124,7 +126,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         if (company == null || StringUtils.isEmpty(company.getId())) {//托管角色
             role.setRoleType(RoleType.TRUSTEESHIPROLE.getStatus());
         } else {//公司角色
-            EmptyUtils.assertOptional(companyRepository.findById(company.getId()),"没有查询到所属公司");
+            EmptyUtils.assertOptional(companyRepository.findById(company.getId()), "没有查询到所属公司");
             role.setRoleType(RoleType.COMPANYROLE.getStatus());
         }
 
@@ -146,7 +148,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             throw new BusinessException("删除失败:没有传入对象id");
         }
         Optional<SysRole> optional = sysRoleRepository.findById(roleId);
-        EmptyUtils.assertOptional(optional,"没有查询到需要删除的角色");
+        EmptyUtils.assertOptional(optional, "没有查询到需要删除的角色");
         //删除角色判断当前登录用户是否拥有被删除的角色的权限
         if (!LoginUserUtils.hasRoleId(roleId)) {
             throw new UnauthorizedException("保存失败:没有权限删除该角色");
