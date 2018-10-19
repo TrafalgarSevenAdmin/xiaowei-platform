@@ -8,11 +8,14 @@ import com.xiaowei.account.repository.CompanyRepository;
 import com.xiaowei.account.repository.SysUserRepository;
 import com.xiaowei.attendancesystem.entity.ChiefEngineer;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
+import com.xiaowei.attendancesystem.entity.PunchRecordItem;
 import com.xiaowei.attendancesystem.repository.ChiefEngineerRepository;
+import com.xiaowei.attendancesystem.repository.PunchRecordItemRepository;
 import com.xiaowei.attendancesystem.repository.PunchRecordRepository;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
 import com.xiaowei.attendancesystem.status.ChiefEngineerStatus;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
+import com.xiaowei.attendancesystem.status.PunchType;
 import com.xiaowei.commonjts.utils.CalculateUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.basic.repository.BaseRepository;
@@ -46,6 +49,8 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
     private ChiefEngineerRepository chiefEngineerRepository;
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private PunchRecordItemRepository punchRecordItemRepository;
 
     public PunchRecordServiceImpl(@Qualifier("punchRecordRepository") BaseRepository repository) {
         super(repository);
@@ -136,6 +141,25 @@ public class PunchRecordServiceImpl extends BaseServiceImpl<PunchRecord> impleme
         one.setOffPunchRecordStatus(punchRecord.getOffPunchRecordStatus());
         punchRecordRepository.save(one);
         return one;
+    }
+
+    @Override
+    @Transactional
+    public PunchRecordItem saveOuterPunchRecord(PunchRecordItem punchRecordItem, String userId) {
+        //获取员工当天的打卡记录
+        PunchRecord punchRecord = punchRecordRepository.findByUserIdAndCurrentDate(userId);
+        if (punchRecord == null) {
+            SysUser user = new SysUser();
+            user.setId(userId);
+            punchRecord = new PunchRecord(user);
+        }
+        punchRecord.setPunchType(PunchType.OUTER);//打卡类型为工单外出打卡类型
+        punchRecordRepository.save(punchRecord);
+        Calendar calendar = Calendar.getInstance();
+        Time currentTime = new Time(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+        punchRecordItem.setClockTime(currentTime);//设置打卡时间
+        punchRecordItem.setPunchRecordId(punchRecord.getId());
+        return punchRecordItemRepository.save(punchRecordItem);
     }
 
     /**

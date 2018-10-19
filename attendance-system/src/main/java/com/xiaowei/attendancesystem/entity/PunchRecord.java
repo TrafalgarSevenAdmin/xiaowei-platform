@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
+import com.xiaowei.attendancesystem.status.PunchType;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -102,6 +103,8 @@ public class PunchRecord extends MultiBaseEntity {
      */
     private Double offDistance;
 
+    private PunchType punchType;
+
 
     @Transient
     private String onWkt;
@@ -143,6 +146,7 @@ public class PunchRecord extends MultiBaseEntity {
         this.punchCount = 0;
         this.onPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
         this.offPunchRecordStatus = PunchRecordStatus.CLOCKISNULL;
+        this.punchType = PunchType.NORMAL;
     }
 
 }

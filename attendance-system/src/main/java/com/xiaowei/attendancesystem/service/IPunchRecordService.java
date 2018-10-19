@@ -2,6 +2,7 @@ package com.xiaowei.attendancesystem.service;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
+import com.xiaowei.attendancesystem.entity.PunchRecordItem;
 import com.xiaowei.core.basic.service.IBaseService;
 
 import java.util.Date;
@@ -16,4 +17,6 @@ public interface IPunchRecordService extends IBaseService<PunchRecord> {
     PunchRecord updateOnStatus(PunchRecord punchRecord);
 
     PunchRecord updateOffStatus(PunchRecord punchRecord);
+
+    PunchRecordItem saveOuterPunchRecord(PunchRecordItem punchRecordItem, String userId);
 }

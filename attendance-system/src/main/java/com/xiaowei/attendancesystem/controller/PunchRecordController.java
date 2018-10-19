@@ -7,10 +7,13 @@ import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.attendancesystem.bean.PunchFormCountBean;
 import com.xiaowei.attendancesystem.dto.PunchFormDTO;
 import com.xiaowei.attendancesystem.dto.PunchRecordDTO;
+import com.xiaowei.attendancesystem.dto.PunchRecordItemDTO;
 import com.xiaowei.attendancesystem.entity.PunchRecord;
+import com.xiaowei.attendancesystem.entity.PunchRecordItem;
 import com.xiaowei.attendancesystem.query.PunchRecordQuery;
 import com.xiaowei.attendancesystem.service.IPunchRecordService;
 import com.xiaowei.attendancesystem.status.PunchRecordStatus;
+import com.xiaowei.attendancesystem.status.PunchType;
 import com.xiaowei.attendancesystem.utils.PunchMonthExcelUtils;
 import com.xiaowei.commonjts.utils.GeometryUtil;
 import com.xiaowei.core.bean.BeanCopyUtils;
@@ -55,6 +58,18 @@ public class PunchRecordController {
         punchRecord = punchRecordService.savePunchRecord(punchRecord,
                 GeometryUtil.transWKT(punchRecordDTO.getWkt()));
         return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecord, fieldsView));
+    }
+
+    @ApiOperation(value = "添加外出打卡记录")
+    @AutoErrorHandler
+    @PostMapping("/outer")
+    public Result insertOuter(@RequestBody @Validated(V.Insert.class) PunchRecordItemDTO punchRecordItemDTO,
+                              BindingResult bindingResult,
+                              FieldsView fieldsView) throws Exception {
+        PunchRecordItem punchRecordItem = BeanCopyUtils.copy(punchRecordItemDTO, PunchRecordItem.class);
+        punchRecordItem.setShape(GeometryUtil.transWKT(punchRecordItemDTO.getWkt()));
+        punchRecordItem = punchRecordService.saveOuterPunchRecord(punchRecordItem, punchRecordItemDTO.getUserId());
+        return Result.getSuccess(ObjectToMapUtils.objectToMap(punchRecordItem, fieldsView));
     }
 
     @ApiOperation(value = "修改上班打卡状态")
@@ -109,7 +124,7 @@ public class PunchRecordController {
         //查询一个公司下所有人某个月份的打卡记录
         List<PunchRecord> punchRecords = punchRecordService.findByCompanyIdAndMonth(punchFormDTO.getCompanyId(), punchFormDTO.getSelectMonth());
 
-        return Result.getSuccess(getPunchFormMap(punchRecords));
+        return Result.getSuccess(getPunchFormMap(punchRecords.stream().filter(punchRecord -> PunchType.NORMAL.equals(punchRecord.getPunchType())).collect(Collectors.toList())));
     }
 
     private Map<String, Object> getPunchFormMap(List<PunchRecord> punchRecords) {
@@ -159,8 +174,13 @@ public class PunchRecordController {
                         .filter(punchRecord -> Integer.valueOf(simpleDateFormat.format(punchRecord.getPunchDate())) == finalI)
                         .findFirst();
                 //添加上、下班打卡状态到列表
+
                 if (optionalRecord.isPresent()) {
                     PunchRecord punchRecord = optionalRecord.get();
+                    if (PunchType.OUTER.equals(punchRecord.getPunchType())) {
+                        datas.add(PunchRecordStatus.OUTER);
+                        datas.add(PunchRecordStatus.OUTER);
+                    }
                     datas.add(judgeOnPunchRecordType(punchRecord));
                     datas.add(judgeOffPunchRecordType(punchRecord));
                 } else {
