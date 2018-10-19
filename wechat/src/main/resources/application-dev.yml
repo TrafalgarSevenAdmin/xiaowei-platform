@@ -21,9 +21,6 @@ spring:
     generate-ddl: true
     properties:
       format_sql: true
-      hibernate:
-        session_factory:
-          statement_inspector: com.xiaowei.account.multi.SqlStatementInspector
     hibernate:
       ddl-auto: update
     show-sql: true
