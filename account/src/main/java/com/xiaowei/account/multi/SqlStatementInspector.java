@@ -1,4 +1,4 @@
-package com.xiaowei.accountweb;
+package com.xiaowei.account.multi;
 
 import com.xiaowei.accountcommon.LoginUserUtils;
 import org.hibernate.resource.jdbc.spi.StatementInspector;

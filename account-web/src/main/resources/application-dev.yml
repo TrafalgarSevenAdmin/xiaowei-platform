@@ -17,7 +17,7 @@ spring:
       format_sql: true
       hibernate:
         session_factory:
-          statement_inspector: com.xiaowei.accountweb.SqlStatementInspector
+          statement_inspector: com.xiaowei.account.multi.SqlStatementInspector
         temp:
           use_jdbc_metadata_defaults: false
     hibernate:

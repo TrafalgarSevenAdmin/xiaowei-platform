@@ -1,11 +1,13 @@
 package com.xiaowei;
 
+import com.xiaowei.account.multi.MultiTenancyRepositoryFactoryBean;
 import com.xiaowei.commonupload.BaseUploadController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.ShardedJedisPool;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
+@EnableJpaRepositories(repositoryFactoryBeanClass = MultiTenancyRepositoryFactoryBean.class)
 public class WorkSystemApplication {
 
 	public static void main(String[] args) {
