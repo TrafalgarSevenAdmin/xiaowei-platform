@@ -1,9 +1,6 @@
 package com.xiaowei.accountweb;
 
 import com.xiaowei.accountcommon.LoginUserUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
 
 import java.util.Arrays;
