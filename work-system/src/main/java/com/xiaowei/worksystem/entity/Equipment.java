@@ -91,7 +91,7 @@ public class Equipment extends MultiBaseEntity {
     /**
      * 状态
      */
-    String status;
+    Integer status;
 
     /**
      * 安装方式 大堂、穿墙
