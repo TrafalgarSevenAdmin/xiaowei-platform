@@ -85,9 +85,6 @@ public class RoleController {
     @ApiOperation("角色查询接口")
     @GetMapping("")
     public Result query(RoleQuery roleQuery, FieldsView fieldsView) {
-        //查询角色设置默认条件
-        setDefaultCondition(roleQuery);
-
         if (roleQuery.isNoPage()) {
             List<SysRole> roles = sysRoleService.query(roleQuery,SysRole.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(roles, fieldsView));//以list形式返回,没有层级
@@ -95,14 +92,6 @@ public class RoleController {
             PageResult pageResult = sysRoleService.queryPage(roleQuery,SysRole.class);
             pageResult.setRows(ObjectToMapUtils.listToMap(pageResult.getRows(), fieldsView));
             return Result.getSuccess(pageResult);//以分页列表形式返回
-        }
-    }
-
-    private void setDefaultCondition(RoleQuery roleQuery) {
-        //默认只能查询当前登录用户所拥有的角色
-        LoginUserBean loginUser = LoginUserUtils.getLoginUser();
-        if(!SuperUser.ADMINISTRATOR_NAME.equals(loginUser.getLoginName())){
-            roleQuery.getUserIds().add(loginUser.getId());
         }
     }
 

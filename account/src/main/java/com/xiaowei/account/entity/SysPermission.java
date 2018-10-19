@@ -45,6 +45,7 @@ public class SysPermission extends BaseEntity {
     /**
      * 分配权限的前置条件 比如要修改用户的权限 则默认分配用户列表的权限
      */
+    @Lob
     private String precondition;
 
     /**

@@ -21,6 +21,9 @@ spring:
     generate-ddl: true
     properties:
       format_sql: true
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
     hibernate:
       ddl-auto: update
     show-sql: true

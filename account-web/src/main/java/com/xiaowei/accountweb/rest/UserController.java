@@ -160,8 +160,8 @@ public class UserController {
             Session session = (Session) redisTemplate.opsForValue().get(AccountConst.USER_REDIS_GROUP_PREFIX + id);
             LoginUserBean user;
             if (session != null && (user = (LoginUserBean) session.getAttribute(SESSION_USER_KEY)) != null) {
-                if(user.getTenancyId().equals(LoginUserUtils.getLoginUserOrNull().getTenancyId())){
-                    onlineUsers.add(new OnlineUser(session,user));
+                if (LoginUserUtils.getLoginUserOrNull().getTenancyId().equals(user.getTenancyId())) {
+                    onlineUsers.add(new OnlineUser(session, user));
                 }
             }
         }

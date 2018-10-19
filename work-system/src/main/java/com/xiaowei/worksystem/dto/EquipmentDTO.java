@@ -1,10 +1,18 @@
 package com.xiaowei.worksystem.dto;
 
 import com.xiaowei.core.validate.V;
+import com.xiaowei.worksystem.entity.customer.Customer;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
+@Data
 public class EquipmentDTO {
 
     @ApiModelProperty(value = "设备名称")
@@ -23,35 +31,129 @@ public class EquipmentDTO {
     @NotBlank(groups = {V.Update.class},message = "设备地址必填!")
     private String address;
 
-    public String getEquipmentName() {
-        return equipmentName;
-    }
+    /**
+     * 类型
+     */
+    String equipmentType;
 
-    public void setEquipmentName(String equipmentName) {
-        this.equipmentName = equipmentName;
-    }
+    /**
+     * 品牌
+     */
+    String equipmentBrand;
 
-    public String getEquipmentNo() {
-        return equipmentNo;
-    }
+    /**
+     * 型号
+     */
+    String equipmentModel;
 
-    public void setEquipmentNo(String equipmentNo) {
-        this.equipmentNo = equipmentNo;
-    }
+    /**
+     * 生产日期
+     */
+    Date madeDate;
 
-    public String getType() {
-        return type;
-    }
+    /**
+     * 生产批次
+     */
+    String batchNo;
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    /**
+     * 安装日期
+     */
+    Date installDate;
 
-    public String getAddress() {
-        return address;
-    }
+    /**
+     * 维保状态
+     */
+    String warrantyStatus;
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    /**
+     * 服务合同号
+     */
+    String contractNo;
+
+    /**
+     * 网点名称
+     */
+    String branchName;
+
+    /**
+     * 客户设备编号
+     */
+    String customerEquipmentNo;
+
+    /**
+     * 状态
+     */
+    Integer status;
+
+    /**
+     * 安装方式 大堂、穿墙
+     */
+    String installType;
+
+    /**
+     * IP地址
+     */
+    String ip;
+
+    /**
+     * 经度
+     */
+    Double longitude;
+
+    /**
+     * 纬度
+     */
+    Double latitude;
+
+    /**
+     * 维保到期日期
+     */
+    String warrantyTime;
+
+    /**
+     * 安装位置(离行、在行)
+     */
+    String locationType;
+
+    /**
+     * 备注信息
+     */
+    String note;
+
+//    /**
+//     * 操作系统名称
+//     */
+//    String osName;
+//
+//    /**
+//     * 操作系统版本
+//     */
+//    String osVersion;
+//
+//    /**
+//     * ATMC名称
+//     */
+//    String atmcName;
+//
+//    /**
+//     * ATMC版本
+//     */
+//    String atmcVersion;
+//
+//    /**
+//     * SP名称
+//     */
+//    String spName;
+//
+//    /**
+//     * SP版本
+//     */
+//    String spVersion;
+
+    /**
+     * 所属服务对象
+     */
+    Customer customer;
+
 }

@@ -117,13 +117,12 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
             return;
         }
         //获取这个用户的角色，并将角色名作为标签
-        Stream<SysRole> sysRoleStream = user.getRoles().stream().filter(v -> StringUtils.isNotEmpty(v.getWechatMenuId()));
-        log.debug("正在同步用户:{}的角色:{}",user.getNickName(), sysRoleStream.map(SysRole::getName).collect(Collectors.toList()).toString());
+        log.debug("正在同步用户:{}的角色:{}",user.getNickName(), user.getRoles().stream().filter(v -> StringUtils.isNotEmpty(v.getWechatMenuId())).map(SysRole::getName).collect(Collectors.toList()).toString());
         //添加备注
         if (StringUtils.isNotEmpty(user.getNickName())) {
             wxMpService.getUserService().userUpdateRemark(openId, user.getNickName());
         }
-        Map<String, SysRole> collect = sysRoleStream.collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue, newValue) -> newValue));
+        Map<String, SysRole> collect = user.getRoles().stream().filter(v -> StringUtils.isNotEmpty(v.getWechatMenuId())).collect(Collectors.toMap(v -> v.getName(), role -> role,(oldValue, newValue) -> newValue));
         //获得所有的标签
         List<WxUserTag> allTags = wxMpService.getUserTagService().tagGet();
         Set<String> allTagsName = allTags.stream().map(WxUserTag::getName).collect(Collectors.toSet());
