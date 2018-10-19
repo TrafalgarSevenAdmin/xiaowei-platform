@@ -1,6 +1,7 @@
 package com.xiaowei.accountcommon;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.authz.UnauthenticatedException;
 
 /**
@@ -14,13 +15,14 @@ public class LoginUserUtils {
 
     /**
      * 获取当前登录的用户
+     *
      * @return
      * @throws UnauthenticatedException
      */
-    public static LoginUserBean getLoginUser() throws UnauthenticatedException{
-        if(!SecurityUtils.getSubject().isAuthenticated()) {
+    public static LoginUserBean getLoginUser() throws UnauthenticatedException {
+        if (!SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthenticatedException("用户未登录!");
-        }else{
+        } else {
             Object user = SecurityUtils.getSubject().getSession().getAttribute(SESSION_USER_KEY);
             return (LoginUserBean) user;
         }
@@ -28,36 +30,43 @@ public class LoginUserUtils {
 
     /**
      * 获取当前登录的用户
+     *
      * @return
      * @throws UnauthenticatedException
      */
-    public static LoginUserBean getLoginUserOrNull() throws UnauthenticatedException{
-        if(!SecurityUtils.getSubject().isAuthenticated()) {
+    public static LoginUserBean getLoginUserOrNull() throws UnauthenticatedException {
+        try {
+            if (!SecurityUtils.getSubject().isAuthenticated()) {
+                return null;
+            } else {
+                Object user = SecurityUtils.getSubject().getSession().getAttribute(SESSION_USER_KEY);
+                return (LoginUserBean) user;
+            }
+        } catch (UnavailableSecurityManagerException exception) {
             return null;
-        }else{
-            Object user = SecurityUtils.getSubject().getSession().getAttribute(SESSION_USER_KEY);
-            return (LoginUserBean) user;
         }
     }
 
 
     /**
      * 判断当前用户是否登录
+     *
      * @return
      * @throws UnauthenticatedException
      */
-    public static boolean isLogin() throws UnauthenticatedException{
+    public static boolean isLogin() throws UnauthenticatedException {
         return SecurityUtils.getSubject().isAuthenticated();
     }
 
     /**
      * 当前用户是否有此角色Id
+     *
      * @return
      * @throws UnauthenticatedException
      */
-    public static boolean hasRoleId(String roleId) throws UnauthenticatedException{
+    public static boolean hasRoleId(String roleId) throws UnauthenticatedException {
         return getLoginUser().getRoles().stream()
-                .filter(roleBean ->roleBean.getId().equals(roleId))
+                .filter(roleBean -> roleBean.getId().equals(roleId))
                 .findAny()
                 .isPresent();
     }
@@ -90,14 +99,15 @@ public class LoginUserUtils {
 
     /**
      * 当前用户是否有此权限Id
+     *
      * @return
      * @throws UnauthenticatedException
      */
-    public static boolean hasPermissionId(String permissionId) throws UnauthenticatedException{
-       return getLoginUser().getPermissions().stream()
-               .filter(permissionBean -> permissionBean.getId().equals(permissionId))
-               .findAny()
-               .isPresent();
+    public static boolean hasPermissionId(String permissionId) throws UnauthenticatedException {
+        return getLoginUser().getPermissions().stream()
+                .filter(permissionBean -> permissionBean.getId().equals(permissionId))
+                .findAny()
+                .isPresent();
     }
 
 
