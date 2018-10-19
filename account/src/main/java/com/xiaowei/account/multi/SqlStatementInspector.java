@@ -1,18 +1,27 @@
 package com.xiaowei.account.multi;
 
+import com.xiaowei.accountcommon.LoginUserUtils;
+import com.xiaowei.core.context.ContextUtils;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
 
-import java.util.Arrays;
+import javax.persistence.EntityManager;
+import java.util.regex.Pattern;
+
+import static com.xiaowei.account.multi.consts.MultiConsts.MultiTenancyFilterName;
 
 public class SqlStatementInspector implements StatementInspector {
 
     @Override
     public String inspect(String sql) {
-        //无奈之举，如果发现是子查询，就溢出掉filter条件
-        if (Arrays.stream(Thread.getAllStackTraces().get(Thread.currentThread())).limit(20).filter(v -> v.getMethodName().equals("loadCollectionSubselect")).findFirst().isPresent()) {
-            return sql.replaceAll("\\w*\\.tenancy_id=\\? (and|or)?", "");
-        }
+        Pattern compile = Pattern.compile("tenancy_id=\\?");
         // 这里可以拦截到sql ， 这里的sql格式会有占位符？  如：select u.name from user u where u.id = ?
+        Filter enabledFilter = ContextUtils.getApplicationContext().getBean(EntityManager.class).unwrap(Session.class).getEnabledFilter(MultiTenancyFilterName);
+        if (enabledFilter==null) {
+            //替换所有租户过滤配置
+            return compile.matcher(sql).replaceAll("tenancy_id=\'" + LoginUserUtils.getLoginUser().getTenancyId() + "\'");
+        }
         return sql;
     }
 }

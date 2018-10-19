@@ -120,6 +120,8 @@ public class WechatPayServiceImpl implements IWechatPayService {
             Optional<WxUser> userOptional = wxUserService.findByUserId(xwOrder.getUser().getId());
             EmptyUtils.assertOptional(userOptional, "该用户未绑定微信");
             wxPayUnifiedOrderRequest.setOpenid(userOptional.get().getOpenId());
+        } else {
+            wxPayUnifiedOrderRequest.setProductId(order);
         }
         try {
             WxPayUnifiedOrderResult wxPayUnifiedOrderResult = wxPayService.unifiedOrder(wxPayUnifiedOrderRequest);
