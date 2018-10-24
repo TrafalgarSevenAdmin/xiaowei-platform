@@ -117,7 +117,8 @@ public class WechatPayServiceImpl implements IWechatPayService {
         //指定不能使用信用卡支付,因为信用卡支付需要交手续费的
         wxPayUnifiedOrderRequest.setLimitPay("no_credit");
         if (type == PayType.JSAPI) {
-            Optional<WxUser> userOptional = wxUserService.findByUserId(xwOrder.getUser().getId());
+            //只有订阅了公众号才能使用jsapi支付
+            Optional<WxUser> userOptional = wxUserService.findByUserId(xwOrder.getUser().getId()).stream().filter(WxUser::getSubscribe).findAny();
             EmptyUtils.assertOptional(userOptional, "该用户未绑定微信");
             wxPayUnifiedOrderRequest.setOpenid(userOptional.get().getOpenId());
         } else {

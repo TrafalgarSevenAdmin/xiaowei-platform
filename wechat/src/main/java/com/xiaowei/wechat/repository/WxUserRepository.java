@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface WxUserRepository extends BaseRepository<WxUser> {
@@ -21,5 +22,5 @@ public interface WxUserRepository extends BaseRepository<WxUser> {
     @Query("update WxUser set subscribe = false,unsubscribeTime=:unsubscribeTime where openId =:openid")
     void unsubscribe(@Param("openid") String openid, @Param("unsubscribeTime") Date unsubscribeTime);
 
-    Optional<WxUser> findBySysUser_IdAndAppId(String userId,String appId);
+    List<WxUser> findBySysUser_IdAndAppId(String userId, String appId);
 }
