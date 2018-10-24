@@ -39,7 +39,8 @@ public class MqMessageTransmitToWxReceiver {
     @RabbitHandler
     public void messageSend(UserMessageBean messageBean) {
         String userId = messageBean.getUserId();
-        Optional<WxUser> byUserId = wxUserService.findByUserId(userId);
+        //只给一个用户推消息
+        Optional<WxUser> byUserId = wxUserService.findByUserId(userId).stream().filter(v->v.getSubscribe()).findAny();
         if (!byUserId.isPresent()) {
             //如果用户没有绑定微信，这个就推送不了
             // TODO: 2018/7/13 0013 错误怎么展示

@@ -70,7 +70,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
 
 
     @Override
-    public Optional<WxUser> findByUserId(String userId) {
+    public List<WxUser> findByUserId(String userId) {
         return wxUserRepository.findBySysUser_IdAndAppId(userId,wechatProperties.getAppId());
     }
 
@@ -98,9 +98,18 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         //查询到用户，且关注了微信后
         if (sysUser != null) {
             //查询用户的openid
-            Optional<WxUser> byUserId = this.findByUserId(userId);
-            if (byUserId.isPresent()) {
-                this.syncUser(sysUser, byUserId.get().getOpenId());
+           this.findByUserId(userId).stream().filter(WxUser::getSubscribe).forEach(v-> {
+               try {
+                   this.syncUser(sysUser, v.getOpenId());
+               } catch (WxErrorException e) {
+                   log.error("同步用户"+sysUser.getNickName()+"角色到微信失败！",e);
+               }
+           });
+        }else {
+            //若找不到此用户，可能这个用户已经被删除了。因此把此用户绑定的微信用户给解绑
+            for (WxUser wxUser : this.findByUserId(userId)) {
+                wxUser.setSysUser(null);
+                wxUserRepository.save(wxUser);
             }
         }
     }

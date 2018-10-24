@@ -27,7 +27,7 @@ public interface IWxUserService extends IBaseService<WxUser> {
      * @param userId
      * @return
      */
-    Optional<WxUser> findByUserId(String userId);
+    List<WxUser> findByUserId(String userId);
 
     /**
      * 保存或更新微信发过来的用户信息
