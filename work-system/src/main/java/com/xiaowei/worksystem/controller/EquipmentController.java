@@ -90,7 +90,6 @@ public class EquipmentController {
     @GetMapping("")
     @RequiresPermissions("order:equipment:query")
     public Result query(Query query, FieldsView fieldsView) {
-        query.addFilter(new Filter("status", Filter.Operator.neq,CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {
             List<Equipment> equipments = equipmentService.query(query, Equipment.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(equipments, fieldsView));//以list形式返回,没有层级
