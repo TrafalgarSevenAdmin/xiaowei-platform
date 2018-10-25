@@ -85,9 +85,12 @@ public class WorkOrderController {
                            FieldsView fieldsView) throws Exception {
         WorkOrder workOrder = BeanCopyUtils.copy(inWorkOrderDTO, WorkOrder.class);
         workOrder = workOrderService.saveInWorkOrder(workOrder);
+        if (workOrder.getEngineer() != null) {
+            //派单提醒通知
+            maintenanceOfInDispatching(workOrder);
+        }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
-
 
     @ApiOperation(value = "添加评价")
     @AutoErrorHandler
@@ -156,6 +159,34 @@ public class WorkOrderController {
         maintenanceOfDispatching(workOrder);
         return Result.getSuccess();
     }
+
+
+    /**
+     * 内部工单派单提醒通知
+     * @param workOrder
+     */
+    private void maintenanceOfInDispatching(WorkOrder workOrder) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getEngineer().getId());
+            userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment() != null ? workOrder.getEquipment().getAddress() : "暂无", null));
+            userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/engineer/enWorkingInOrder?orderId=" + workOrder.getId());
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * 派单提醒通知
