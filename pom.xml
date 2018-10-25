@@ -73,7 +73,7 @@
             </activation>
             <properties>
                 <label>localhost</label>
-                <server.host>http://test.xwseries.com</server.host>
+                <server.host>http://xwkx.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://localhost:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>admin</datasource.password>
@@ -100,7 +100,7 @@
             <id>dev</id>
             <properties>
                 <label>dev</label>
-                <server.host>http://test.xwseries.com</server.host>
+                <server.host>http://xwkx.xwseries.com</server.host>
                 <datasource.url>jdbc:postgresql://192.168.1.218:5432/xiaowei?characterEncoding=utf-8</datasource.url>
                 <datasource.username>postgres</datasource.username>
                 <datasource.password>xw123456789</datasource.password>
@@ -121,7 +121,7 @@
                 <wechat.proxyHost>119.23.224.29</wechat.proxyHost>
                 <wechat.proxyPort>7979</wechat.proxyPort>
                 <upload.path>/root/upload</upload.path>
-                <upload.accessUrlRoot>192.168.1.218:8080/static/</upload.accessUrlRoot>
+                <upload.accessUrlRoot>xwkx.xwseries.com/static/</upload.accessUrlRoot>
             </properties>
         </profile>
         <profile>

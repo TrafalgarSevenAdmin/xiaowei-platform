@@ -114,6 +114,7 @@ public class UserController {
     public Result delete(@PathVariable("userId") String userId) {
         //伪删除
         sysUserService.fakeDeleteUser(userId);
+        messagePushSender.sendUserInfoChageMessage(userId);
         return Result.getSuccess("删除成功");
     }
 
