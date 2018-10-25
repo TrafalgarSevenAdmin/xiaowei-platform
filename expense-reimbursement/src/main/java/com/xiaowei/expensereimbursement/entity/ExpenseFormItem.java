@@ -66,6 +66,11 @@ public class ExpenseFormItem extends MultiBaseEntity {
     private ExpenseForm expenseForm;
 
     /**
+     * 单价
+     */
+    private Double unitPrice;
+
+    /**
      * 数量
      */
     private Integer count;

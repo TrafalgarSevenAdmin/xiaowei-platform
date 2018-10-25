@@ -29,6 +29,11 @@ public class RequestFormItem extends MultiBaseEntity {
      * 填报金额
      */
     private Double fillFigure;
+
+    /**
+     * 单价
+     */
+    private Double unitPrice;
     /**
      * 审核金额
      */
