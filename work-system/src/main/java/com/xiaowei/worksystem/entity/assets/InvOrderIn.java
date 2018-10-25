@@ -6,6 +6,8 @@ import com.xiaowei.worksystem.status.InvOrderInType;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -17,6 +19,8 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "W_INV_ORDER_IN")
+@SQLDelete(sql = "update w_inv_order_in set delete_flag = true, delete_time = now() where id=?")
+@Where(clause = "delete_flag <> true")
 @JsonIgnoreProperties(value = {"delete_flag", "delete_time"})
 public class InvOrderIn extends MultiBaseEntity {
 
