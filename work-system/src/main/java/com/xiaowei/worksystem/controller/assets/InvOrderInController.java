@@ -164,7 +164,6 @@ public class InvOrderInController {
     @GetMapping("")
     @RequiresPermissions("order:assets:inventory:in:query")
     public Result query(Query query, FieldsView fieldsView) {
-        query.addFilter(new Filter("status", Filter.Operator.neq, CommonStatus.DELETE.getStatus()));
         if (query.isNoPage()) {
             List<InvOrderIn> invOrderIns = invOrderInService.query(query, InvOrderIn.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(invOrderIns, fieldsView));//以list形式返回,没有层级
