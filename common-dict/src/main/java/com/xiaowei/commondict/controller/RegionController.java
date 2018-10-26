@@ -1,5 +1,6 @@
 package com.xiaowei.commondict.controller;
 
+import com.xiaowei.commondict.dto.RegionCityLevelDTO;
 import com.xiaowei.commondict.dto.RegionDTO;
 import com.xiaowei.commondict.entity.Region;
 import com.xiaowei.commondict.query.RegionQuery;
@@ -101,6 +102,20 @@ public class RegionController {
     @RequiresPermissions("account:region:delete")
     public Result delete(@PathVariable("regionId") String regionId) throws Exception {
         regionService.deleteRegion(regionId);
+        return Result.getSuccess();
+    }
+
+    @ApiOperation(value = "编辑区域")
+    @AutoErrorHandler
+    @PutMapping("/{regionId}/cityLevel")
+    @RequiresPermissions("account:region:edit")
+    public Result updateCityLevel(@PathVariable("regionId") String regionId, @RequestBody RegionCityLevelDTO regionCityLevelDTO, BindingResult bindingResult, FieldsView fieldsView) throws Exception {
+        Region region = regionService.getOne(regionId);
+        String code = region.getShortCode();
+        if (regionCityLevelDTO.isContainChild()) {
+            code = code + "%";
+        }
+        regionService.updateCityLevel(code, regionCityLevelDTO.getCityLevel());
         return Result.getSuccess();
     }
 

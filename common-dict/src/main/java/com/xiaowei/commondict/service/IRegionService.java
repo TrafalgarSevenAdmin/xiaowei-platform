@@ -49,4 +49,6 @@ public interface IRegionService extends IBaseService<Region> {
     void deleteRegion(String id);
 
     Region updateRegion(Region region);
+
+    void updateCityLevel(String code, String cityLevel);
 }

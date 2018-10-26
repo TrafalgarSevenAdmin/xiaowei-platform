@@ -42,4 +42,8 @@ public interface RegionRepository extends BaseRepository<Region>{
     @Modifying
     @Query("delete from Region r where r.shortCode like :shortCodeLike")
     void deleteRegion(@Param("shortCodeLike") String shortCodeLike);
+
+    @Modifying
+    @Query("update Region set cityLevel =:cityLevel where shortCode like :code")
+    void updateCityLevel(@Param("code") String code, @Param("cityLevel") String cityLevel);
 }
