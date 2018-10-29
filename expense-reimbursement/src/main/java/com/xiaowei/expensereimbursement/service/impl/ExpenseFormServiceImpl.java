@@ -8,6 +8,7 @@ import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.validate.JudgeType;
 import com.xiaowei.expensereimbursement.entity.ExpenseForm;
 import com.xiaowei.expensereimbursement.entity.ExpenseFormItem;
+import com.xiaowei.expensereimbursement.entity.RequestForm;
 import com.xiaowei.expensereimbursement.entity.WorkOrderSelect;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormItemRepository;
 import com.xiaowei.expensereimbursement.repository.ExpenseFormRepository;
@@ -23,6 +24,7 @@ import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.xiaowei.expensereimbursement.status.ExpenseFormStatus.*;
 
@@ -65,9 +68,17 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断所有明细的费用科目是否唯一以及合计金额是否正确
         //保存科目明细
         judgeItemIsUniqueAndAmount(expenseForm);
-        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
-            //修改工单状态为报销中
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        //修改工单状态为报销中
+        messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        //判断所属申请单是否审核通过
+        if (StringUtils.isNotEmpty(expenseForm.getRequestFormCodes())) {
+            Set<String> codes = Arrays.stream(expenseForm.getRequestFormCodes().split(";")).collect(Collectors.toSet());
+            List<RequestForm> requestForms = requestFormRepository.findByIdIn(codes);
+            requestForms.stream().forEach(requestForm -> {
+                if (!RequestFormStatus.AUDIT.getStatus().equals(requestForm.getStatus())) {
+                    throw new BusinessException("申请单:" + requestForm.getCode() + "状态错误!");
+                }
+            });
         }
         return expenseForm;
     }
@@ -97,6 +108,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             judgeWorkOrder(expenseForm);
             //设置无法修改的属性
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
+            expenseForm.setWorkOrderCode(one.getWorkOrderCode());//所属工单无法修改
         }
 
     }
@@ -110,8 +122,13 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
         }
-        if (workOrderSelect.getSystemStatus() != 7 && workOrderSelect.getSystemStatus() != 8) {
+        if (workOrderSelect.getSystemStatus() != 7) {
             throw new BusinessException("该工单状态异常!");
+        }
+
+        //查询是否有其他报销单
+        if (StringUtils.isEmpty(expenseForm.getId()) && CollectionUtils.isNotEmpty(expenseFormRepository.findByWorkOrderCode(workOrderCode))) {
+            throw new BusinessException("该工单已有报销单!");
         }
         return workOrderSelect;
     }
@@ -181,12 +198,6 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         expenseFormItemRepository.deleteByExpenseFormId(expenseForm.getId());
         //先删除明细,再保存明细
         judgeItemIsUniqueAndAmount(expenseForm);
-        if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
-            //修改工单状态为报销中
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
-        }
-
-
         return expenseForm;
     }
 
@@ -255,29 +266,13 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             //设置驳回次数
             one.setTurnDownCount(one.getTurnDownCount() == null ? 1 : (one.getTurnDownCount() + 1));
             one.setStatus(TURNDOWN.getStatus());
-            finishedExpense(one);
         }
         one.setFirstOption(expenseForm.getFirstOption());//初审意见
         return expenseFormRepository.save(one);
     }
 
     private void finishedExpense(ExpenseForm one) {
-        //如果有其他报销单,并且报销单状态为报销中的状态,则不修改工单状态;否则,修改工单状态为处理完成
-        final List<ExpenseForm> expenseForms = expenseFormRepository.findByWorkOrderCodeAndNotId(one.getWorkOrderCode(), one.getId());
-        if (CollectionUtils.isEmpty(expenseForms)) {
-            //修改工单状态为处理完成
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
-        } else {
-            for (ExpenseForm expenseForm : expenseForms) {
-                if (expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus()) ||
-                        expenseForm.getStatus().equals(ExpenseFormStatus.FIRSTAUDIT.getStatus()) ||
-                        expenseForm.getStatus().equals(ExpenseFormStatus.SECONDAUDIT.getStatus())) {
-                    return;
-                }
-            }
-            //修改工单状态为处理完成
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
-        }
+        messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(one.getWorkOrderCode(), TaskType.FINISHED_EXPENSE));
     }
 
     /**
@@ -312,11 +307,12 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         one.setSecondAuditTime(new Date());//复审时间
         if (audit) {//是否驳回
             one.setStatus(SECONDAUDIT.getStatus());
+            //完成报销中流程,工单设置为待归档
+            finishedExpense(one);
         } else {
             one.setStatus(TURNDOWN.getStatus());
         }
         one.setSecondOption(expenseForm.getSecondOption());//复审意见
-        finishedExpense(one);
         return expenseFormRepository.save(one);
     }
 

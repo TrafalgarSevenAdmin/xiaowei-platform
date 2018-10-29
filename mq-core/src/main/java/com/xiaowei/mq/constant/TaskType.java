@@ -20,7 +20,11 @@ public enum TaskType implements Serializable {
     /**
      * 自动通过审核
      */
-    AUTO_PASS_QUALITY_CHACK;
+    AUTO_PASS_QUALITY_CHACK,
+    /**
+     * 自动待归档
+     */
+    AUTO_PREPIGEONHOLE;
     
     
 }

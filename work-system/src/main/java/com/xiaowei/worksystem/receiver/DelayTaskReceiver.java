@@ -36,14 +36,14 @@ public class DelayTaskReceiver {
         log.log(Level.INFO,MessageFormat.format("收到延时消息，一共延时:{0}s",  (new Date().getTime() - messageBean.getStartTime().getTime()/1000)));
 
         switch (messageBean.getTaskType()) {
-//            case AUTO_PREPIGEONHOLE:
-//                try {
-//                    workOrderService.prePigeonhole(messageBean.getObjectId());
-//                } catch (Exception e) {
-//                    log.warning("延时任务处理过程中错误："+e.getMessage());
-//                    e.printStackTrace();
-//                }
-//                break;
+            case AUTO_PREPIGEONHOLE:
+                try {
+                    workOrderService.prePigeonhole(messageBean.getObjectId());
+                } catch (Exception e) {
+                    log.warning("延时任务处理过程中错误："+e.getMessage());
+                    e.printStackTrace();
+                }
+                break;
             case AUTO_PASS_QUALITY_CHACK:
                 try {
                     //定时通过质检

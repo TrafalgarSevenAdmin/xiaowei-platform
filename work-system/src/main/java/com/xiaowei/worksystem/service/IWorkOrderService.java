@@ -61,4 +61,7 @@ public interface IWorkOrderService extends IBaseService<WorkOrder> {
     WorkOrder cancel(String workOrderId);
 
     WorkOrder termination(String workOrderId);
+
+    WorkOrder prePigeonhole(String objectId);
+
 }

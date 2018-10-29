@@ -13,6 +13,8 @@ import com.xiaowei.core.utils.DateUtils;
 import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.core.validate.JudgeType;
+import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
 import com.xiaowei.pay.consts.PayStatus;
 import com.xiaowei.pay.entity.XwOrder;
@@ -477,8 +479,8 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         engineerWorkRepository.save(engineerWork);
         setWorkOrderItemAmount(workOrder);//设置项目金额
         WorkOrder save = workOrderRepository.save(workOrder);
-//        //设置为24小时后自动完成此工单
-//        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE), 1000 * 60 * 60 * 24);
+        //设置为24小时后自动待归档
+        messagePushSender.sendDelayTask(new TaskMessage(workOrderId, TaskType.AUTO_PREPIGEONHOLE), 1000 * 60 * 60 * 24);
         return save;
     }
 
@@ -614,25 +616,25 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         return one;
     }
 
-//    /**
-//     * 工单待归档
-//     *
-//     * @param workOrderId
-//     * @return
-//     */
-//    @Override
-//    @Transactional
-//    public WorkOrder prePigeonhole(String workOrderId) {
-//        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
-//        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
-//        WorkOrder workOrder = one.get();
-//        //处理完成
-//        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
-//            throw new BusinessException("状态错误!");
-//        }
-//        workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());//工单状态变更为待归档
-//        return workOrderRepository.save(workOrder);
-//    }
+    /**
+     * 工单待归档
+     *
+     * @param workOrderId
+     * @return
+     */
+    @Override
+    @Transactional
+    public WorkOrder prePigeonhole(String workOrderId) {
+        Optional<WorkOrder> one = workOrderRepository.findById(workOrderId);
+        EmptyUtils.assertOptional(one, "没有查询到需要修改的对象");
+        WorkOrder workOrder = one.get();
+        //处理完成
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+            return workOrder;
+        }
+        workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());//工单状态变更为待归档
+        return workOrderRepository.save(workOrder);
+    }
 
     /**
      * 工单终审
@@ -789,8 +791,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
         //工单处理完成或者报销中
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus()) &&
-                !workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
             throw new BusinessException("状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.EXPENSEING.getStatus());//工单状态变更为报销中
@@ -812,7 +813,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
             throw new BusinessException("状态错误!");
         }
-        workOrder.setSystemStatus(WorkOrderSystemStatus.FINISHHAND.getStatus());//工单状态变更为处理完成
+        workOrder.setSystemStatus(WorkOrderSystemStatus.PREPIGEONHOLE.getStatus());//工单状态变更为待归档
         return workOrderRepository.save(workOrder);
     }
 

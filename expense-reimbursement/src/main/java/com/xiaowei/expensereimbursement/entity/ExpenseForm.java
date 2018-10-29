@@ -27,6 +27,10 @@ public class ExpenseForm extends MultiBaseEntity {
      */
     private String workOrderCode;
     /**
+     * 所属申请单
+     */
+    private String requestFormCodes;
+    /**
      * 报销单编号
      */
     @Column(unique = true,updatable = false)

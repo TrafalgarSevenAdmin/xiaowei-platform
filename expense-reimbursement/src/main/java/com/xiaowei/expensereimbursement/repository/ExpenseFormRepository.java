@@ -38,4 +38,7 @@ public interface ExpenseFormRepository extends BaseRepository<ExpenseForm>{
 
     @Query("select e from ExpenseForm e where e.workOrderCode = ?1 and e.id <> ?2")
     List<ExpenseForm> findByWorkOrderCodeAndNotId(String workOrderCode, String id);
+
+    @Query("select e from ExpenseForm e where e.workOrderCode = ?1")
+    List<ExpenseForm> findByWorkOrderCode(String workOrderCode);
 }
