@@ -128,6 +128,11 @@ public class Equipment extends MultiBaseEntity {
      */
     String note;
 
+    /**
+     * 机芯类型
+     */
+    String coreType;
+
 //    /**
 //     * 操作系统名称
 //     */
