@@ -1,4 +1,4 @@
-package com.xiaowei.expensereimbursementweb.query;
+package com.xiaowei.account.query;
 
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Logic;

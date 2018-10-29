@@ -1,8 +1,8 @@
-package com.xiaowei.expensereimbursement.service;
+package com.xiaowei.account.service;
 
 
 import com.xiaowei.core.basic.service.IBaseService;
-import com.xiaowei.expensereimbursement.entity.AuditConfiguration;
+import com.xiaowei.account.entity.AuditConfiguration;
 
 import java.util.List;
 

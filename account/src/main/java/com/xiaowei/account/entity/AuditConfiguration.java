@@ -1,4 +1,4 @@
-package com.xiaowei.expensereimbursement.entity;
+package com.xiaowei.account.entity;
 
 import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.xiaowei.expensereimbursement.status;
+package com.xiaowei.account.status;
 
 public enum AuditTypeStatus {
 
