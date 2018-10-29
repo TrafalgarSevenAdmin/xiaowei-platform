@@ -25,7 +25,11 @@ public enum AuditTypeStatus {
     /**
      * 申请单审核
      */
-    APPLICATIONFORM(5);
+    APPLICATIONFORM(5),
+    /**
+     * 租户审核
+     */
+    AUDITTENEMENTID(6);
 
 
     Integer status;
