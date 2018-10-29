@@ -56,7 +56,6 @@ public class WorkOrderController {
     @Value("${server.host}")
     private String serverHost;
 
-
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
     @PostMapping("")
