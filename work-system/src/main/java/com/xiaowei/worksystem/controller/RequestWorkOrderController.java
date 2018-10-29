@@ -127,7 +127,6 @@ public class RequestWorkOrderController {
     }
 
     private void setDefaultCondition(RequestWorkOrderQuery requestWorkOrderQuery) {
-
     }
 
     @ApiOperation("根据id获取工单请求")
