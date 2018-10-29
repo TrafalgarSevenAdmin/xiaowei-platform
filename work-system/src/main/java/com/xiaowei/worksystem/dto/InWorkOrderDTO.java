@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Data
 public class InWorkOrderDTO {
@@ -56,5 +57,11 @@ public class InWorkOrderDTO {
     @NotNull(groups = {V.Insert.class,V.Update.class},message = "处理工程师必填!")
     @ParamField("处理工程师")
     private SysUser engineer;
+
+    /**
+     * 预计完成时间
+     */
+    @ApiModelProperty(value = "预计完成时间")
+    private Date preFinishedTime;
 
 }

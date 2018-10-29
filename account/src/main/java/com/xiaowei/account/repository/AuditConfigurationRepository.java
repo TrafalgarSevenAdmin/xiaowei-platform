@@ -1,7 +1,7 @@
-package com.xiaowei.expensereimbursement.repository;
+package com.xiaowei.account.repository;
 
 import com.xiaowei.core.basic.repository.BaseRepository;
-import com.xiaowei.expensereimbursement.entity.AuditConfiguration;
+import com.xiaowei.account.entity.AuditConfiguration;
 import org.springframework.data.jpa.repository.Query;
 
 public interface AuditConfigurationRepository extends BaseRepository<AuditConfiguration>{

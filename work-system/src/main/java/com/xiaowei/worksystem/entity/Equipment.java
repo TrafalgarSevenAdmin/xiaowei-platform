@@ -89,11 +89,6 @@ public class Equipment extends MultiBaseEntity {
     String customerEquipmentNo;
 
     /**
-     * 状态
-     */
-    Integer status;
-
-    /**
      * 安装方式 大堂、穿墙
      */
     String installType;
