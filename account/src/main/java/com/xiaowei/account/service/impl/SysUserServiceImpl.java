@@ -120,6 +120,11 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    public List<SysUser> findByUserIdIn(Set<String> userIds) {
+        return sysUserRepository.findByUserIdIn(userIds);
+    }
+
+    @Override
     public Optional<SysUser> findByMobile(String mobile) {
         return sysUserRepository.findByMobile(mobile);
     }

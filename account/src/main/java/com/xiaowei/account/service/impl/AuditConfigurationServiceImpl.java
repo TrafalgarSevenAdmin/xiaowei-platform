@@ -66,4 +66,9 @@ public class AuditConfigurationServiceImpl extends BaseServiceImpl<AuditConfigur
         auditConfigurationRepository.saveAll(auditConfigurations);
 
     }
+
+    @Override
+    public List<AuditConfiguration> findByType(Integer status) {
+        return auditConfigurationRepository.findByType(status);
+    }
 }

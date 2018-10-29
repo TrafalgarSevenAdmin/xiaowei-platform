@@ -11,7 +11,7 @@ public enum  MessageType {
     /**
      * 派单通知
      */
-    MAINTENANCEOFDISPATCHING("yGkZz0WqHlSL1BjmPwISqfTG7pJPGS23cotuNEGA0vM"),
+    MAINTENANCEOFDISPATCHING("qMALx0jyp2x2wt5yGqKn70JB1sJa3qCwPCxjTAF9sjQ"),
     /**
      * 费用审核通知
      */
@@ -23,7 +23,11 @@ public enum  MessageType {
     /**
      * 工单处理通知
      */
-    PROCESSINGNOTIFICATION("kheEs_KCgIc9veQvxl_YcjLcwUk2Zd9J4qYs0GJcyqw");
+    PROCESSINGNOTIFICATION("kheEs_KCgIc9veQvxl_YcjLcwUk2Zd9J4qYs0GJcyqw"),
+    /**
+     * 需要派单员派单的通知
+     */
+    MESSAGETOSENDORDER("_qVAauBtZ9kKNLEYd2_gJ_NgPtgfa03sBfstsUtXywE");
 
     // ===================================== 微信推送使用 ===================================
 

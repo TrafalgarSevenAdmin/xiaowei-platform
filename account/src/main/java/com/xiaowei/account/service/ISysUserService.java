@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author mocker
@@ -54,4 +55,6 @@ public interface ISysUserService extends IBaseService<SysUser> {
     List<SysUser> findFromCompanys();
 
     SysUser updatePassword(String userId, String oldPassword, String newPassword);
+
+    List<SysUser> findByUserIdIn(Set<String> userIds);
 }

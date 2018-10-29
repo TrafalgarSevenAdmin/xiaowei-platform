@@ -13,4 +13,6 @@ public interface IAuditConfigurationService extends IBaseService<AuditConfigurat
     void deleteAuditConfiguration(String auditConfigurationId);
 
     void saveAllAuditConfiguration(List<AuditConfiguration> auditConfigurations);
+
+    List<AuditConfiguration> findByType(Integer status);
 }
