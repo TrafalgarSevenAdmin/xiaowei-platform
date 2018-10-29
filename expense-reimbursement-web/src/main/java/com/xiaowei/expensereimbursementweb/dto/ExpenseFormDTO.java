@@ -23,6 +23,12 @@ public class ExpenseFormDTO {
     @ParamField("所属工单编号")
     private String workOrderCode;
     /**
+     * 所属申请单
+     */
+    @ParamField("所属申请单")
+    @ApiModelProperty(value = "所属申请单")
+    private String requestFormCodes;
+    /**
      * 报销单照片
      */
     private String formFileStore;
