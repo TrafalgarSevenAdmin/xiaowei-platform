@@ -145,7 +145,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         for (ExpenseFormItem expenseFormItem : expenseFormItems) {
             total = total + expenseFormItem.getFillFigure();
             if (subjectCodes.contains(expenseFormItem.getSubjectCode())) {
-//                throw new BusinessException("报销费用科目重复!");
+                throw new BusinessException("报销费用科目重复!");
             } else {
                 subjectCodes.add(expenseFormItem.getSubjectCode());
             }
@@ -160,7 +160,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             expenseFormItemRepository.save(expenseFormItem);
         }
         //判断金额
-        if (total != expenseForm.getFillAmount()) {
+        double d = 0.001;
+        if (total - expenseForm.getFillAmount() > -d && expenseForm.getFillAmount() - total < d) {
             throw new BusinessException("填报总金额有误!");
         }
 
