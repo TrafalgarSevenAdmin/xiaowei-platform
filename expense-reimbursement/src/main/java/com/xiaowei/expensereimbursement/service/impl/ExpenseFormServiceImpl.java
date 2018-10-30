@@ -161,7 +161,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         }
         //判断金额
         double d = 0.001;
-        if (total - expenseForm.getFillAmount() > -d && expenseForm.getFillAmount() - total < d) {
+        if (Math.abs(total - expenseForm.getFillAmount()) > d) {
             throw new BusinessException("填报总金额有误!");
         }
 

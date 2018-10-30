@@ -80,8 +80,8 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
         }
         //判断金额
         double d = 0.001;
-        if (total - requestForm.getFillAmount() > -d && requestForm.getFillAmount() - total < d) {
-            throw new BusinessException("填报总金额有误!");
+        if (Math.abs(total - requestForm.getFillAmount()) > d) {
+            throw new BusinessException("填报总金额有误!应为:" + total);
         }
 
     }
