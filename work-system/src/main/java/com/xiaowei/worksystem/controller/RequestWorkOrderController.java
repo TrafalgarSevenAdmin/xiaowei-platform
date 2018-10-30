@@ -133,7 +133,6 @@ public class RequestWorkOrderController {
     @GetMapping("/{requestWorkOrderId}")
     @RequiresPermissions("order:request:get")
     public Result findById(@PathVariable("requestWorkOrderId") String requestWorkOrderId, FieldsView fieldsView) {
-
         RequestWorkOrder requestWorkOrder = requestWorkOrderService.findById(requestWorkOrderId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(requestWorkOrder, fieldsView));
     }
