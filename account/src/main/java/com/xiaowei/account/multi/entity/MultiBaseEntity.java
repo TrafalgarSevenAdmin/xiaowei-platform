@@ -36,7 +36,7 @@ public class MultiBaseEntity extends BaseEntity {
     @PrePersist
     public void onTenancyId() {
         LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-        tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
+        tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : "1";
     }
 
 }
