@@ -31,6 +31,11 @@
             <artifactId>core</artifactId>
             <version>1.0</version>
         </dependency>
+        <!-- 支持发送邮件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -79,6 +84,12 @@
             <groupId>com.xiaowei</groupId>
             <artifactId>mq-core</artifactId>
             <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xiaowei</groupId>
+            <artifactId>common-jts</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

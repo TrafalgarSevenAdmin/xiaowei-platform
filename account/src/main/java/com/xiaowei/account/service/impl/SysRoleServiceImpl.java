@@ -1,6 +1,8 @@
 package com.xiaowei.account.service.impl;
 
+import com.xiaowei.account.consts.PlatformTenantConst;
 import com.xiaowei.account.consts.RoleType;
+import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.Company;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
@@ -103,12 +105,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
             }
             Optional<SysRole> byId = sysRoleRepository.findById(roleId);
             EmptyUtils.assertOptional(byId, "保存失败:没有查询到需要修改的对象");
-
-            //修改角色判断当前登录用户是否拥有被修改的角色的权限
-            if (!LoginUserUtils.hasRoleId(roleId)) {
-                throw new UnauthorizedException("保存失败:没有权限修改该角色");
+            //只有平台租户才能修改托管角色
+            if (!PlatformTenantConst.ID.equals(LoginUserUtils.getLoginUser().getTenancyId())) {
+                //判断待修改的角色是否是托管角色
+                if (byId.get().getRoleType().equals(RoleType.TRUSTEESHIPROLE.getStatus())) {
+                    throw new BusinessException("您无权修改由系统分配的托管角色！");
+                }
             }
-
         }
         //验证所属公司
         judgeCompany(role);
@@ -152,6 +155,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         //删除角色判断当前登录用户是否拥有被删除的角色的权限
         if (!LoginUserUtils.hasRoleId(roleId)) {
             throw new UnauthorizedException("保存失败:没有权限删除该角色");
+        }
+        //若当前用户不是平台租户并且角色属于托管角色，那么就不允许删除此角色
+        if (!PlatformTenantConst.ID.equals(LoginUserUtils.getLoginUser().getTenancyId()) && optional.get().getRoleType().equals(RoleType.TRUSTEESHIPROLE.getStatus())) {
+            throw new BusinessException("不允许删除由系统分配的托管角色！");
         }
         //删除角色的权限,用户
         sysRoleRepository.deleteUserRoleByRoleId(roleId);

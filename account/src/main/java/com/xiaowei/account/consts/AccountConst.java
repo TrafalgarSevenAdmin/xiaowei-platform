@@ -3,6 +3,7 @@ package com.xiaowei.account.consts;
 
 import com.xiaowei.accountcommon.LoginUserBean;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class AccountConst {
@@ -13,6 +14,10 @@ public class AccountConst {
 
     //用户cookie分组前缀
     public final static String USER_REDIS_GROUP_PREFIX = "SYSTEM:USERS:LOGINED:";
+
+    //验证码分租前缀
+    public final static String VERIFICATION_CODE_REDIS_GROUP_PREFIX = "SYSTEM:USERS:VERIFICATION:";
+
     public final static String USER_DEFAULT_PASSWORD = "123456";
 
     // 注册时默认分配的用户角色
@@ -30,7 +35,8 @@ public class AccountConst {
             "访客",
             UserStatus.NORMAL.getStatus(),
             Collections.EMPTY_LIST,
-            Collections.EMPTY_LIST,
+            //默认拥有查询所有租户的权限，以便于在注册时选择公司
+            Arrays.asList("account:tenement:query"),
             null,
             null,
             null,

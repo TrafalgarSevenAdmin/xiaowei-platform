@@ -47,6 +47,11 @@ spring:
     multipart:
       max-file-size: 1024MB
       max-request-size: 1024MB
+  mail:
+    host: smtp.163.com
+    username: 13880298453@163.com
+    password: 71H0BszikMolz7KE
+    default-encoding: utf-8
 logging:
   level:
     com:

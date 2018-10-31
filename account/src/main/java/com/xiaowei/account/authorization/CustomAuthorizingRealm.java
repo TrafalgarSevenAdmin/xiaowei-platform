@@ -56,14 +56,7 @@ public class CustomAuthorizingRealm extends AuthorizingRealm {
             }
 
             if(!CollectionUtils.isEmpty(loginUserBean.getPermissions())){
-                for (PermissionBean permissionBean : loginUserBean.getPermissions()) {
-                    if(StringUtils.isNotEmpty(permissionBean.getSymbol())){
-                        simpleAuthorizationInfo.addStringPermission(permissionBean.getSymbol());
-                    }
-                    if(StringUtils.isNotEmpty(permissionBean.getPrecondition())){
-                        simpleAuthorizationInfo.addStringPermissions(Arrays.asList(permissionBean.getPrecondition().split(",")));
-                    }
-                }
+                simpleAuthorizationInfo.addStringPermissions(loginUserBean.getPermissions());
             }
             if(!CollectionUtils.isEmpty(loginUserBean.getRoles())) {
                 simpleAuthorizationInfo.addRoles(

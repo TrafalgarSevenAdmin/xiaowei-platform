@@ -3,6 +3,7 @@ package com.xiaowei.accountweb.rest;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.query.RoleQuery;
+import com.xiaowei.account.service.ICompanyService;
 import com.xiaowei.account.service.ISysPermissionService;
 import com.xiaowei.account.service.ISysRoleService;
 import com.xiaowei.account.utils.AccountUtils;
@@ -11,7 +12,10 @@ import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.SysRoleDTO;
 import com.xiaowei.commonlog4j.annotation.ContentParam;
 import com.xiaowei.commonlog4j.annotation.HandleLog;
+import com.xiaowei.core.basic.entity.BaseEntity;
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
@@ -42,8 +46,12 @@ public class RoleController {
 
     @Autowired
     private ISysRoleService sysRoleService;
+
     @Autowired
     private ISysPermissionService sysPermissionService;
+
+    @Autowired
+    private ICompanyService companyService;
 
     @RequiresPermissions("account:role:add")
     @ApiOperation(value = "添加角色", notes = "添加字段name,comment,company")
@@ -57,6 +65,9 @@ public class RoleController {
         return Result.getSuccess(ObjectToMapUtils.objectToMap(sysRole, fieldsView));
     }
 
+    /**
+     * 只能修改自己所属公司的角色，托管角色不能修改
+     */
     @RequiresPermissions("account:role:update")
     @ApiOperation(value = "修改角色", notes = "只能修改name,comment,parentId")
     @AutoErrorHandler
@@ -81,10 +92,18 @@ public class RoleController {
         return Result.getSuccess("删除成功");
     }
 
+    /**
+     * 只能查询出自己公司的角色以及托管角色
+     * @param roleQuery
+     * @param fieldsView
+     * @return
+     */
     @RequiresPermissions("account:role:query")
     @ApiOperation("角色查询接口")
     @GetMapping("")
     public Result query(RoleQuery roleQuery, FieldsView fieldsView) {
+        //强制筛选只能查到刚当前租户下的所有公司的角色。因为角色表无租户概念
+        roleQuery.addFilter(new Filter("company.id", Filter.Operator.in, Logic.or,companyService.findAll().stream().map(BaseEntity::getId).toArray()));
         if (roleQuery.isNoPage()) {
             List<SysRole> roles = sysRoleService.query(roleQuery,SysRole.class);
             return Result.getSuccess(ObjectToMapUtils.listToMap(roles, fieldsView));//以list形式返回,没有层级
@@ -99,11 +118,6 @@ public class RoleController {
     @ApiOperation("根据id获取角色")
     @GetMapping("/{roleId}")
     public Result findById(@PathVariable("roleId") String roleId, FieldsView fieldsView) {
-        //根据id获取角色只能获取当前登录用户所拥有的角色
-        if(!LoginUserUtils.hasRoleId(roleId)){
-            throw new UnauthorizedException("查询失败:没有权限查询该角色");
-        }
-
         SysRole sysRole = sysRoleService.findById(roleId);
         return Result.getSuccess(ObjectToMapUtils.objectToMap(sysRole, fieldsView));
     }
