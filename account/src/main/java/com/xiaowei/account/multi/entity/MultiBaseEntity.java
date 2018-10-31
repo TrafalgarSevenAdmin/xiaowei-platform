@@ -4,7 +4,9 @@ package com.xiaowei.account.multi.entity;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
@@ -35,8 +37,11 @@ public class MultiBaseEntity extends BaseEntity {
 
     @PrePersist
     public void onTenancyId() {
-        LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-        tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
+        //只有在没有直接指定租户id的情况下使用当前登陆用户的租户
+        if (StringUtils.isEmpty(tenancyId)) {
+            LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
+            tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
+        }
     }
 
 }

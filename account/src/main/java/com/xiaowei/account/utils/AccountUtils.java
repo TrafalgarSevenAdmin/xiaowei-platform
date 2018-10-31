@@ -45,7 +45,7 @@ public class AccountUtils {
 
     public static LoginUserBean toLoginBean(SysUser sysUser){
         List<RoleBean> roles = new ArrayList<>();
-        List<PermissionBean> permissions = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
         String tenementId = null;
         //构建登录用户信息
         if(SuperUser.ADMINISTRATOR_NAME.equals(sysUser.getLoginName())){
@@ -53,7 +53,7 @@ public class AccountUtils {
             List<SysRole> sysRoles = ContextUtils.getApplicationContext().getBean(ISysRoleService.class).findAll();
             roles.addAll(BeanCopyUtils.copyList(sysRoles, RoleBean.class));
             List<SysPermission> sysPermissions = ContextUtils.getApplicationContext().getBean(ISysPermissionService.class).findAll();
-            permissions.addAll(BeanCopyUtils.copyList(sysPermissions, PermissionBean.class));
+            permissions.addAll(sysPermissions.stream().map(SysPermission::getSymbol).collect(Collectors.toList()));
             tenementId = AccountConst.ADMIN_TENENCYID;
         }else{
             List<SysPermission> sysPermissions = new ArrayList<>();
@@ -69,7 +69,8 @@ public class AccountUtils {
             });
             sysPermissions.addAll(ContextUtils.getApplicationContext().getBean(ISysPermissionService.class)
                     .findBySymbolIn(splitList));
-            permissions.addAll(BeanCopyUtils.copyList(sysPermissions.stream().distinct().collect(Collectors.toList()), PermissionBean.class));
+
+            permissions.addAll(sysPermissions.stream().map(SysPermission::getSymbol).distinct().collect(Collectors.toList()));
             tenementId = sysUser.getTenancyId();
         }
 

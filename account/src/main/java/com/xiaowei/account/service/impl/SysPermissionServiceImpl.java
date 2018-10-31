@@ -1,5 +1,6 @@
 package com.xiaowei.account.service.impl;
 
+import com.xiaowei.account.consts.PlatformTenantConst;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.entity.SysRole;
 import com.xiaowei.account.repository.SysPermissionRepository;
@@ -60,8 +61,8 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
         if (parent == null) {
             throw new BusinessException("保存失败:没有查询到父级");
         }
-        //新增权限判断当前登录用户是否拥有其父级
-        if(!LoginUserUtils.hasPermissionId(parent.getId())){
+        //新增权限判断当前登录用户是否拥有其父级权限
+        if(!LoginUserUtils.hasPermissionSymbol(parent.getSymbol())){
             throw new UnauthorizedException("保存失败:没有权限在此处添加权限");
         }
         permission.setLevel(parent.getLevel() + 1);
@@ -99,8 +100,8 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
         Optional<SysPermission> optional = sysPermissionRepository.findById(permissionId);
         SysPermission one = optional.get();
         EmptyUtils.assertOptional(optional,"没有查询到需要删除的角色");
-        //删除权限判断当前登录用户是否拥有其被删除的权限
-        if(!LoginUserUtils.hasPermissionId(permissionId)){
+        //删除权限判断当前登录用户是否是平台用户
+        if(!LoginUserUtils.getLoginUser().getTenancyId().equals(PlatformTenantConst.ID)){
             throw new UnauthorizedException("保存失败:没有权限删除该权限");
         }
 
@@ -124,10 +125,6 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
         return Lists.emptyList();
     }
 
-    @Override
-    public List<SysPermission> findBySymbolPrefix(String prefix) {
-        return sysPermissionRepository.findBySymbolLike(prefix+"%");
-    }
 
     private void judgeAttribute(SysPermission permission, JudgeType judgeType) {
         //判定同级下的权限下名称的唯一性
@@ -157,7 +154,7 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<SysPermission> imp
             }
 
             //修改权限判断当前登录用户是否拥有其被修改的权限
-            if(!LoginUserUtils.hasPermissionId(permissionId)){
+            if(!LoginUserUtils.hasPermissionSymbol(permission.getSymbol())){
                 throw new UnauthorizedException("保存失败:没有权限修改该权限");
             }
 
