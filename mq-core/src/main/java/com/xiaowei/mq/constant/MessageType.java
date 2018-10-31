@@ -11,7 +11,7 @@ public enum  MessageType {
     /**
      * 派单通知
      */
-    MAINTENANCEOFDISPATCHING("yGkZz0WqHlSL1BjmPwISqfTG7pJPGS23cotuNEGA0vM"),
+    MAINTENANCEOFDISPATCHING("qMALx0jyp2x2wt5yGqKn70JB1sJa3qCwPCxjTAF9sjQ"),
     /**
      * 费用审核通知
      */
