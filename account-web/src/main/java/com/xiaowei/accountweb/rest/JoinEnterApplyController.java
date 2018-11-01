@@ -99,20 +99,22 @@ public class JoinEnterApplyController {
     @GetMapping("/me")
     public Result getMeJoinApply() {
         LoginUserUtils.getLoginUser();
-        Object openId = SecurityUtils.getSubject().getSession().getAttribute("openId");
-        List<JoinEnterApply> joinEnterApplies = joinEnterApplyService.query(new Query().addFilter(Filter.eq("openId", openId)));
-        if (CollectionUtils.isNotEmpty(joinEnterApplies)) {
-            return Result.getSuccess(joinEnterApplies.get(0));
-        } else {
-            return Result.getSuccess();
+        String openId = (String) SecurityUtils.getSubject().getSession().getAttribute("openId");
+        if (StringUtils.isNotEmpty(openId)) {
+            List<JoinEnterApply> joinEnterApplies = joinEnterApplyService.query(new Query().addFilter(Filter.eq("openId", openId)));
+            if (CollectionUtils.isNotEmpty(joinEnterApplies)) {
+                return Result.getSuccess(joinEnterApplies.get(0));
+            }
         }
+        return Result.getSuccess();
     }
 
     @RequiresPermissions("account:join:audit")
     @ApiOperation(value = "入驻申请审核接口", notes = "非平台租户中的用户不能审核公司入驻的申请，只能审核此租户下的加盟工程师申请")
     @PostMapping("/audit")
+    @AutoErrorHandler
     @HandleLog(type = "审核申请单", contentParams = {@ContentParam(useParamField = true, field = "joinAuditDto", value = "审核申请单请求")})
-    public Result auditPass(JoinAuditDto joinAuditDto, FieldsView fieldsView) {
+    public Result auditPass(@RequestBody @Validated(V.Insert.class) JoinAuditDto joinAuditDto,BindingResult bindingResult, FieldsView fieldsView) {
         joinEnterApplyService.audit(joinAuditDto);
         return Result.getSuccess();
     }

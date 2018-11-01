@@ -1,18 +1,22 @@
 package com.xiaowei.accountweb.dto;
 
+import com.xiaowei.core.validate.V;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @ApiModel("审核信息")
 @Data
 public class JoinAuditDto {
     @ApiModelProperty("待审核的id")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "id必填!")
     String id;
 
     @ApiModelProperty("审核意见")
+    @NotBlank(groups = {V.Insert.class,V.Update.class},message = "审核意见必填!")
     String reason;
 
     @ApiModelProperty("是否通过")
@@ -31,9 +35,11 @@ public class JoinAuditDto {
     public static class EngineerJoinApply{
 
         @ApiModelProperty(value = "为用户分配的部门id",required = true)
+        @NotBlank(groups = {V.Insert.class,V.Update.class},message = "为用户分配的部门id必填!")
         String departmentId;
 
         @ApiModelProperty(value = "为用户分配的角色id",required = true)
+        @NotBlank(groups = {V.Insert.class,V.Update.class},message = "为用户分配的角色id必填!")
         List<String> roleIds;
     }
 
@@ -48,6 +54,7 @@ public class JoinAuditDto {
     public static class CompanyJoinApply{
 
         @ApiModelProperty(value = "入驻的公司名称",required = true)
+        @NotBlank(groups = {V.Insert.class,V.Update.class},message = "入驻的公司名称必填!")
         String companyName;
 
     }

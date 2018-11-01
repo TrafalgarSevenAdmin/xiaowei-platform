@@ -55,6 +55,9 @@ public class JoinEnterApply extends MultiBaseEntity {
     @ApiModelProperty("联系人电话")
     String contactsPhone;
 
+    @ApiModelProperty(value = "要加入的公司Id")
+    String tenementId;
+
     @ApiModelProperty("经营范围")
     String scope;
 
@@ -126,6 +129,11 @@ public class JoinEnterApply extends MultiBaseEntity {
             return this.mapAddr.toText();
         }
         return wkt;
+    }
+
+    @JsonIgnore
+    public Geometry getMapAddr() {
+        return mapAddr;
     }
 
     /**

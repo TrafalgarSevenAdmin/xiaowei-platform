@@ -1,6 +1,7 @@
 package com.xiaowei.account.multi.entity;
 
 
+import com.xiaowei.account.consts.PlatformTenantConst;
 import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.basic.entity.BaseEntity;
@@ -40,7 +41,8 @@ public class MultiBaseEntity extends BaseEntity {
         //只有在没有直接指定租户id的情况下使用当前登陆用户的租户
         if (StringUtils.isEmpty(tenancyId)) {
             LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-            tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : null;
+            //默认使用平台租户
+            tenancyId = loginUserOrNull != null ? loginUserOrNull.getTenancyId() : PlatformTenantConst.ID;
         }
     }
 

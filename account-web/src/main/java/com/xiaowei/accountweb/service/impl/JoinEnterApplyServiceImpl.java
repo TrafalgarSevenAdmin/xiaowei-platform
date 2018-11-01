@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
@@ -74,7 +75,7 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
                     auditEngineerJoin(joinEnterApply,joinAuditDto.getEngineerJoinApply());
                 break;
                 case Default:
-                    if (StringUtils.isNotEmpty(joinEnterApply.getTenancyId())) {
+                    if (StringUtils.isNotEmpty(joinEnterApply.getTenementId())) {
                         auditEngineerJoin(joinEnterApply, joinAuditDto.getEngineerJoinApply());
                     } else {
                         auditCompanyJoin(joinEnterApply,joinAuditDto.getCompanyJoinApply());
@@ -138,19 +139,33 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
         company.setStatus(CompanyStatus.NORMAL.getStatus());
         company = companyService.save(company);
 
-        //创建用户，并绑定此租户的超级管理员。
+        Optional<SysUser> byMobile = sysUserService.findByMobile(joinEnterApply.getMobilePhone());
         SysUser sysUser = new SysUser();
-        sysUser.setTenancyId(tenement.getId());
-        sysUser.setCard(joinEnterApply.getCardNumber());
-        sysUser.setMobile(joinEnterApply.getMobilePhone());
-        sysUser.setEmail(joinEnterApply.getEmail());
-        sysUser.setLoginName(joinEnterApply.getMobilePhone());
-        sysUser.setNickName(joinEnterApply.getUserName());
-        sysUser.setSubWechat(true);
-        //分配默认的租户管理员
-        sysUser.setRoles(roleService.query(new Query().addFilter(Filter.eq("code", PlatformTenantConst.TENEMENT_ADMIN_ROLE_CODE))));
-        sysUser.setCompany(company);
-        sysUser = sysUserService.registerUser(sysUser);
+        if (byMobile.isPresent()) {
+//        若找到一个用户账号，就使用此账号改为超级管理员,从之前所属的公司离开，之前的公司也不能再给此人分配工单。
+            sysUser = byMobile.get();
+            sysUser.setEmail(joinEnterApply.getEmail());
+            sysUser.setCard(joinEnterApply.getCardNumber());
+            sysUser.setRoles(roleService.query(new Query().addFilter(Filter.eq("code", PlatformTenantConst.TENEMENT_ADMIN_ROLE_CODE))));
+            sysUser.setCompany(company);
+            sysUser.setDepartment(null);
+            sysUser.setPost(null);
+            sysUser = sysUserService.update(sysUser);
+            sysUserService.updateTenancyId(sysUser.getId(), tenement.getId());
+        } else {
+            //创建用户，并绑定此租户的超级管理员。
+            sysUser.setTenancyId(tenement.getId());
+            sysUser.setCard(joinEnterApply.getCardNumber());
+            sysUser.setMobile(joinEnterApply.getMobilePhone());
+            sysUser.setEmail(joinEnterApply.getEmail());
+            sysUser.setLoginName(joinEnterApply.getMobilePhone());
+            sysUser.setNickName(joinEnterApply.getUserName());
+            sysUser.setSubWechat(true);
+            //分配默认的租户管理员
+            sysUser.setRoles(roleService.query(new Query().addFilter(Filter.eq("code", PlatformTenantConst.TENEMENT_ADMIN_ROLE_CODE))));
+            sysUser.setCompany(company);
+            sysUser = sysUserService.registerUser(sysUser);
+        }
         company.setPrincipal(sysUser);
         //更新公司的管理人
         companyService.save(company);

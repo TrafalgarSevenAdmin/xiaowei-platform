@@ -125,6 +125,11 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    public void updateTenancyId(String id, String tenancyId) {
+        sysUserRepository.updateTenancyId(id, tenancyId);
+    }
+
+    @Override
     public Optional<SysUser> findByMobile(String mobile) {
         return sysUserRepository.findByMobile(mobile);
     }
