@@ -38,7 +38,14 @@ public class WxMenuController {
   @PostMapping("/create")
   @RequiresPermissions("wechat:menu:create")
   public Result menuCreate(@RequestBody WxMenu menus) throws WxErrorException {
-    meunService.individuationMeun(menus);
+    wxService.getMenuService().menuCreate(menus);
+    return Result.getSuccess();
+  }
+
+  @DeleteMapping("/{id}")
+  @RequiresPermissions("wechat:menu:delete")
+  public Result Delete(@PathVariable("id")String  id) throws WxErrorException {
+    wxService.getMenuService().menuDelete(id);
     return Result.getSuccess();
   }
 

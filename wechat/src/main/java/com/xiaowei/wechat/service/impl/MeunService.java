@@ -50,16 +50,6 @@ public class MeunService implements IMeunService {
     private WxMenuEntityRepository wxMenuEntityRepository;
 
 
-    /**
-     * 可以通过标签名自定义标签
-     * @throws WxErrorException
-     */
-    @Override
-    public void individuationMeun(WxMenu wxMenu) throws WxErrorException {
-        WxMpMenuService menuService = wxMpService.getMenuService();
-        menuService.menuCreate(wxMenu);
-    }
-
     @Override
     public Result setRoleWechtMenu(@PathVariable("roleId") String roleId, @RequestBody WechatMenuDto wechatMenuDto) throws WxErrorException {
         //角色的权限配置

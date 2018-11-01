@@ -8,10 +8,6 @@ import me.chanjar.weixin.common.error.WxErrorException;
 
 public interface IMeunService {
 
-    /**
-     * 普通菜单
-     */
-    void individuationMeun(WxMenu wxMenu) throws WxErrorException;
 
     Result setRoleWechtMenu(String roleId, WechatMenuDto wechatMenuDto) throws WxErrorException;
 

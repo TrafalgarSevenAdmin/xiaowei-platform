@@ -3,6 +3,7 @@ package com.xiaowei.worksystem.entity;
 import com.xiaowei.account.multi.entity.MultiBaseEntity;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -130,6 +131,11 @@ public class Equipment extends MultiBaseEntity {
      * 状态
      */
     String status;
+
+    @ManyToOne(targetEntity = WorkFlow.class)
+    @JoinColumn(name = "workflow_id")
+    @Fetch(FetchMode.JOIN)
+    WorkFlow workFlow;
 
 //    /**
 //     * 操作系统名称
