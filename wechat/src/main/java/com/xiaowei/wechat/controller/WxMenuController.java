@@ -31,15 +31,13 @@ public class WxMenuController {
 
   /**
    * <pre>
-   * 自定义菜单创建接口
-   * 详情请见：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141013&token=&lang=zh_CN
-   * 如果要创建个性化菜单，请设置matchrule属性
-   * 详情请见：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1455782296&token=&lang=zh_CN
+   * 默认菜单创建接口
+   * 由于查找不到自定义菜单时候所显示的默认菜单
    * </pre>
    */
   @PostMapping("/create")
   @RequiresPermissions("wechat:menu:create")
-  public Result menuCreate(@RequestBody MeunDTO menus) throws WxErrorException {
+  public Result menuCreate(@RequestBody WxMenu menus) throws WxErrorException {
     meunService.individuationMeun(menus);
     return Result.getSuccess();
   }

@@ -47,7 +47,7 @@ public class VerificationCodeServiceImpl implements IVerificationCodeService {
     /**
      * 验证邮件的内容，使用${code}填充验证码
      */
-    private static final String VERIFICATION_MAIL_COTEXT_KEY = "verification.mail.title";
+    private static final String VERIFICATION_MAIL_COTEXT_KEY = "verification.mail.context";
     /**
      * 发送验证码
      * @param email

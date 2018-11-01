@@ -3,16 +3,15 @@ package com.xiaowei.wechat.service;
 import com.xiaowei.core.result.Result;
 import com.xiaowei.wechat.dto.MeunDTO;
 import com.xiaowei.wechat.dto.WechatMenuDto;
+import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.error.WxErrorException;
 
 public interface IMeunService {
 
     /**
-     * 自定义菜单
-     * @param meunDTOs
-     * @throws WxErrorException
+     * 普通菜单
      */
-    void individuationMeun(MeunDTO meunDTOs) throws WxErrorException;
+    void individuationMeun(WxMenu wxMenu) throws WxErrorException;
 
     Result setRoleWechtMenu(String roleId, WechatMenuDto wechatMenuDto) throws WxErrorException;
 
