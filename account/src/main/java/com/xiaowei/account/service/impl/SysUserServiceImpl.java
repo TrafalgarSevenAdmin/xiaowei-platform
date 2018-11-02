@@ -287,39 +287,40 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
      * @param oldRoles 旧角色集合
      */
     private void judgeHaveRoles(SysUser user, List<SysRole> oldRoles) {
+        //不进行过多的限制，防止连管理员都没有办法更新其他人员的角色
         //修改用户时判断   当前所选角色 > 之前的角色   证明是新勾选的   验证权限并直接添加
         //                 当前所选角色 < 之前的角色   判断是否为当前登录用户的角色   如果是  则证明是去除的   直接去除
         //                                                        如果不是 则证明是当前登录用户无法操作的角色  保持不变
 
-        //确保stream能够执行不报错
-        List<SysRole> newRoles = user.getRoles();
-        if (oldRoles == null) {
-            oldRoles = new ArrayList<>();
-        }
-        if (newRoles == null) {
-            newRoles = new ArrayList<>();
-        }
-
-        Set<String> oldRoleIds = oldRoles.stream().map(BaseEntity::getId).collect(Collectors.toSet());
-        Set<String> newRoleIds = newRoles.stream().map(BaseEntity::getId).collect(Collectors.toSet());
-        //1.旧角色不包含新角色 证明是新增的  验证是否为当前登录用户所能操作
-        //2.新角色不包含旧角色 证明是去除的  当前登录用户有则去除 没有重新加上
-        newRoleIds.stream().forEach(s -> {
-            if (!oldRoleIds.contains(s)) {
-                if (!LoginUserUtils.hasRoleId(s)) {
-                    throw new UnauthorizedException("保存失败:所选角色权限不足");
-                }
-            }
-        });
-        Iterator<SysRole> iterator = oldRoles.iterator();
-        while (iterator.hasNext()) {
-            SysRole next = iterator.next();
-            if (!newRoleIds.contains(next.getId())) {
-                if (!LoginUserUtils.hasRoleId(next.getId())) {
-                    newRoles.add(next);
-                }
-            }
-        }
+//        //确保stream能够执行不报错
+//        List<SysRole> newRoles = user.getRoles();
+//        if (oldRoles == null) {
+//            oldRoles = new ArrayList<>();
+//        }
+//        if (newRoles == null) {
+//            newRoles = new ArrayList<>();
+//        }
+//
+//        Set<String> oldRoleIds = oldRoles.stream().map(BaseEntity::getId).collect(Collectors.toSet());
+//        Set<String> newRoleIds = newRoles.stream().map(BaseEntity::getId).collect(Collectors.toSet());
+//        //1.旧角色不包含新角色 证明是新增的  验证是否为当前登录用户所能操作
+//        //2.新角色不包含旧角色 证明是去除的  当前登录用户有则去除 没有重新加上
+//        newRoleIds.stream().forEach(s -> {
+//            if (!oldRoleIds.contains(s)) {
+//                if (!LoginUserUtils.hasRoleId(s)) {
+//                    throw new UnauthorizedException("保存失败:所选角色权限不足");
+//                }
+//            }
+//        });
+//        Iterator<SysRole> iterator = oldRoles.iterator();
+//        while (iterator.hasNext()) {
+//            SysRole next = iterator.next();
+//            if (!newRoleIds.contains(next.getId())) {
+//                if (!LoginUserUtils.hasRoleId(next.getId())) {
+//                    newRoles.add(next);
+//                }
+//            }
+//        }
 
     }
 
