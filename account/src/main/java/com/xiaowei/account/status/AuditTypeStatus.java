@@ -1,4 +1,4 @@
-package com.xiaowei.expensereimbursement.status;
+package com.xiaowei.account.status;
 
 public enum AuditTypeStatus {
 
@@ -25,7 +25,11 @@ public enum AuditTypeStatus {
     /**
      * 申请单审核
      */
-    APPLICATIONFORM(5);
+    APPLICATIONFORM(5),
+    /**
+     * 租户审核
+     */
+    AUDITTENEMENTID(6);
 
 
     Integer status;

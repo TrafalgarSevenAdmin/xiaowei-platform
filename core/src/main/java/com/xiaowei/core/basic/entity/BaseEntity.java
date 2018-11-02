@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by yuanxuan on 2018/3/26.
  */
 @MappedSuperclass
-@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler","tenancyId","delete_time","delete_flag"})
 public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(

@@ -2,6 +2,7 @@ package com.xiaowei.worksystem.dto;
 
 import com.xiaowei.core.validate.V;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -84,7 +85,7 @@ public class EquipmentDTO {
     /**
      * 状态
      */
-    Integer status;
+    String status;
 
     /**
      * 安装方式 大堂、穿墙
@@ -117,9 +118,11 @@ public class EquipmentDTO {
     String locationType;
 
     /**
-     * 备注信息
+     * 机芯类型
      */
-    String note;
+    String coreType;
+
+    WorkFlow workFlow;
 
 //    /**
 //     * 操作系统名称

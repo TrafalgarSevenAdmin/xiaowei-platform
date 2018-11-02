@@ -120,6 +120,16 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
     }
 
     @Override
+    public List<SysUser> findByUserIdIn(Set<String> userIds) {
+        return sysUserRepository.findByUserIdIn(userIds);
+    }
+
+    @Override
+    public void updateTenancyId(String id, String tenancyId) {
+        sysUserRepository.updateTenancyId(id, tenancyId);
+    }
+
+    @Override
     public Optional<SysUser> findByMobile(String mobile) {
         return sysUserRepository.findByMobile(mobile);
     }
@@ -261,12 +271,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
             judgeLoginName(loginName);
             //验证电话号码唯一性
             judgeMobile(mobile);
-            //判断是否超出了当前登录用户的角色
             List<SysRole> registerRoles = sysRoleService.query(new Query().addFilter(Filter.eq("code", AccountConst.REGISTER_ROLE_CODE)));
-            if (!CollectionUtils.isEmpty(user.getRoles())) {
-                //若分配了角色，则判断分配的角色是否超过限制
-                judgeHaveRoles(registerRoles.stream().map(SysRole::getId).collect(Collectors.toSet()), user.getRoles().stream().map(SysRole::getId).collect(Collectors.toSet()));
-            } else {
+            if (CollectionUtils.isEmpty(user.getRoles())) {
                 //若未分配角色，则分配默认的注册角色
                 user.setRoles(registerRoles);
             }
@@ -328,15 +334,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         if (CollectionUtils.isEmpty(roles)) {
             return;
         }
-        //如果操作角色不为空  且登录用户角色为空  则抛出异常
-        if (CollectionUtils.isEmpty(loginUserRoles)) {
-            throw new UnauthorizedException("保存失败:所选角色权限不足");
-        }
-        roles.stream().forEach(s -> {
-            if (!loginUserRoles.contains(s)) {
-                throw new UnauthorizedException("保存失败:所选角色权限不足");
-            }
-        });
     }
 
     /**

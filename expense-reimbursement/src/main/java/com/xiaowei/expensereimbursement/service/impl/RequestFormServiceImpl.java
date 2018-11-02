@@ -16,7 +16,6 @@ import com.xiaowei.expensereimbursement.service.IRequestFormService;
 import com.xiaowei.expensereimbursement.status.RequestFormItemStatus;
 import com.xiaowei.expensereimbursement.status.RequestFormStatus;
 import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +25,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -59,12 +59,12 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
 
     private void judgeItemIsUniqueAndAmount(RequestForm requestForm) {
         double total = 0;
-        Set<String> subjectCodes = new HashSet<>();
+        Set<String> subjectCodes = requestFormItemRepository.findByWorkOrderCode(requestForm.getWorkOrderCode()).stream().map(RequestFormItem::getSubjectCode).collect(Collectors.toSet());
         final List<RequestFormItem> requestFormItems = requestForm.getRequestFormItems();
         for (RequestFormItem requestFormItem : requestFormItems) {
             total = total + requestFormItem.getFillFigure();
             if (subjectCodes.contains(requestFormItem.getSubjectCode())) {
-//                throw new BusinessException("报销费用科目重复!");
+                throw new BusinessException("申请费用科目重复!");
             } else {
                 subjectCodes.add(requestFormItem.getSubjectCode());
             }
@@ -79,9 +79,11 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
             requestFormItemRepository.save(requestFormItem);
         }
         //判断金额
-        if (total != requestForm.getFillAmount()) {
-            throw new BusinessException("填报总金额有误!");
+        double d = 0.001;
+        if (Math.abs(total - requestForm.getFillAmount()) > d) {
+            throw new BusinessException("填报总金额有误!应为:" + total);
         }
+
     }
 
     private void judgeAttribute(RequestForm requestForm, JudgeType judgeType) {
@@ -122,10 +124,10 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
                 workOrderSelect.getSystemStatus() == 9) {
             throw new BusinessException("该工单状态无法创建申请单!");
         }
-        //查询是否有其他申请单
-        if(CollectionUtils.isNotEmpty(requestFormRepository.findByWorkOrderCode(workOrderCode))){
-            throw new BusinessException("该工单已有申请单!");
-        }
+//        //查询是否有其他申请单
+//        if(CollectionUtils.isNotEmpty(requestFormRepository.findByWorkOrderCode(workOrderCode))){
+//            throw new BusinessException("该工单已有申请单!");
+//        }
     }
 
     private String getCurrentDayMaxCode() {
@@ -164,6 +166,7 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
 
     /**
      * 费用申请审核
+     *
      * @param requestForm
      * @param audit
      * @return
@@ -241,6 +244,7 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
 
     /**
      * 判断审核总计金额是否合规
+     *
      * @param requestForm
      * @param one
      */

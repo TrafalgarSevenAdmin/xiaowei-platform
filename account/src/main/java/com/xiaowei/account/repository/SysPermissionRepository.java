@@ -44,5 +44,4 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission> {
     @Query("select p from SysPermission p where p.symbol in ?1")
     List<SysPermission> findBySymbolIn(Set<String> symbols);
 
-    List<SysPermission> findBySymbolLike(String symbolsPre);
 }

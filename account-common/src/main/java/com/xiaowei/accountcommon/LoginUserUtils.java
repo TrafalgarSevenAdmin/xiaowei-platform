@@ -98,14 +98,13 @@ public class LoginUserUtils {
 //    }
 
     /**
-     * 当前用户是否有此权限Id
-     *
+     * 当前用户是否有此权限Code
      * @return
      * @throws UnauthenticatedException
      */
-    public static boolean hasPermissionId(String permissionId) throws UnauthenticatedException {
+    public static boolean hasPermissionSymbol(String permissionCode) throws UnauthenticatedException {
         return getLoginUser().getPermissions().stream()
-                .filter(permissionBean -> permissionBean.getId().equals(permissionId))
+                .filter(code -> code.equals(permissionCode))
                 .findAny()
                 .isPresent();
     }

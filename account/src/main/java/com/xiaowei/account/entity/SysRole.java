@@ -2,7 +2,7 @@ package com.xiaowei.account.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xiaowei.account.multi.entity.MultiBaseEntity;
+import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @Table(name = "sys_role")
 @Entity
-public class SysRole extends MultiBaseEntity {
+public class SysRole extends BaseEntity {
 
     /**
      * 角色名称
@@ -53,8 +53,11 @@ public class SysRole extends MultiBaseEntity {
      */
     @Column(updatable = false)
     private String code;
+
     /**
      * 角色类型
+     * @See com.xiaowei.account.consts.RoleType
+     * 若是托管角色，那么所有的租户都可以看到
      */
     private Integer roleType;
 

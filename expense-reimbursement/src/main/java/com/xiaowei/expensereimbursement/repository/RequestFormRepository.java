@@ -5,6 +5,7 @@ import com.xiaowei.expensereimbursement.entity.RequestForm;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RequestFormRepository extends BaseRepository<RequestForm>{
 
@@ -21,4 +22,7 @@ public interface RequestFormRepository extends BaseRepository<RequestForm>{
 
     @Query("select r from RequestForm r where r.workOrderCode = ?1")
     List<RequestForm> findByWorkOrderCode(String workOrderCode);
+
+    @Query("select r from RequestForm r where r.code in ?1")
+    List<RequestForm> findByIdIn(Set<String> codes);
 }

@@ -56,7 +56,6 @@ public class WorkOrderController {
     @Value("${server.host}")
     private String serverHost;
 
-
     @ApiOperation(value = "添加工单")
     @AutoErrorHandler
     @PostMapping("")
@@ -71,6 +70,10 @@ public class WorkOrderController {
         if (workOrder.getEngineer() != null) {
             //派单提醒通知
             maintenanceOfDispatching(workOrder);
+        }
+        if (workOrder.getProposer() != null) {
+            //派单通知给申请人
+            messageToProposer(workOrder);
         }
         return Result.getSuccess(ObjectToMapUtils.objectToMap(workOrder, fieldsView));
     }
@@ -157,12 +160,15 @@ public class WorkOrderController {
         workOrder = workOrderService.distributeWorkOrder(workOrder);
         //派单提醒通知
         maintenanceOfDispatching(workOrder);
+        //派单通知给申请人
+        messageToProposer(workOrder);
         return Result.getSuccess();
     }
 
 
     /**
      * 内部工单派单提醒通知
+     *
      * @param workOrder
      */
     private void maintenanceOfInDispatching(WorkOrder workOrder) {
@@ -171,7 +177,7 @@ public class WorkOrderController {
             userMessageBean.setUserId(workOrder.getEngineer().getId());
             userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("first", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("first", new UserMessageBean.Payload("您有新的任务消息通知,请尽快确认处理", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
@@ -186,7 +192,31 @@ public class WorkOrderController {
         }
     }
 
-
+    /**
+     * 派单通知给申请人
+     *
+     * @param workOrder
+     */
+    private void messageToProposer(WorkOrder workOrder) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(workOrder.getProposer().getId());
+            userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("您有新的任务消息通知,请尽快确认处理", null));
+            messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
+            messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
+            messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd").format(workOrder.getCreatedTime()), null));
+            messageMap.put("keyword5", new UserMessageBean.Payload(workOrder.getEquipment() != null ? workOrder.getEquipment().getAddress() : "暂无", null));
+            userMessageBean.setData(messageMap);
+            userMessageBean.setUrl(serverHost + "/xwkx-web/user/myOrders");
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 派单提醒通知
@@ -199,7 +229,7 @@ public class WorkOrderController {
             userMessageBean.setUserId(workOrder.getEngineer().getId());
             userMessageBean.setMessageType(MessageType.MAINTENANCEOFDISPATCHING);
             Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
-            messageMap.put("first", new UserMessageBean.Payload("您有新的派单通知,请尽快确认", null));
+            messageMap.put("first", new UserMessageBean.Payload("您有新的任务消息通知,请尽快确认处理", null));
             messageMap.put("keyword1", new UserMessageBean.Payload(workOrder.getCode(), null));
             messageMap.put("keyword2", new UserMessageBean.Payload(workOrder.getErrorDescription(), null));
             messageMap.put("keyword3", new UserMessageBean.Payload(new SimpleDateFormat("HH:mm:ss").format(workOrder.getCreatedTime()), null));
@@ -391,7 +421,7 @@ public class WorkOrderController {
                            @RequestBody @Validated(V.Insert.class) PostponeDTO postponeDTO,
                            BindingResult bindingResult,
                            FieldsView fieldsView) throws Exception {
-        workOrderService.postpone(workOrderId,postponeDTO.getAppointTime(),postponeDTO.getPreFinishedTime());
+        workOrderService.postpone(workOrderId, postponeDTO.getAppointTime(), postponeDTO.getPreFinishedTime());
         return Result.getSuccess();
     }
 

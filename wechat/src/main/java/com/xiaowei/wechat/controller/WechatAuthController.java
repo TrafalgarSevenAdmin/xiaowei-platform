@@ -200,6 +200,8 @@ public class WechatAuthController {
                 subject.login(new WxUserLoginToken(AccountConst.GUEST_USER_NAME,ContextUtils.getIpAddr()));
                 subject.getSession().setAttribute(LoginUserUtils.SESSION_USER_KEY,AccountConst.GUEST_USER_INFO);
                 subject.getSession().setAttribute(LoginUserUtils.LOGIN_USER_BROWSER, RequestUtils.getOsAndBrowserInfo());
+                //若当前用户是访客，就把他的微信的openId存储到登陆信息中，方便其他系统获取
+                subject.getSession().setAttribute("openId", wxMpOAuth2AccessToken.getOpenId());
                 //在以访客身份登陆后,重新访问路由即可
                 response.sendRedirect(lastCallBack);
             } else {

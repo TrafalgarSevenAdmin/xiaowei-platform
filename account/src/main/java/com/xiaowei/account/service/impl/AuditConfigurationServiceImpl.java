@@ -1,12 +1,12 @@
-package com.xiaowei.expensereimbursement.service.impl;
+package com.xiaowei.account.service.impl;
 
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
 import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.utils.EmptyUtils;
-import com.xiaowei.expensereimbursement.entity.AuditConfiguration;
-import com.xiaowei.expensereimbursement.repository.AuditConfigurationRepository;
-import com.xiaowei.expensereimbursement.service.IAuditConfigurationService;
+import com.xiaowei.account.entity.AuditConfiguration;
+import com.xiaowei.account.repository.AuditConfigurationRepository;
+import com.xiaowei.account.service.IAuditConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -65,5 +65,10 @@ public class AuditConfigurationServiceImpl extends BaseServiceImpl<AuditConfigur
         });
         auditConfigurationRepository.saveAll(auditConfigurations);
 
+    }
+
+    @Override
+    public List<AuditConfiguration> findByType(Integer status) {
+        return auditConfigurationRepository.findByType(status);
     }
 }
