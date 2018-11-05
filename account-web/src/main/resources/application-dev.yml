@@ -52,6 +52,7 @@ spring:
     username: 13880298453@163.com
     password: 71H0BszikMolz7KE
     default-encoding: utf-8
+    port: 587
 logging:
   level:
     com:
@@ -83,4 +84,8 @@ checkfield:
     - W_WORKFLOWITEM.standard_file_store
     - A_PUNCHRECORD.on_punch_file_store
     - A_PUNCHRECORD.off_punch_file_store
+    - M_ENTER_APPLY.card_file_store
+    - M_ENTER_APPLY.graduation_file_store
+    - M_ENTER_APPLY.skill_file_store
+    - M_ENTER_APPLY.business_file_store
 

@@ -1,6 +1,7 @@
 package com.xiaowei.mq.sender;
 
 import com.xiaowei.mq.bean.TaskMessage;
+import com.xiaowei.mq.bean.UserChageMassage;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MqQueueConstant;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -35,9 +36,17 @@ public class MessagePushSender {
     /**
      * 发送用户信息更改的消息
      */
-    public void sendUserInfoChageMessage(String userId) {
+    public void sendUserInfoChageMessage(UserChageMassage userChageMassage) {
+        amqpTemplate.convertAndSend(MqQueueConstant.USER_INFO_CHANGE_QUEUE, userChageMassage);
+    }
+
+    /**
+     * 用户微信绑定消息
+     */
+    public void sendWxUserBind(String openId,String userId) {
         amqpTemplate.convertAndSend(MqQueueConstant.USER_INFO_CHANGE_QUEUE, userId);
     }
+
 
     /**
      * 发送订单支付完成的消息

@@ -17,17 +17,24 @@ import com.xiaowei.core.exception.BusinessException;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.utils.StringPYUtils;
+import com.xiaowei.mq.bean.UserChageMassage;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> implements IJoinEnterApplyService {
 
@@ -49,6 +56,9 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
 
     @Autowired
     ICompanyService companyService;
+
+    @Autowired
+    private MessagePushSender messagePushSender;
 
     public JoinEnterApplyServiceImpl(@Qualifier("joinEnterApplyRepository")BaseRepository repository) {
         super(repository);
@@ -84,7 +94,39 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
             }
         }
         joinEnterApplyRepository.save(joinEnterApply);
+        //绑定用户的微信
+        messagePushSender.sendUserInfoChageMessage(new UserChageMassage(joinEnterApply.getTargetUser().getId(), joinEnterApply.getOpenId(), UserChageMassage.Type.Bind));
         //给用户发送通知
+        notificationOfAuditResults(joinEnterApply);
+    }
+
+    /**
+     * 审核结果通知
+     */
+    private void notificationOfAuditResults(JoinEnterApply audit) {
+        try {
+            UserMessageBean userMessageBean = new UserMessageBean();
+            userMessageBean.setUserId(audit.getTargetUser().getId());
+            userMessageBean.setMessageType(MessageType.NOTIFICATIONOFAUDITRESULTS);
+            Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+            messageMap.put("first", new UserMessageBean.Payload("加盟入驻审核结果", null));
+            //审核单号：
+            messageMap.put("keyword1", new UserMessageBean.Payload(null, null));
+            //审核人：
+            messageMap.put("keyword2", new UserMessageBean.Payload(StringUtils.isNotEmpty(audit.getAuditUser().getNickName()) ? audit.getAuditUser().getNickName() : audit.getAuditUser().getLoginName(), null));
+            //审核结果：
+            messageMap.put("keyword3", new UserMessageBean.Payload(audit.getAuditPass() ? "已通过" : "未通过", null));
+            //审核时间：
+            messageMap.put("keyword4", new UserMessageBean.Payload(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(audit.getAuditTime()), null));
+            //审核意见：
+            messageMap.put("keyword5", new UserMessageBean.Payload(audit.getAuditReason(), null));
+            //remark：
+            messageMap.put("remark", new UserMessageBean.Payload(audit.getAuditPass()?"恭喜你成功加盟":"请修改并重新发起加盟请求!", null));
+            userMessageBean.setData(messageMap);
+            messagePushSender.sendWxMessage(userMessageBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -109,8 +151,6 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
         SysUser targetUser = sysUserService.registerUser(sysUser);
         //数据更新
         joinEnterApply.setTargetUser(targetUser);
-        //todo 绑定微信？推送消息？？
-
     }
 
     /**
@@ -144,6 +184,7 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
         if (byMobile.isPresent()) {
 //        若找到一个用户账号，就使用此账号改为超级管理员,从之前所属的公司离开，之前的公司也不能再给此人分配工单。
             sysUser = byMobile.get();
+            log.warn("公司加盟：手机号：{}绑定的用户[{}]已经存在，将使用此用户作为此公司{}的管理员", sysUser.getMobile(), sysUser.getNickName(), companyJoinApply.getCompanyName());
             sysUser.setEmail(joinEnterApply.getEmail());
             sysUser.setCard(joinEnterApply.getCardNumber());
             sysUser.setRoles(roleService.query(new Query().addFilter(Filter.eq("code", PlatformTenantConst.TENEMENT_ADMIN_ROLE_CODE))));

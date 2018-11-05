@@ -5,6 +5,8 @@ import com.xiaowei.account.entity.SysUser;
 import com.xiaowei.account.service.ISysUserService;
 import com.xiaowei.core.basic.repository.BaseRepository;
 import com.xiaowei.core.basic.service.impl.BaseServiceImpl;
+import com.xiaowei.core.exception.BusinessException;
+import com.xiaowei.core.utils.EmptyUtils;
 import com.xiaowei.wechat.config.WechatProperties;
 import com.xiaowei.wechat.entity.WxUser;
 import com.xiaowei.wechat.repository.WxUserRepository;
@@ -196,6 +198,20 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
         this.setUserTag(openId, tag, wxUserTags);
     }
 
+    @Override
+    public void bindUser(String userId, String openId) throws WxErrorException {
+        WxUser wxUser = wxUserRepository.findByOpenIdAndAppId(openId, wechatProperties.getAppId()).orElseThrow(() -> new BusinessException("没有发现微信用户！"));
+        SysUser sysUser = wxUser.getSysUser();
+        if (sysUser != null) {
+            log.warn("此微信用户{}已经绑定了一个系统用户：{},替换中。。。", wxUser.getNickname(), sysUser.getNickName());
+        }
+        sysUser = sysUserService.findById(userId);
+        EmptyUtils.assertObject(sysUser, "要绑定的系统用户不存在，系统用户id：" + userId);
+        wxUser.setSysUser(sysUser);
+        wxUserRepository.save(wxUser);
+        this.syncUser(sysUser,openId);
+
+    }
 
 
 }
