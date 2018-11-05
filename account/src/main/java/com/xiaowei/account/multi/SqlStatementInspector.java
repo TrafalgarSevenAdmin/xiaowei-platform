@@ -1,6 +1,5 @@
 package com.xiaowei.account.multi;
 
-import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.context.ContextUtils;
 import org.hibernate.Filter;
 import org.hibernate.Session;
@@ -25,7 +24,7 @@ public class SqlStatementInspector implements StatementInspector {
         }
         if (enabledFilter == null && sql.contains("tenancy_id=?")) {
             //替换所有租户过滤配置
-            return compile.matcher(sql).replaceAll("tenancy_id=\'" + LoginUserUtils.getLoginUser().getTenancyId() + "\'");
+            return compile.matcher(sql).replaceAll("tenancy_id=\'" + MultiTenancyPostProcessor.SecurecyAdvice.getTenancyId() + "\'");
         }
         return sql;
     }

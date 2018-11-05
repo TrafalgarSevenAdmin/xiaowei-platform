@@ -24,10 +24,19 @@ public class MultiTenancyPostProcessor implements RepositoryProxyPostProcessor {
         factory.addAdvice(SecurecyAdvice.INSTANCE);
     }
 
-    static enum SecurecyAdvice implements MethodInterceptor {
+    public static enum SecurecyAdvice implements MethodInterceptor {
         INSTANCE;
 
         private EntityManager entityManager;
+
+        public static final String notFilterTenancy = "!#NOT_FILTER_TENANCY_ID#!";
+
+        /**
+         * 临时指定要查询的租户
+         * 若为空，就从登陆用户中获取
+         * 可设置为@See com.xiaowei.account.multi.MultiTenancyPostProcessor.SecurecyAdvice#notFilterTenancy，就不筛选租户
+         */
+        public static ThreadLocal<String> tempChageTenancyId = new ThreadLocal<>();
 
         public EntityManager getEntityManager() {
             if (this.entityManager == null) {
@@ -36,13 +45,27 @@ public class MultiTenancyPostProcessor implements RepositoryProxyPostProcessor {
             return entityManager;
         }
 
+        public static String getTenancyId() {
+            //如果遇到临时的
+            if (tempChageTenancyId.get()!=null) {
+                return tempChageTenancyId.get();
+            }
+            LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
+            if (loginUserOrNull != null && StringUtils.isNotEmpty(loginUserOrNull.getTenancyId())) {
+                return loginUserOrNull.getTenancyId();
+            } else {
+                return null;
+            }
+        }
+
         @Override
         public Object invoke(MethodInvocation Invocation) throws Throwable {
             LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
-            if (!Invocation.getMethod().getName().equals("getOne") && loginUserOrNull != null && StringUtils.isNotEmpty(loginUserOrNull.getTenancyId())) {
+            String tenancyId = getTenancyId();
+            if (!Invocation.getMethod().getName().equals("getOne") && tenancyId !=null && !notFilterTenancy.equals(tenancyId)) {
                 //补全多租户id
                 try {
-                    getEntityManager().unwrap(Session.class).enableFilter(MultiTenancyFilterName).setParameter("tenancyId", loginUserOrNull.getTenancyId());
+                    getEntityManager().unwrap(Session.class).enableFilter(MultiTenancyFilterName).setParameter("tenancyId", tenancyId);
                     Object obj = Invocation.proceed();
                     return obj;
                 } finally {
