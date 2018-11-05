@@ -72,4 +72,8 @@ public class ExpenseSubjectDTO {
     @ApiModelProperty(value = "是否按照岗位级别")
     @ParamField("是否按照岗位级别")
     private Boolean postLevel;
+    /**
+     * 科目最大报销数量
+     */
+    private Integer maxCount;
 }

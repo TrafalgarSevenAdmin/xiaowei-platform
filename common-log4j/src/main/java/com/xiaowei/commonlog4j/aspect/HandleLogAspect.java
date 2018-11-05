@@ -108,8 +108,11 @@ public class HandleLogAspect {
         logBaseData.setSuccess(true);
         logBaseData.setUrl(targetName + "." + methodName);
         logBaseData.setIp(ContextUtils.judgeAddress(ContextUtils.getIpAddr()));
-        logBaseData.setEmployeeId(LoginUserUtils.getLoginUser().getId());
-
+        try {
+            logBaseData.setEmployeeId(LoginUserUtils.getLoginUser().getId());
+        }catch (Exception e){
+            e.getMessage();
+        }
         //设置日志内容
         setLogContent(logBaseData, logParam.contentParams(), parameterNames, arguments);
         logBaseDataService.save(logBaseData);

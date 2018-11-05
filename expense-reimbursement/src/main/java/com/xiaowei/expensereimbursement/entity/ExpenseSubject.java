@@ -79,4 +79,8 @@ public class ExpenseSubject extends BaseEntity {
      */
     private Boolean postLevel;
 
+    /**
+     * 科目最大报销数量
+     */
+    private Integer maxCount;
 }
