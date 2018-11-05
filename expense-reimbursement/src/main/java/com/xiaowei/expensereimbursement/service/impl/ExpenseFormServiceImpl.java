@@ -73,7 +73,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断所属申请单是否审核通过
         if (StringUtils.isNotEmpty(expenseForm.getRequestFormCodes())) {
             Set<String> codes = Arrays.stream(expenseForm.getRequestFormCodes().split(";")).collect(Collectors.toSet());
-            List<RequestForm> requestForms = requestFormRepository.findByIdIn(codes);
+            List<RequestForm> requestForms = requestFormRepository.findByCodeIn(codes);
             requestForms.stream().forEach(requestForm -> {
                 if (!RequestFormStatus.AUDIT.getStatus().equals(requestForm.getStatus())) {
                     throw new BusinessException("申请单:" + requestForm.getCode() + "状态错误!");

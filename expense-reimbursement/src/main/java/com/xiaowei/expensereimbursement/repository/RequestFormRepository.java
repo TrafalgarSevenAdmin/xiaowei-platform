@@ -24,5 +24,5 @@ public interface RequestFormRepository extends BaseRepository<RequestForm>{
     List<RequestForm> findByWorkOrderCode(String workOrderCode);
 
     @Query("select r from RequestForm r where r.code in ?1")
-    List<RequestForm> findByIdIn(Set<String> codes);
+    List<RequestForm> findByCodeIn(Set<String> codes);
 }
