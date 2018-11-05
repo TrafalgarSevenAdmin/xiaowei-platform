@@ -1,17 +1,16 @@
 package com.xiaowei.worksystem.entity;
 
 import com.xiaowei.account.multi.entity.MultiBaseEntity;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.worksystem.entity.customer.Customer;
+import com.xiaowei.worksystem.entity.flow.WorkFlow;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -128,6 +127,16 @@ public class Equipment extends MultiBaseEntity {
      */
     String coreType;
 
+    /**
+     * 状态
+     */
+    String status;
+
+    @ManyToOne(targetEntity = WorkFlow.class)
+    @JoinColumn(name = "workflow_id")
+    @Fetch(FetchMode.JOIN)
+    WorkFlow workFlow;
+
 //    /**
 //     * 操作系统名称
 //     */
@@ -171,4 +180,9 @@ public class Equipment extends MultiBaseEntity {
     @JoinColumn(name = "customer_id")
     @Fetch(FetchMode.JOIN)
     Customer customer;
+
+    @PrePersist
+    public void onCreateSetUser() {
+        createUser = LoginUserUtils.getLoginUser().getNickName();
+    }
 }

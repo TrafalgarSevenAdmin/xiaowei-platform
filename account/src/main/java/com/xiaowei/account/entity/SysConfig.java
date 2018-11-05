@@ -4,6 +4,7 @@ import com.xiaowei.core.basic.entity.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -27,6 +28,7 @@ public class SysConfig extends BaseEntity {
     /**
      * 配置的值
      */
+    @Lob
     private String value;
 
     /**

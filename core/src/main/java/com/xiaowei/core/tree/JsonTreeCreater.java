@@ -1,8 +1,7 @@
 package com.xiaowei.core.tree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -24,6 +23,12 @@ public class JsonTreeCreater<T> {
     private  Function<T, Boolean> getDisabled = a->false;//默认不禁用
 
     private  Function<T, Object> getData = a->null;
+
+    /**
+     * 在找不到父节点的时候需要使用此方法实现获取获取父节点的数据
+     * 要求返回父节点数据
+     */
+    private  Function<Object,T> findParent = a->null;
 
     HashMap<String, JsonTreeData> parentIndex = new HashMap<String, JsonTreeData>();
 
@@ -77,12 +82,32 @@ public class JsonTreeCreater<T> {
         this.getDisabled = getDisabled;
     }
 
+    /**
+     * 树形创建器
+     * @param data  元数据
+     * @param getId 解析id的方法
+     * @param getParentId   解析父id的方法
+     * @param getName   树形显示的方法
+     * @param getChecked    是否勾选的方法
+     * @param getDisabled  是否禁用
+     */
+    public JsonTreeCreater(List<T> data, Function<T, String> getId,Function<T, String> getParentId, Function<T, String> getName, Function<T, Boolean> getChecked,Function<T,Object> getData,Function<T,Boolean> getDisabled,Function<Object,T> findParent) {
+        this.getParentId = getParentId;
+        this.data = data;
+        this.getId = getId;
+        this.getName = getName;
+        this.getChecked = getChecked;
+        this.getData = getData;
+        this.getDisabled = getDisabled;
+        this.findParent = findParent;
+    }
+
 
     public  List<JsonTreeData> create() {
         //初始化根节点
         treeRootItem.setChildren(new ArrayList<>());
         parentIndex.put("0", treeRootItem);
-        for (T t : data) {//遍历所有节点，然后记录下来
+        Function<T, JsonTreeData> createNode = t -> {
             JsonTreeData treeItem = new JsonTreeData();
             treeItem.setData(getData.apply(t));
             treeItem.setText(getName.apply(t));
@@ -90,12 +115,25 @@ public class JsonTreeCreater<T> {
             treeItem.setDisabled(getDisabled.apply(t));
             treeItem.setId(getId.apply(t));
             treeItem.setChildren(new ArrayList<>());
+            return treeItem;
+        };
+        for (T t : data) {//遍历所有节点，然后记录下来
+            JsonTreeData treeItem = createNode.apply(t);
             //将当前节点当父节点记下来。
-            parentIndex.put(getId.apply(t), treeItem);
+            parentIndex.put(treeItem.getId(), treeItem);
         }
-        for (T t : data) {
+        //通过创建队列的方式实现广度遍历
+        ArrayDeque<T> queue = new ArrayDeque(data);
+        while (!queue.isEmpty()) {
+            T t = queue.pop();
             JsonTreeData node = parentIndex.get(getId.apply(t));//获取当前节点
             JsonTreeData parentNode = parentIndex.get(getParentId.apply(t));//获取父节点
+            if (parentNode == null) {
+                T nodeData = findParent.apply(getParentId.apply(t));
+                parentNode = createNode.apply(nodeData);
+                parentIndex.put(parentNode.getId(), parentNode);
+                queue.addLast(nodeData);
+            }
             parentNode.getChildren().add(node);//添加到父节点
         }
         return treeRootItem.getChildren();

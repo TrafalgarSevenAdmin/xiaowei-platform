@@ -36,7 +36,7 @@ public class LoginUserBean implements Serializable {
 
     private List<RoleBean> roles;
 
-    private List<PermissionBean> permissions;
+    private List<String> permissions;
 
     private CompanyBean companyBean;
 
@@ -48,7 +48,7 @@ public class LoginUserBean implements Serializable {
     public LoginUserBean() {
     }
 
-    public LoginUserBean(String id, String loginName, String mobile, String email, String nickName, Integer status, List<RoleBean> roles, List<PermissionBean> permissions, CompanyBean companyBean, DepartmentBean departmentBean, PostBean postBean, String tenancyId) {
+    public LoginUserBean(String id, String loginName, String mobile, String email, String nickName, Integer status, List<RoleBean> roles, List<String> permissions, CompanyBean companyBean, DepartmentBean departmentBean, PostBean postBean, String tenancyId) {
         this.id = id;
         this.loginName = loginName;
         this.mobile = mobile;

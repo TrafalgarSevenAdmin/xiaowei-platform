@@ -1,6 +1,8 @@
 package com.xiaowei.account.query;
 
 import com.xiaowei.account.consts.RoleType;
+import com.xiaowei.accountcommon.CompanyBean;
+import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.core.query.rundi.query.Filter;
 import com.xiaowei.core.query.rundi.query.Logic;
 import com.xiaowei.core.query.rundi.query.Query;
@@ -44,9 +46,11 @@ public class RoleQuery extends Query {
             addFilter(new Filter("roleType", Filter.Operator.eq, roleType));
         }
         if (StringUtils.isNotEmpty(companyId2)) {
-            addFilter(new Filter("company.id", Filter.Operator.eq,Logic.or, companyId2));
+            addFilter(new Filter("company.id", Filter.Operator.eq, Logic.and, companyId2));
+        } else {
             addFilter(new Filter("roleType", Filter.Operator.eq, Logic.or, RoleType.TRUSTEESHIPROLE.getStatus()));
         }
+
     }
 
 }

@@ -19,6 +19,7 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.mq.bean.UserChageMassage;
 import com.xiaowei.mq.sender.MessagePushSender;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,7 +82,7 @@ public class UserController {
         SysUser user = BeanCopyUtils.copy(sysUserDTO, SysUser.class);
         user.setId(userId);
         user = sysUserService.updateUser(user);
-        messagePushSender.sendUserInfoChageMessage(user.getId());
+        messagePushSender.sendUserInfoChageMessage(new UserChageMassage(userId));
         return Result.getSuccess(ObjectToMapUtils.objectToMap(user, fieldsView));
     }
 
@@ -114,7 +115,7 @@ public class UserController {
     public Result delete(@PathVariable("userId") String userId) {
         //伪删除
         sysUserService.fakeDeleteUser(userId);
-        messagePushSender.sendUserInfoChageMessage(userId);
+        messagePushSender.sendUserInfoChageMessage(new UserChageMassage(userId));
         return Result.getSuccess("删除成功");
     }
 

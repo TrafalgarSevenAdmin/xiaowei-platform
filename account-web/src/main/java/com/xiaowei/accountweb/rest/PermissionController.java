@@ -1,5 +1,6 @@
 package com.xiaowei.accountweb.rest;
 
+import com.xiaowei.account.consts.PlatformTenantConst;
 import com.xiaowei.account.consts.SuperUser;
 import com.xiaowei.account.entity.SysPermission;
 import com.xiaowei.account.query.PermissionQuery;
@@ -12,6 +13,8 @@ import com.xiaowei.accountweb.dto.SysPermissionDTO;
 import com.xiaowei.commonlog4j.annotation.ContentParam;
 import com.xiaowei.commonlog4j.annotation.HandleLog;
 import com.xiaowei.core.bean.BeanCopyUtils;
+import com.xiaowei.core.query.rundi.query.Filter;
+import com.xiaowei.core.query.rundi.query.Query;
 import com.xiaowei.core.result.FieldsView;
 import com.xiaowei.core.result.PageResult;
 import com.xiaowei.core.result.Result;
@@ -82,16 +85,25 @@ public class PermissionController {
         return Result.getSuccess("删除成功");
     }
 
+    /**
+     * 只能查询到当前登陆用户自己所拥有的权限，用于分配给其他角色，相当于继承
+     */
     @RequiresPermissions("account:permission:tree")
     @ApiOperation("权限树查询接口,roleId可传可不传,传的话代表修改角色需要的权限树有checked")
     @GetMapping("/tree")
     public Result tree(String roleId,String prefix) {
         List<SysPermission> permissions;
-        if (StringUtils.isNotBlank(prefix)) {
-            permissions = sysPermissionService.findBySymbolPrefix(prefix);
-        } else {
-            permissions = sysPermissionService.findAll();
+        Query filter = new Query();
+
+        //超级管理员可以查询出所有的权限，其他的只能查询出自己拥有的权限
+        if (!SuperUser.ADMINISTRATOR_NAME.equals(LoginUserUtils.getLoginUser().getLoginName())) {
+            filter.addFilter(Filter.in("roles.id", LoginUserUtils.getLoginUser().getRoles().stream().map(RoleBean::getId).toArray()));
         }
+        //前缀筛选
+        if (StringUtils.isNotBlank(prefix)) {
+            filter.addFilter(Filter.like("symbol", prefix + "%"));
+        }
+        permissions = sysPermissionService.query(filter, SysPermission.class);
         Set<String> checkedIds;       //用于显示权限是否被勾选
         if (!StringUtils.isEmpty(roleId)) {
             checkedIds = sysPermissionService.findByRoleId(roleId).stream().collect(Collectors.toSet());
@@ -102,13 +114,7 @@ public class PermissionController {
                 item -> item.getCode(),
                 a -> StringUtils.isEmpty(a.getParentCode()) ? "0" : a.getParentCode(),
                 a -> a.getName(),
-                a -> {
-                    if (StringUtils.isEmpty(roleId)) {
-                        return false;
-                    } else {
-                        return checkedIds.contains(a.getId());
-                    }
-                },
+                StringUtils.isEmpty(roleId) ? a -> false : a -> checkedIds.contains(a.getId()),
                 a -> {
                     Map<String, Object> dataMap = new HashMap<>();
                     dataMap.put("id", a.getId());
@@ -116,7 +122,8 @@ public class PermissionController {
                     dataMap.put("level", a.getLevel());
                     return dataMap;
                 },
-                a -> !LoginUserUtils.hasPermissionId(a.getId())
+                a -> false,
+                code -> sysPermissionService.query(new Query().addFilter(Filter.eq("code", code))).get(0)
         ).create());//以树形式返回
     }
 
@@ -148,8 +155,8 @@ public class PermissionController {
     @ApiOperation("根据id获取权限")
     @GetMapping("/{permissionId}")
     public Result findById(@PathVariable("permissionId") String permissionId, FieldsView fieldsView) {
-        //根据id获取权限只能获取当前登录用户所拥有的权限
-        if (!LoginUserUtils.hasPermissionId(permissionId)) {
+        //只有平台租户才能够查询权限细节
+        if(!LoginUserUtils.getLoginUser().getTenancyId().equals(PlatformTenantConst.ID)){
             throw new UnauthorizedException("查询失败:没有权限查询该权限");
         }
         SysPermission permission = sysPermissionService.findById(permissionId);

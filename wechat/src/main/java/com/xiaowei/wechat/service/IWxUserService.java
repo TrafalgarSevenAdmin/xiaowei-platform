@@ -48,4 +48,11 @@ public interface IWxUserService extends IBaseService<WxUser> {
      * @throws WxErrorException
      */
     void setUserTag(String openId, String tag) throws WxErrorException;
+
+    /**
+     * 绑定用户微信
+     * @param userId
+     * @param openId
+     */
+    void bindUser(String userId, String openId) throws WxErrorException;
 }

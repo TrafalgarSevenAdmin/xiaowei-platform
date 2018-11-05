@@ -104,4 +104,10 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements IRegio
         return region;
     }
 
+    @Override
+    @Transactional
+    public void updateCityLevel(String code, String cityLevel) {
+        regionRepository.updateCityLevel(code, cityLevel);
+    }
+
 }

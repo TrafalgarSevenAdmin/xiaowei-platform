@@ -1,6 +1,6 @@
 package com.xiaowei.wechat.receiver;
 
-import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.mq.bean.UserChageMassage;
 import com.xiaowei.mq.constant.MqQueueConstant;
 import com.xiaowei.wechat.service.IWxUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,17 +19,26 @@ import org.springframework.stereotype.Component;
 public class UserInfoChageReceiver {
 
     @Autowired
-    private ISysUserService sysUserService;
-
-    @Autowired
     private IWxUserService wxUserService;
 
     @RabbitHandler
-    public void messageReceiver(String userId) {
-        try {
-            wxUserService.syncUser(userId);
-        } catch (Exception e) {
-            log.error("主动同步用户标签出错！",e);
+    public void messageReceiver(UserChageMassage userChageMassage) {
+        switch (userChageMassage.getType()) {
+            case Bind:
+                try {
+                    wxUserService.bindUser(userChageMassage.getUserId(),userChageMassage.getOpenId());
+                } catch (Exception e) {
+                    log.error("绑定用户出错！", e);
+                }
+            case Chage:
+                try {
+                    wxUserService.syncUser(userChageMassage.getUserId());
+                } catch (Exception e) {
+                    log.error("主动同步用户标签出错！", e);
+                }
+            default:
+                log.error("类型错误");
         }
+
     }
 }

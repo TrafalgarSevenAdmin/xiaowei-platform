@@ -57,4 +57,11 @@ public interface ISysUserService extends IBaseService<SysUser> {
     SysUser updatePassword(String userId, String oldPassword, String newPassword);
 
     List<SysUser> findByUserIdIn(Set<String> userIds);
+
+    /**
+     * 更新用户的租户
+     * @param id
+     * @param tenancyId
+     */
+    void updateTenancyId(String id, String tenancyId);
 }
