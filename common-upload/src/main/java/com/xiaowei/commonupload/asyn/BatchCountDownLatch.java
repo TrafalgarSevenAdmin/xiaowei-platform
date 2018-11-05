@@ -48,7 +48,7 @@ public class BatchCountDownLatch implements Runnable {
                 }
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            logger.error(ExceptionUtils.getStackTrace(e),e);
         }
         countDownLatch.countDown();
     }

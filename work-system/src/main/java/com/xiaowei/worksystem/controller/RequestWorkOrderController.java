@@ -102,7 +102,7 @@ public class RequestWorkOrderController {
                 userMessageBean.setUrl(serverHost + "/xwkx-web/management/manRequestHandle?requestId=" + requestWorkOrder.getId());
                 messagePushSender.sendWxMessage(userMessageBean);
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(),e);
                 e.printStackTrace();
             }
         }
