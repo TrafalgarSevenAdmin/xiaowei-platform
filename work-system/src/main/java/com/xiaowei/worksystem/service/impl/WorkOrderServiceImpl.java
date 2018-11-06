@@ -792,7 +792,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
         //工单处理完成或者报销中
         if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
-            throw new BusinessException("状态错误!");
+            throw new BusinessException("工单状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.EXPENSEING.getStatus());//工单状态变更为报销中
         return workOrderRepository.save(workOrder);

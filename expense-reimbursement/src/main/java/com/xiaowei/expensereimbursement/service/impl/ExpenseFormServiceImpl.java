@@ -22,6 +22,7 @@ import com.xiaowei.expensereimbursement.utils.ExpenseFormUtils;
 import com.xiaowei.mq.bean.TaskMessage;
 import com.xiaowei.mq.constant.TaskType;
 import com.xiaowei.mq.sender.MessagePushSender;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.xiaowei.expensereimbursement.status.ExpenseFormStatus.*;
 
-
+@Slf4j
 @Service
 public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> implements IExpenseFormService {
 
@@ -78,6 +79,11 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
                 }
             });
         }
+        //若不是保存为草稿
+        if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus())) {
+            //修改工单状态为报销中
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        }
         return expenseForm;
     }
 
@@ -85,11 +91,6 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus()) &&
                 !expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
             throw new BusinessException("传入状态非法");
-        }
-        //若不是保存为草稿
-        if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus())) {
-            //修改工单状态为报销中
-            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
         }
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             expenseForm.setId(null);
@@ -113,7 +114,6 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             expenseForm.setTurnDownCount(one.getTurnDownCount());//驳回次数无法修改
             expenseForm.setWorkOrderCode(one.getWorkOrderCode());//所属工单无法修改
         }
-
     }
 
     private WorkOrderSelect judgeWorkOrder(ExpenseForm expenseForm) {
@@ -127,6 +127,7 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         }
         //若工单不是已完成状态，或者此报销单为以驳回状态，才可以允许保存
         if (workOrderSelect.getSystemStatus() != 7 && expenseForm.getStatus() != TURNDOWN.getStatus()) {
+            log.error("出现报销工单异常！异常工单号：{},工单状态：{}", expenseForm.getWorkOrderCode(), workOrderSelect.getSystemStatus());
             throw new BusinessException("该工单状态异常!");
         }
 
@@ -203,6 +204,12 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         expenseFormItemRepository.deleteByExpenseFormId(expenseForm.getId());
         //先删除明细,再保存明细
         judgeItemIsUniqueAndAmount(expenseForm);
+
+        //若不是保存为草稿
+        if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus())) {
+            //修改工单状态为报销中
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
+        }
         return expenseForm;
     }
 
