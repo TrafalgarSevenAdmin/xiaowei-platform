@@ -126,9 +126,19 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
             throw new BusinessException("该工单已经关闭!");
         }
         //若工单不是已完成状态，或者此报销单为以驳回状态，才可以允许保存
-        if (workOrderSelect.getSystemStatus() != 7 && expenseForm.getStatus() != TURNDOWN.getStatus()) {
-            log.error("出现报销工单异常！异常工单号：{},工单状态：{}", expenseForm.getWorkOrderCode(), workOrderSelect.getSystemStatus());
-            throw new BusinessException("该工单状态异常!");
+        if (workOrderSelect.getSystemStatus() != 7) {
+            //查看之前的此报销单是否是被驳回的
+            if (StringUtils.isNotEmpty(expenseForm.getId())) {
+                ExpenseForm byId = this.findById(expenseForm.getId());
+                if (byId != null && !byId.getStatus().equals(TURNDOWN.getStatus())) {
+                    //若不是被驳回的工单
+                    log.error("出现报销工单异常！异常工单号：{},工单状态：{}", expenseForm.getWorkOrderCode(), workOrderSelect.getSystemStatus());
+                    throw new BusinessException("该工单状态异常!");
+                }
+            } else {
+                log.error("出现报销工单异常！异常工单号：{},工单状态：{}", expenseForm.getWorkOrderCode(), workOrderSelect.getSystemStatus());
+                throw new BusinessException("该工单状态异常!");
+            }
         }
 
         //查询是否有其他报销单

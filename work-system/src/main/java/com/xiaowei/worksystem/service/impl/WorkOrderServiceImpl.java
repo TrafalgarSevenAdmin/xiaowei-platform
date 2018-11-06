@@ -791,7 +791,7 @@ public class WorkOrderServiceImpl extends BaseServiceImpl<WorkOrder> implements 
         WorkOrder workOrder = workOrderRepository.findByCode(workOrderCode);
         EmptyUtils.assertObject(workOrder, "没有查询到需要修改的对象");
         //工单处理完成或者报销中
-        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())) {
+        if (!workOrder.getSystemStatus().equals(WorkOrderSystemStatus.FINISHHAND.getStatus())&& !workOrder.getSystemStatus().equals(WorkOrderSystemStatus.EXPENSEING.getStatus())) {
             throw new BusinessException("工单状态错误!");
         }
         workOrder.setSystemStatus(WorkOrderSystemStatus.EXPENSEING.getStatus());//工单状态变更为报销中
