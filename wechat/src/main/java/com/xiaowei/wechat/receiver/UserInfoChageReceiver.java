@@ -30,12 +30,14 @@ public class UserInfoChageReceiver {
                 } catch (Exception e) {
                     log.error("绑定用户出错！", e);
                 }
+                break;
             case Chage:
                 try {
                     wxUserService.syncUser(userChageMassage.getUserId());
                 } catch (Exception e) {
                     log.error("主动同步用户标签出错！", e);
                 }
+                break;
             default:
                 log.error("类型错误!" + userChageMassage.getType());
         }

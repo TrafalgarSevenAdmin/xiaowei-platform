@@ -96,6 +96,7 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
     @Override
     @Transactional
     public void syncUser(String userId) throws WxErrorException {
+        log.info("开始用户用户{}的数据");
         SysUser sysUser = sysUserService.findById(userId);
         //查询到用户，且关注了微信后
         if (sysUser != null) {
