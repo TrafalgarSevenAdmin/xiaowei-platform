@@ -87,16 +87,22 @@ public class WorkOrder extends MultiBaseEntity {
 
     /**
      * 针对后台处理人员状态
+     * @See com.xiaowei.worksystem.status.WorkOrderSystemStatus
      */
     private Integer systemStatus;
+
     /**
      * 完成状态
+     * @See com.xiaowei.worksystem.status.FinishedType
      */
     private Integer finishedType;
+
     /**
      * 针对用户状态
+     * @See com.xiaowei.worksystem.status.WorkOrderUserStatus
      */
     private Integer userStatus;
+
     /**
      * 申请处理人
      */

@@ -68,8 +68,6 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         //判断所有明细的费用科目是否唯一以及合计金额是否正确
         //保存科目明细
         judgeItemIsUniqueAndAmount(expenseForm);
-        //修改工单状态为报销中
-        messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
         //判断所属申请单是否审核通过
         if (StringUtils.isNotEmpty(expenseForm.getRequestFormCodes())) {
             Set<String> codes = Arrays.stream(expenseForm.getRequestFormCodes().split(";")).collect(Collectors.toSet());
@@ -87,6 +85,11 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus()) &&
                 !expenseForm.getStatus().equals(ExpenseFormStatus.PREAUDIT.getStatus())) {
             throw new BusinessException("传入状态非法");
+        }
+        //若不是保存为草稿
+        if (!expenseForm.getStatus().equals(ExpenseFormStatus.DRAFT.getStatus())) {
+            //修改工单状态为报销中
+            messagePushSender.sendWorkOrderExpenseingMessage(new TaskMessage(expenseForm.getWorkOrderCode(), TaskType.TO_EXPENSEING));
         }
         if (judgeType.equals(JudgeType.INSERT)) {//保存
             expenseForm.setId(null);

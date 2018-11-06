@@ -187,7 +187,7 @@ public class WorkOrderController {
             userMessageBean.setUrl(serverHost + "/xwkx-web/engineer/enWorkingInOrder?orderId=" + workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
             e.printStackTrace();
         }
     }
@@ -213,7 +213,7 @@ public class WorkOrderController {
             userMessageBean.setUrl(serverHost + "/xwkx-web/user/myOrders");
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
             e.printStackTrace();
         }
     }
@@ -239,7 +239,7 @@ public class WorkOrderController {
             userMessageBean.setUrl(serverHost + "/xwkx-web/engineer/enReceiveOrder?orderId=" + workOrder.getId());
             messagePushSender.sendWxMessage(userMessageBean);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
             e.printStackTrace();
         }
 

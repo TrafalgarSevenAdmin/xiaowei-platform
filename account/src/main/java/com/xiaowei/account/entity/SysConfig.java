@@ -36,4 +36,9 @@ public class SysConfig extends BaseEntity {
      */
     private String note;
 
+    /**
+     * 前端填写的参数类型
+     */
+    private String type;
+
 }

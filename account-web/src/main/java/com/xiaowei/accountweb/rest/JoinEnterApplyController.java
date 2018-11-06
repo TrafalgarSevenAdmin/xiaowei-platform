@@ -1,6 +1,13 @@
 package com.xiaowei.accountweb.rest;
 
 import com.xiaowei.account.consts.PlatformTenantConst;
+import com.xiaowei.account.entity.AuditConfiguration;
+import com.xiaowei.account.entity.SysUser;
+import com.xiaowei.account.multi.MultiTenancyPostProcessor;
+import com.xiaowei.account.service.IAuditConfigurationService;
+import com.xiaowei.account.service.ISysUserService;
+import com.xiaowei.account.status.AuditTypeStatus;
+import com.xiaowei.accountcommon.LoginUserBean;
 import com.xiaowei.accountcommon.LoginUserUtils;
 import com.xiaowei.accountweb.dto.JoinAuditDto;
 import com.xiaowei.accountweb.dto.JoinEnterDto;
@@ -19,8 +26,12 @@ import com.xiaowei.core.result.Result;
 import com.xiaowei.core.utils.ObjectToMapUtils;
 import com.xiaowei.core.validate.AutoErrorHandler;
 import com.xiaowei.core.validate.V;
+import com.xiaowei.mq.bean.UserMessageBean;
+import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.sender.MessagePushSender;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -30,11 +41,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.xiaowei.accountcommon.LoginUserUtils.SESSION_USER_KEY;
 
 /**
  * 加盟入驻接口
  */
+@Slf4j
 @Api(tags = "加盟入驻接口")
 @RestController
 @RequestMapping("/api/join")
@@ -45,6 +63,16 @@ public class JoinEnterApplyController {
 
     @Autowired
     IVerificationCodeService verificationCodeService;
+
+    @Autowired
+    private ISysUserService userService;
+
+    @Autowired
+    private IAuditConfigurationService auditConfigurationService;
+
+    @Autowired
+    private MessagePushSender messagePushSender;
+
 
     @ApiOperation(value = "获取验证码")
     @AutoErrorHandler
@@ -77,6 +105,13 @@ public class JoinEnterApplyController {
             joinEnterApply.setOpenId((String) SecurityUtils.getSubject().getSession().getAttribute("openId"));
         }
         joinEnterApplyService.save(joinEnterApply);
+
+        //更新当前登陆用户的租户，方便下一步查询审核人员时，自动带上租户
+        LoginUserBean loginUserOrNull = LoginUserUtils.getLoginUserOrNull();
+        loginUserOrNull.setTenancyId(joinEnterDto.getTenementId());
+        SecurityUtils.getSubject().getSession().setAttribute(SESSION_USER_KEY,loginUserOrNull);
+
+        messageToSendorder(joinEnterApply);
         return Result.getSuccess();
     }
 
@@ -101,6 +136,8 @@ public class JoinEnterApplyController {
         LoginUserUtils.getLoginUser();
         String openId = (String) SecurityUtils.getSubject().getSession().getAttribute("openId");
         if (StringUtils.isNotEmpty(openId)) {
+            //查询时不筛选登陆用户的租户，毕竟登陆用户可能是访客用户，并没有租户
+            MultiTenancyPostProcessor.SecurecyAdvice.tempChageTenancyId.set(MultiTenancyPostProcessor.SecurecyAdvice.notFilterTenancy);
             List<JoinEnterApply> joinEnterApplies = joinEnterApplyService.query(new Query().addFilter(Filter.eq("openId", openId)));
             if (CollectionUtils.isNotEmpty(joinEnterApplies)) {
                 return Result.getSuccess(joinEnterApplies.get(0));
@@ -126,6 +163,37 @@ public class JoinEnterApplyController {
     public Result delete(@PathVariable("id") String id) {
         joinEnterApplyService.delete(id);
         return Result.getSuccess();
+    }
+
+    /**
+     * 需要派单员派单的通知
+     * @param joinEnterApply
+     */
+    private void messageToSendorder(JoinEnterApply joinEnterApply) {
+        //查询派单员
+        Set<String> userIds = auditConfigurationService.findByType(AuditTypeStatus.AUDITTENEMENTID.getStatus()).stream().map(AuditConfiguration::getUserId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(userIds)) {
+            return;
+        }
+        List<SysUser> users = userService.findByUserIdIn(userIds);
+        for (SysUser user : users) {
+            try {
+                UserMessageBean userMessageBean = new UserMessageBean();
+                userMessageBean.setUserId(user.getId());
+                userMessageBean.setMessageType(MessageType.MESSAGETOSENDORDER);
+                Map<String, UserMessageBean.Payload> messageMap = new HashMap<>();
+                messageMap.put("first", new UserMessageBean.Payload("贵公司有新的加盟申请,请尽快登陆PC端后台处理", null));
+                messageMap.put("keyword1", new UserMessageBean.Payload(user.getCompany() != null ? user.getCompany().getCompanyName() : null, null));
+                messageMap.put("keyword2", new UserMessageBean.Payload(joinEnterApply.getUserName(), null));
+                messageMap.put("keyword3", new UserMessageBean.Payload(joinEnterApply.getMobilePhone(), null));
+                userMessageBean.setData(messageMap);
+                messagePushSender.sendWxMessage(userMessageBean);
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                e.printStackTrace();
+            }
+        }
+
     }
 
 }

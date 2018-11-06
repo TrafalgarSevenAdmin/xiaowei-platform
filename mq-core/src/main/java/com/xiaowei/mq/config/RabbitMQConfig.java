@@ -86,4 +86,9 @@ public class RabbitMQConfig {
     public Binding bindingOrderExpiredQueueDelayTask(Queue orderExpiredQueue, TopicExchange delayExchange) {
         return BindingBuilder.bind(orderExpiredQueue).to(delayExchange).with(DELAY_PAY_TASK_ROUTING);
     }
+
+    @Bean
+    public Binding bindingWxMessageExpiredQueueDelayTask(Queue wxMessageQueue, TopicExchange delayExchange) {
+        return BindingBuilder.bind(wxMessageQueue).to(delayExchange).with(DELAY_WX_MESSAGE_PUSH_ROUTING);
+    }
 }

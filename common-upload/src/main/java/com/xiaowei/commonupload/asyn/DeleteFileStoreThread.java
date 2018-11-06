@@ -44,7 +44,7 @@ public class DeleteFileStoreThread implements Runnable {
             fileStoreRepository.deleteAll(fileStores);
             logger.info("文件删除完毕，耗时ms:" + (System.currentTimeMillis() - startTime));
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            logger.error(ExceptionUtils.getStackTrace(e),e);
         }
 
     }
