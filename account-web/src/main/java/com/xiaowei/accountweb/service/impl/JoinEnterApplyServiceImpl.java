@@ -20,6 +20,7 @@ import com.xiaowei.core.utils.StringPYUtils;
 import com.xiaowei.mq.bean.UserChageMassage;
 import com.xiaowei.mq.bean.UserMessageBean;
 import com.xiaowei.mq.constant.MessageType;
+import com.xiaowei.mq.constant.MqQueueConstant;
 import com.xiaowei.mq.sender.MessagePushSender;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -123,7 +124,8 @@ public class JoinEnterApplyServiceImpl extends BaseServiceImpl<JoinEnterApply> i
             //remark：
             messageMap.put("remark", new UserMessageBean.Payload(audit.getAuditPass()?"恭喜你成功加盟":"请修改并重新发起加盟请求!", null));
             userMessageBean.setData(messageMap);
-            messagePushSender.sendWxMessage(userMessageBean);
+            //设置为200毫秒后推送消息，防止由于才变更了用户信息而造成没有写入到数据库中，使得查不到用户绑定的微信
+            messagePushSender.sendDelay(MqQueueConstant.DELAY_WX_MESSAGE_PUSH_ROUTING, userMessageBean, 200);
         } catch (Exception e) {
             e.printStackTrace();
         }

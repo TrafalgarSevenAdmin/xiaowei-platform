@@ -7,7 +7,6 @@ public class MqQueueConstant {
      */
     public static final String DELAY_EXCHAGE = "delay_exchage";
 
-
     /**
      * 微信消息推送队列
      */
@@ -40,7 +39,7 @@ public class MqQueueConstant {
     public static final String DELAY_TASK_QUEUE = "delay_task_queue";
 
     /**
-     * 延时任务,
+     * 延时任务
      */
     public static final String DELAY_TASK_ROUTING = "delay.task";
 
@@ -50,8 +49,8 @@ public class MqQueueConstant {
     public static final String DELAY_PAY_TASK_ROUTING = "delay.pay.task";
 
     /**
-     * 延时消息
+     * 微信推送延时消息
      */
-    public static final String DELAY_MESSAGE_ROUTING = "delay.message";
+    public static final String DELAY_WX_MESSAGE_PUSH_ROUTING = "delay.message.wx_message_push_queue";
 
 }

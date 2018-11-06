@@ -9,6 +9,7 @@ public class UserChageMassage implements MessageBean {
 
     public UserChageMassage(String userId) {
         this.userId = userId;
+        this.type = Type.Chage;
     }
 
     public UserChageMassage(String userId, String openId, Type type) {

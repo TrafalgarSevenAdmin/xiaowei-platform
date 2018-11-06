@@ -37,7 +37,7 @@ public class UserInfoChageReceiver {
                     log.error("主动同步用户标签出错！", e);
                 }
             default:
-                log.error("类型错误");
+                log.error("类型错误!" + userChageMassage.getType());
         }
 
     }
