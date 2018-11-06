@@ -125,7 +125,8 @@ public class ExpenseFormServiceImpl extends BaseServiceImpl<ExpenseForm> impleme
         if (workOrderSelect.getSystemStatus() == 10) {
             throw new BusinessException("该工单已经关闭!");
         }
-        if (workOrderSelect.getSystemStatus() != 7) {
+        //若工单不是已完成状态，或者此报销单为以驳回状态，才可以允许保存
+        if (workOrderSelect.getSystemStatus() != 7 && expenseForm.getStatus() != TURNDOWN.getStatus()) {
             throw new BusinessException("该工单状态异常!");
         }
 
