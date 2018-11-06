@@ -98,7 +98,7 @@ public class RequestFormServiceImpl extends BaseServiceImpl<RequestForm> impleme
             Optional<RequestForm> optional = requestFormRepository.findById(requestFormId);
             EmptyUtils.assertOptional(optional, "没有查询到需要修改的对象");
             final RequestForm one = optional.get();
-            if (!ArrayUtils.contains(ExpenseFormUtils.CANUPDATE, one.getStatus())) {
+            if (!ArrayUtils.contains(ExpenseFormUtils.REQUESTCANUPDATE, one.getStatus())) {
                 throw new BusinessException("申请单当前不允许修改");
             }
 
