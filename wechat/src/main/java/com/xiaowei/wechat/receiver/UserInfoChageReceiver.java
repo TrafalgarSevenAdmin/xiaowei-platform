@@ -38,6 +38,13 @@ public class UserInfoChageReceiver {
                     log.error("主动同步用户标签出错！", e);
                 }
                 break;
+            case Delete:
+                try {
+                    wxUserService.sysUserDelete(userChageMassage.getUserId());
+                } catch (Exception e) {
+                    log.error("主动同步用户标签出错！", e);
+                }
+                break;
             default:
                 log.error("类型错误!" + userChageMassage.getType());
         }

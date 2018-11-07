@@ -173,6 +173,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements ISys
         Optional<SysUser> sysUser = sysUserRepository.findById(userId);
         EmptyUtils.assertOptional(sysUser, "没有查询到需要删除的对象");
         SysUser one = sysUser.get();
+        if (one.getId().equals(LoginUserUtils.getLoginUser().getId())) {
+            throw new BusinessException("删除失败:不允许删除自己");
+        }
         //admin不允许伪删除
         if (one.getLoginName().equals(SuperUser.ADMINISTRATOR_NAME)) {
             throw new BusinessException("删除失败:不允许删除超级管理员");

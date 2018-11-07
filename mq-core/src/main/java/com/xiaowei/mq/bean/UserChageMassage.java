@@ -34,6 +34,11 @@ public class UserChageMassage implements MessageBean {
          * 用户信息变更
          */
         Chage,
+
+        /**
+         * 用户删除
+         */
+        Delete
     }
 
 }

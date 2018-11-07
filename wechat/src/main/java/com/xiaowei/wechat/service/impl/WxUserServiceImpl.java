@@ -108,12 +108,19 @@ public class WxUserServiceImpl extends BaseServiceImpl<WxUser> implements IWxUse
                    log.error("同步用户"+sysUser.getNickName()+"角色到微信失败！",e);
                }
            });
-        }else {
-            //若找不到此用户，可能这个用户已经被删除了。因此把此用户绑定的微信用户给解绑
-            for (WxUser wxUser : this.findByUserId(userId)) {
-                wxUser.setSysUser(null);
-                wxUserRepository.save(wxUser);
-            }
+        }
+    }
+
+    /**
+     * 系统用户被删除了，就吧绑定的微信信息给解绑
+     * @param userId
+     */
+    @Override
+    public void sysUserDelete(String userId) {
+        //若找不到此用户，可能这个用户已经被删除了。因此把此用户绑定的微信用户给解绑
+        for (WxUser wxUser : this.findByUserId(userId)) {
+            wxUser.setSysUser(null);
+            wxUserRepository.save(wxUser);
         }
     }
 
