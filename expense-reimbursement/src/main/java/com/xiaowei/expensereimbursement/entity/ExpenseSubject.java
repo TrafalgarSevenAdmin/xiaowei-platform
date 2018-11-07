@@ -83,4 +83,9 @@ public class ExpenseSubject extends BaseEntity {
      * 科目最大报销数量
      */
     private Integer maxCount;
+
+    /**
+     * 科目最大报销人数
+     */
+    private Integer maxPerson;
 }
