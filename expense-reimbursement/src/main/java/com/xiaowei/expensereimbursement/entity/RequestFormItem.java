@@ -61,4 +61,9 @@ public class RequestFormItem extends MultiBaseEntity {
      */
     private Integer count;
 
+    /**
+     * 人数
+     */
+    private Integer personCount;
+
 }
